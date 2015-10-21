@@ -1,0 +1,216 @@
+import React from 'react';
+
+import MESSAGES from '../WindowMessageListener';
+
+import {EventHandlers} from '../../Constants';
+
+import uuid from 'node-uuid';
+import QueryString from 'query-string';
+
+const VIMEO_EVENTS_TO_HTML5 = {
+	play: 'playing',
+	pause: 'pause',
+	finish: 'ended',
+	seek: 'seeked',
+	playProgress: 'timeupdate'
+};
+
+const VIMEO_URL_PARTS = /(?:https?:)?\/\/(?:(?:www|player)\.)?vimeo.com\/(?:(?:channels|video)\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?|#)/i;
+
+let Source = React.createClass({
+	displayName: 'Vimeo-Video',
+
+
+	statics: {
+		service: 'vimeo',
+		getID (url) {
+			/** @see test */
+			const [/*matchedURL*/, /*albumId*/, id] = url.match(VIMEO_URL_PARTS) || [];
+			return id || null;
+		},
+
+		getCanonicalURL (url) {
+			const id = this.getID(url);
+			return `https://www.vimeo.com/${id}`;
+		}
+	},
+
+
+	propTypes: {
+		source: React.PropTypes.any.isRequired
+	},
+
+
+	getInitialState () {
+		return {};
+	},
+
+
+	componentWillMount () {
+		const id = uuid.v4();
+		this.setState({id});
+		this.updateURL(this.props, id);
+	},
+
+
+	componentDidMount () {
+		MESSAGES.add(this.onMessage);
+	},
+
+
+	componentWillReceiveProps (nextProps) {
+		this.updateURL(nextProps);
+	},
+
+
+	componentWillUnmount () {
+		MESSAGES.remove(this.onMessage);
+	},
+
+
+	buildURL (props, id = this.state.id) {
+		const unwrap = x => Array.isArray(x) ? x[0] : x;
+		const {source: mediaSource, autoPlay} = props;
+
+		const videoId = typeof mediaSource === 'string'
+			? Source.getID(mediaSource)
+			: unwrap(mediaSource.source);
+
+		if (!id) {
+			console.error('Player ID missing');
+		}
+
+		const args = {
+			api: 1,
+			player_id: id,//eslint-disable-line camelcase
+			//autopause: 0, //we handle this for other videos, but its nice we only have to do this for cross-provider videos.
+			autoplay: autoPlay ? 1 : 0,
+			badge: 0,
+			byline: 0,
+			loop: 0,
+			portrait: 0,
+			title: 0
+		};
+
+		return 'https://player.vimeo.com/video/' + videoId + '?' + QueryString.stringify(args);
+	},
+
+
+	updateURL (props, id) {
+		const url = this.buildURL(props, id);
+		this.setState({
+			scope: url.split('?')[0],
+			playerURL: url
+		});
+	},
+
+
+	getPlayerContext () {
+		const {refs: {iframe}} = this;
+		return iframe && (iframe.contentWindow || window.frames[iframe.name]);
+	},
+
+
+	onMessage (event) {
+		let data = JSON.parse(event.data);
+		let mappedEvent = VIMEO_EVENTS_TO_HTML5[data.event];
+		let handlerName = EventHandlers[mappedEvent];
+
+		event = data.event;
+
+		if (data.player_id !== this.state.id) {
+			return;
+		}
+
+		console.debug('Vimeo Event: %s: %o', event, data.data || data);
+
+		data = data.data;
+
+		if (event === 'error') {
+			//console.warn(`Vimeo Error: ${data.code}: ${data.message}`);
+			//Make the view just hide the poster so the viewer can tap the embeded player's play button.
+			mappedEvent = 'playing';
+			handlerName = EventHandlers.playing;
+		}
+		else if (event === 'ready') {
+			this.postMessage('addEventListener', 'play');	//playing
+			this.postMessage('addEventListener', 'pause');	//pause
+			this.postMessage('addEventListener', 'finish');	//ended
+			this.postMessage('addEventListener', 'seek');	//seeked
+			this.postMessage('addEventListener', 'playProgress'); //timeupdate
+			// this.flushQueue();
+		}
+
+		if(mappedEvent && handlerName) {
+
+			this.props[handlerName]({
+				timeStamp: Date.now(),
+				target: {
+					currentTime: data && data.seconds,
+					duration: data && data.duration
+				},
+				type: mappedEvent
+			});
+
+		}
+	},
+
+
+	postMessage (method, params) {
+		let context = this.getPlayerContext(), data;
+		if (!context) {
+			console.warn(this.state.id, ' No Player Context!');
+			return;
+		}
+
+		data = {
+			method: method,
+			value: params
+		};
+
+		context.postMessage(JSON.stringify(data), this.state.scope);
+	},
+
+
+	render () {
+		if (!this.state.playerURL) {
+			return (<div>No source</div>);
+		}
+
+		let {id} = this.state;
+
+		let props = Object.assign({}, this.props, {
+			deferred: null,
+			name: id
+		});
+
+		return (
+			<iframe ref="iframe" {...props} src={this.state.playerURL}
+				frameBorder="0" seemless allowFullScreen allowTransparency />
+		);
+	},
+
+
+	play () {
+		//ready?
+		this.postMessage('play');
+		//else queue.
+	},
+
+
+	pause () {
+		this.postMessage('pause');
+	},
+
+
+	stop () {
+		this.postMessage('stop');
+	},
+
+
+	setCurrentTime (time) {
+		this.postMessage('seekTo', time);
+	}
+});
+
+export default Source;
