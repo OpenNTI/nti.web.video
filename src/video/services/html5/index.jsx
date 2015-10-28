@@ -154,10 +154,13 @@ export default React.createClass({
 
 
 	doPlay (e) {
-		e.preventDefault();
-		e.stopPropagation();
-		console.log('doPlay');
-		this.play();
+		let {video} = this.refs;
+		if (video && video.paused) {
+			e.preventDefault();
+			e.stopPropagation();
+			console.log('doPlay');
+			this.play();
+		}
 	},
 
 
