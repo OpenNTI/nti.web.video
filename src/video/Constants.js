@@ -2,7 +2,7 @@
 export const EventHandlers = {
 	playing: 'onPlaying',
 	pause: 'onPause',
-	ending: 'onEnded',
+	ended: 'onEnded',
 	seeked: 'onSeeked',
 	timeupdate: 'onTimeUpdate'
 };
