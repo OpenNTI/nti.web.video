@@ -1,5 +1,4 @@
-// import Constants from './Constants';
+import Constants from './Constants';
 import Component from './components/Video';
-// import Placeholder from './components/Placeholder';
 
-export {Component};
+export {Constants, Component};

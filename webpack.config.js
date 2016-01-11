@@ -1,18 +1,18 @@
 /*eslint no-var: 0*/
 var path = require('path');
-var webpack = require('webpack');
 exports = module.exports = {
-	entry: '<%= pkg.main %>',
+	entry: './src/index.js',
 	output: {
-		path: '<%= pkg.dist %>',
-		filename: 'nti.react-video.js',
-		library: 'NTIVideo',
-		libraryTarget: 'this'
+		path: 'lib/',
+		filename: 'index.js',
+		library: true,
+		libraryTarget: 'commonjs2'
 	},
 
 	cache: true,
 	debug: true,
 	devtool: 'source-map',
+
 
 	target: 'web',
 	stats: {
@@ -25,22 +25,16 @@ exports = module.exports = {
 		extensions: ['', '.jsx', '.js']
 	},
 
-	externals: [
-		{
-			'react' : 'React',
-			'react-dom': 'ReactDOM'
-		}
-	],
 
-	plugins: [
-		new webpack.optimize.OccurenceOrderPlugin(),
-		new webpack.optimize.DedupePlugin(),
-		new webpack.optimize.UglifyJsPlugin({ test: /\.js(x?)($|\?)/i })
+	externals: [
+		// Every non-relative module is external
+		// abc -> require("abc")
+		/^[a-z\-0-9]+/i
 	],
 
 	module: {
 		loaders: [
-			{ test: /\.js(x?)$/, exclude: /node_modules/, loader: 'babel?optional[]=runtime' },
+			{ test: /\.js(x?)$/, exclude: /node_modules/, loader: 'babel' },
 			{ test: /\.json$/, loader: 'json' }
 		]
 	}

@@ -1,3 +1,2 @@
 node_modules
-.update.sh
-dist
+lib

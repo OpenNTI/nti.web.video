@@ -1,6 +1,6 @@
 import React from 'react';
 
-// import {getEventTarget} from 'nti.lib.dom';
+import {getEventTarget} from 'nti-lib-dom';
 
 import {EventHandlers} from '../../Constants';
 
@@ -13,6 +13,11 @@ export default React.createClass({
 	},
 
 	propTypes: {
+		/**
+		 * Either a URL string or a source descriptor object.
+		 *
+		 * @type {String/MediaSource}
+		 */
 		source: React.PropTypes.any.isRequired,
 
 		autoPlay: React.PropTypes.bool
@@ -154,10 +159,17 @@ export default React.createClass({
 
 
 	doPlay (e) {
-		let {video} = this.refs;
-		if (video && video.paused) {
+		const isAnchor = e && getEventTarget(e, 'a');
+		const  {video} = this.refs;
+		const paused = video && video.paused;
+		const stopEvent = isAnchor || paused;
+
+		if (stopEvent) {
 			e.preventDefault();
 			e.stopPropagation();
+		}
+
+		if (paused) {
 			console.log('doPlay');
 			this.play();
 		}
@@ -165,7 +177,7 @@ export default React.createClass({
 
 
 	play () {
-		let {video} = this.refs;
+		const {video} = this.refs;
 		this.setState({interacted: true});
 		if (video && this.isMounted()) {
 			if (video.play) {
@@ -176,24 +188,24 @@ export default React.createClass({
 
 
 	pause () {
-		let video = this.refs;
-		if (video && this.isMounted()) {
+		const {video} = this.refs;
+		if (video) {
 			if (video.pause) { video.pause(); }
 		}
 	},
 
 
 	stop () {
-		let {video} = this.refs;
-		if (video && this.isMounted()) {
-			if (video.stop) { video.stop(); }
+		const {video} = this.refs;
+		if (video && video.stop) {
+			video.stop();
 		}
 	},
 
 
 	setCurrentTime (time) {
-		let {video} = this.refs;
-		if (video && this.isMounted()) {
+		const {video} = this.refs;
+		if (video) {
 			video.currentTime = time;
 		}
 	}

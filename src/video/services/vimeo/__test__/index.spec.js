@@ -21,10 +21,15 @@ const VIMEO_URLS = [
 
 describe('Vimeo tests', ()=> {
 
-	it('should handle all forms of Vimeo URLS', ()=>{
+	it('should handle all forms of Vimeo URLS', ()=> {
 		for (let url of VIMEO_URLS) {
 			expect(Vimeo.getID(url)).toBe(ID);
 		}
+	});
+
+
+	it('should handle our crazy ass-backwards custom protocol url', ()=> {
+		expect(Vimeo.getID(`vimeo://${ID}`)).toBe(ID);
 	});
 
 });

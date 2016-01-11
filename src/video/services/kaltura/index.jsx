@@ -1,10 +1,21 @@
+/*eslint react/no-multi-comp:0 react/display-name:0*/
 import React from 'react';
 import getSources from './SourceGrabber';
 import selectSources from './SelectSources';
 
+import {getEventTarget} from 'nti-lib-dom';
 import url from 'url';
 
 import {EventHandlers} from '../../Constants';
+
+function Loading () {
+	return (
+		<figure className="loading">
+			<div className="m spinner"></div>
+			<figcaption>Loading...</figcaption>
+		</figure>
+	);
+}
 
 /**
  * @class KalturaVideo
@@ -92,12 +103,14 @@ export default React.createClass({
 			entryId = parsed[1];
 		}
 
-		this.setState({
-			partnerId: partnerId
+		this.setState({entryId, partnerId}, () => {
+			getSources({ entryId, partnerId })
+			.then(sources => {
+				if(this.state.entryId === entryId) {
+					this.setSources(sources);
+				}
+			});
 		});
-
-		getSources({ entryId: entryId, partnerId: partnerId })
-			.then(this.setSources);
 	},
 
 
@@ -179,7 +192,7 @@ export default React.createClass({
 	render () {
 
 		if(!this.state.sourcesLoaded) {
-			return <div className="loading">Loading...</div>;
+			return <Loading/>;
 		}
 
 		if(this.state.isError) {
@@ -236,14 +249,19 @@ export default React.createClass({
 
 
 	doPlay (e) {
+		let isAnchor = e && getEventTarget(e, 'a');
 		let {video} = this.refs;
-		if (video && video.paused) {
+		if (!video || video.paused) {
+			return;
+		}
+
+		if (isAnchor) {
 			e.preventDefault();
 			e.stopPropagation();
-
-			console.log('doPlay');
-			this.play();
 		}
+
+		console.log('doPlay');
+		this.play();
 	},
 
 
