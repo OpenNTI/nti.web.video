@@ -1,5 +1,4 @@
 /*eslint no-var: 0*/
-var path = require('path');
 exports = module.exports = {
 	entry: './src/index.js',
 	output: {
@@ -21,7 +20,6 @@ exports = module.exports = {
 	},
 
 	resolve: {
-		root: path.resolve(__dirname, 'src'),
 		extensions: ['', '.jsx', '.js']
 	},
 
