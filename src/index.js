@@ -1,3 +1,6 @@
-import {Component as Video} from './video';
+import {getHandler, getUrl} from './services';
+import Component from './Video';
 
-export default Video;
+export default Component;
+
+export {getHandler, getUrl};

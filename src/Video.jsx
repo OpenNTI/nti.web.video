@@ -1,7 +1,7 @@
 import React from 'react';
-import {getHandler} from '../services';
+import {getHandler} from './services';
 
-import Fallback from '../services/html5';
+import Fallback from './services/html5';
 
 import emptyFunction from 'fbjs/lib/emptyFunction';
 
