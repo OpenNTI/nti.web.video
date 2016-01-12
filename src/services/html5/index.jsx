@@ -166,7 +166,7 @@ export default React.createClass({
 	onTimeUpdate (e) {
 		const {props: {onTimeUpdate}, state: {interacted}} = this;
 
-		if (!interacted) {
+		if (!interacted && e.target.currentTime > 0) {
 			this.setState({interacted: true});
 		}
 
