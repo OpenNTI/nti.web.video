@@ -1,9 +1,5 @@
 import React from 'react';
-
 import {getEventTarget} from 'nti-lib-dom';
-
-import {EventHandlers} from '../../Constants';
-
 
 export default React.createClass({
 	displayName: 'HTML5Video',
@@ -20,22 +16,13 @@ export default React.createClass({
 		 */
 		source: React.PropTypes.any.isRequired,
 
-		autoPlay: React.PropTypes.bool
-	},
+		autoPlay: React.PropTypes.bool,
 
-
-	getDefaultProps () {
-		let p = {};
-
-		// default no-op video event handlers
-		Object.keys(EventHandlers)
-			.forEach(eventname=>(
-				p[EventHandlers[eventname]] =
-					e=>console.warn('No handler specified for video event \'%s\'', e.type)
-				)
-			);
-
-		return p;
+		onPlaying: React.PropTypes.func,
+		onPause: React.PropTypes.func,
+		onEnded: React.PropTypes.func,
+		onSeeked: React.PropTypes.func,
+		onTimeUpdate: React.PropTypes.func
 	},
 
 
@@ -44,13 +31,12 @@ export default React.createClass({
 			sources: [],
 			sourcesLoaded: false,
 			error: false,
-			listening: false,
 			interacted: false
 		};
 	},
 
 
-	componentDidMount () {
+	componentWillMount () {
 		this.setupSource(this.props);
 	},
 
@@ -58,6 +44,19 @@ export default React.createClass({
 	componentWillReceiveProps (nextProps) {
 		if (this.props.source !== nextProps.source) {
 			this.setupSource(nextProps);
+		}
+	},
+
+
+	componentDidMount () {
+		const {props: {autoPlay}, refs: {video}} = this;
+		if (video) {
+			//attempt to tell the WebView to play inline...
+			video.setAttribute('webkit-playsinline', true);
+
+			if (autoPlay) {
+				this.doPlay();
+			}
 		}
 	},
 
@@ -82,43 +81,10 @@ export default React.createClass({
 
 	componentDidUpdate (prevProps) {
 		let {video} = this.refs;
-		this.ensureListeningToEvents(video);
 		if (prevProps.source !== this.props.source) {
 			if (video) {
 				video.load();
 			}
-		}
-	},
-
-
-	componentWillUnmount () {
-		let {video} = this.refs;
-		if (video) {
-			Object.keys(EventHandlers).forEach(eventname =>
-				video.removeEventListener(eventname, this.props[EventHandlers[eventname]], false)
-			);
-		}
-	},
-
-
-	ensureListeningToEvents (video) {
-		let {props} = this;
-		if (video && !this.state.listening) {
-			video.addEventListener('error', this.onError, false);
-
-			if (this.props.autoPlay) {
-				this.doPlay();
-			}
-
-			//attempt to tell the WebView to play inline...
-			video.setAttribute('webkit-playsinline', true);
-
-			Object.keys(EventHandlers).forEach(eventname => {
-
-				video.addEventListener(eventname, props[EventHandlers[eventname]], false);
-			});
-
-			this.setState({listening: true});
 		}
 	},
 
@@ -144,10 +110,66 @@ export default React.createClass({
 			<div className="error">Unable to load video.</div>
 		) : (
 			<div className={'video-wrapper ' + (interacted ? 'loaded' : '')}>
-				<video {...videoProps}/>
+				<video {...videoProps}
+					onError={this.onError}
+					onPlaying={this.onPlaying}
+					onPause={this.onPause}
+					onEnded={this.onEnded}
+					onSeeked={this.onSeeked}
+					onTimeUpdate={this.onTimeUpdate}
+					/>
 				{!interacted && <a className="tap-area play" href="#" onClick={this.doPlay} style={{backgroundColor: 'transparent'}}/>}
 			</div>
 		);
+	},
+
+
+	onPlaying (e) {
+		const {props: {onPlaying}} = this;
+
+		if (onPlaying) {
+			onPlaying(e);
+		}
+	},
+
+
+	onPause (e) {
+		const {props: {onPause}} = this;
+
+		if (onPause) {
+			onPause(e);
+		}
+	},
+
+
+	onEnded (e) {
+		const {props: {onEnded}} = this;
+
+		if (onEnded) {
+			onEnded(e);
+		}
+	},
+
+
+	onSeeked (e) {
+		const {props: {onSeeked}} = this;
+
+		if (onSeeked) {
+			onSeeked(e);
+		}
+	},
+
+
+	onTimeUpdate (e) {
+		const {props: {onTimeUpdate}, state: {interacted}} = this;
+
+		if (!interacted) {
+			this.setState({interacted: true});
+		}
+
+		if (onTimeUpdate) {
+			onTimeUpdate(e);
+		}
 	},
 
 
@@ -170,7 +192,6 @@ export default React.createClass({
 		}
 
 		if (paused) {
-			console.log('doPlay');
 			this.play();
 		}
 	},

@@ -6,8 +6,6 @@ import selectSources from './SelectSources';
 import {getEventTarget} from 'nti-lib-dom';
 import url from 'url';
 
-import {EventHandlers} from '../../Constants';
-
 function Loading () {
 	return (
 		<figure className="loading">
@@ -38,22 +36,13 @@ export default React.createClass({
 		source: React.PropTypes.any.isRequired,
 
 		autoPlay: React.PropTypes.bool,
-		deferred: React.PropTypes.bool
-	},
+		deferred: React.PropTypes.bool,
 
-
-	getDefaultProps () {
-		let p = {};
-
-		// default no-op video event handlers
-		Object.keys(EventHandlers)
-			.forEach(eventname=>(
-				p[EventHandlers[eventname]] =
-					e=>console.warn('No handler specified for video event \'%s\'', e.type)
-				)
-			);
-
-		return p;
+		onPlaying: React.PropTypes.func,
+		onPause: React.PropTypes.func,
+		onEnded: React.PropTypes.func,
+		onSeeked: React.PropTypes.func,
+		onTimeUpdate: React.PropTypes.func
 	},
 
 
@@ -62,7 +51,6 @@ export default React.createClass({
 			sources: [],
 			sourcesLoaded: false,
 			isError: false,
-			listening: false,
 			interacted: false
 		};
 	},
@@ -119,7 +107,9 @@ export default React.createClass({
 			return;
 		}
 
-		let qualityPreference = this.state.quality;//TODO: allow selection...
+		const {state: {quality, interacted}, props: {autoPlay}} = this;
+
+		let qualityPreference = quality;//TODO: allow selection...
 		let sources = selectSources(data.sources || [], qualityPreference);
 		let availableQualities = sources.qualities;
 
@@ -133,7 +123,7 @@ export default React.createClass({
 			isError: (data.objectType === 'KalturaAPIException')
 		});
 
-		if (this.state.interacted) {
+		if (autoPlay || interacted) {
 			this.doPlay();
 		}
 	},
@@ -147,8 +137,13 @@ export default React.createClass({
 
 
 	componentDidUpdate (prevProps) {
-		let {video} = this.refs;
-		this.ensureListeningToEvents(video);
+		const {video} = this.refs;
+
+		if (video) {
+			//attempt to tell the WebView to play inline...
+			video.setAttribute('webkit-playsinline', true);
+		}
+
 		if (prevProps.source !== this.props.source) {
 			if (video) {
 				video.load();
@@ -157,52 +152,21 @@ export default React.createClass({
 	},
 
 
-	componentWillUnmount () {
-		let {video} = this.refs;
-		if (video) {
-			Object.keys(EventHandlers).forEach(eventname =>
-				video.removeEventListener(eventname, this.props[EventHandlers[eventname]], false)
-			);
-		}
-	},
-
-
-	ensureListeningToEvents (video) {
-		let {props} = this;
-		if (video && !this.state.listening) {
-			video.addEventListener('error', this.onError, false);
-
-			if (this.props.autoPlay) {
-				this.doPlay();
-			}
-
-			//attempt to tell the WebView to play inline...
-			video.setAttribute('webkit-playsinline', true);
-
-			Object.keys(EventHandlers).forEach(eventname => {
-
-				video.addEventListener(eventname, props[EventHandlers[eventname]], false);
-			});
-
-			this.setState({listening: true});
-		}
-	},
-
-
 	render () {
+		const {poster, sourcesLoaded, isError, interacted} = this.state;
 
-		if(!this.state.sourcesLoaded) {
+		if(!sourcesLoaded) {
 			return <Loading/>;
 		}
 
-		if(this.state.isError) {
+		if(isError) {
 			return (<div className="error">Unable to load video.</div>);
 		}
 
 		let videoProps = Object.assign({}, this.props, {
 			ref: 'video',
 			controls: !/iP(hone|od)/i.test(navigator.userAgent),
-			poster: this.state.poster,
+			poster,
 			src: null,
 			source: null,
 			onClick: this.doPlay
@@ -214,15 +178,21 @@ export default React.createClass({
 			}
 		});
 
-		let interacted = this.state.interacted ? 'loaded' : '';
+		const interactedClass = interacted ? 'loaded' : '';
 
 		return (
-			<div className={'video-wrapper ' + interacted}>
-				<video {...videoProps}>
+			<div className={'video-wrapper ' + interactedClass}>
+				<video {...videoProps}
+					onError={this.onError}
+					onPlaying={this.onPlaying}
+					onPause={this.onPause}
+					onEnded={this.onEnded}
+					onSeeked={this.onSeeked}
+					onTimeUpdate={this.onTimeUpdate}>
 					{this.renderSources()}
 				</video>
-				{!this.state.interacted && <a className="tap-area play" href="#" onClick={this.doPlay}
-						style={{backgroundImage: `url(${this.state.poster})`}}/>}
+				{!interacted && <a className="tap-area play" href="#" onClick={this.doPlay}
+						style={{backgroundImage: `url(${poster})`}}/>}
 			</div>
 		);
 	},
@@ -238,6 +208,55 @@ export default React.createClass({
 		return sources.map(source=> (
 			<source key={source.src} src={source.src} type={source.type}/>
 		));
+	},
+
+
+	onPlaying (e) {
+		const {props: {onPlaying}} = this;
+
+		if (onPlaying) {
+			onPlaying(e);
+		}
+	},
+
+
+	onPause (e) {
+		const {props: {onPause}} = this;
+
+		if (onPause) {
+			onPause(e);
+		}
+	},
+
+
+	onEnded (e) {
+		const {props: {onEnded}} = this;
+
+		if (onEnded) {
+			onEnded(e);
+		}
+	},
+
+
+	onSeeked (e) {
+		const {props: {onSeeked}} = this;
+
+		if (onSeeked) {
+			onSeeked(e);
+		}
+	},
+
+
+	onTimeUpdate (e) {
+		const {props: {onTimeUpdate}, state: {interacted}} = this;
+
+		if (!interacted) {
+			this.setState({interacted: true});
+		}
+
+		if (onTimeUpdate) {
+			onTimeUpdate(e);
+		}
 	},
 
 
@@ -260,7 +279,6 @@ export default React.createClass({
 			e.stopPropagation();
 		}
 
-		console.log('doPlay');
 		this.play();
 	},
 
