@@ -8,9 +8,10 @@ const FORMAT_RANKS = {
 
 
 const getScreenWidth = () =>
-	(global.screen || {}).width
-		|| global.innerWidth
-		|| ((global.document || {}).documentElement || {}).clientWidth;
+	typeof window === 'undefined' ? 0 :
+		(window.screen || {}).width
+			|| window.innerWidth
+			|| ((window.document || {}).documentElement || {}).clientWidth;
 
 
 const getRank = o=> FORMAT_RANKS[o.type] || 0;
