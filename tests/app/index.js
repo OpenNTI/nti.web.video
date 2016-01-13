@@ -1,7 +1,7 @@
 import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Component as Video} from 'video';
+import Video from '../../src/index';
 
 ReactDOM.render(
 	React.createElement(Video, {src: 'https://youtu.be/ip4z4k4jcRo'}),

@@ -14,9 +14,24 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
 	<meta name="apple-mobile-web-app-title" content="nextthought app"/>
 	<title>NextThought Video</title>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/react/0.14.0/react-dom.min.js"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/0.9.0/fetch.min.js"></script>
+
+	<style>
+	.video-wrapper {
+		position: relative;
+		display: inline-block;
+	}
+	.tap-area.play {
+		position: absolute;
+		top: 0px;
+		left: 0px;
+		right: 0px;
+		bottom: 0px;
+		background-repeat: no-repeat;
+		background-size: cover;
+	}
+	</style>
+
 </head>
 <body>
 	<h3>YouTube</h3>
