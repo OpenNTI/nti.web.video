@@ -10,7 +10,10 @@ export default React.createClass({
 
 
 	propTypes: {
-		src: React.PropTypes.string.isRequired,
+		src: React.PropTypes.oneOfType([
+			React.PropTypes.string,
+			React.PropTypes.object
+		]).isRequired,
 
 		onTimeUpdate: React.PropTypes.func,
 		onSeeked: React.PropTypes.func,
