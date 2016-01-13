@@ -185,9 +185,9 @@ export default React.createClass({
 
 	doPlay (e) {
 		const isAnchor = e && getEventTarget(e, 'a');
-		const  {video} = this.refs;
+		const {refs: {video}, state: {interacted}} = this;
 		const paused = video && video.paused;
-		const stopEvent = isAnchor || paused;
+		const stopEvent = isAnchor || (paused && interacted);
 
 		if (stopEvent) {
 			e.preventDefault();

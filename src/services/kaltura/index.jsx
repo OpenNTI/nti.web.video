@@ -272,8 +272,8 @@ export default React.createClass({
 
 	doPlay (e) {
 		let isAnchor = e && getEventTarget(e, 'a');
-		let {video} = this.refs;
-		if (!video || video.paused) {
+		let {refs: {video}, state: {interacted}} = this;
+		if (!video || (interacted && video.paused)) {
 			return;
 		}
 
