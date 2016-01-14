@@ -8,6 +8,9 @@ const kalturaRe = /^kaltura/i;
 const vimeoRe = /vimeo/i;
 const youtubeRe = /youtu(\.?)be/i;
 
+const serviceMap = { youtube, vimeo, kaltura };
+const PROTOCOL_LESS = /^\/\//i;
+const ensureProtocol = x => PROTOCOL_LESS.test(x) ? `http:${x}` : x;
 
 export function getUrl (data) {
 	let src = data && data.sources[0];
@@ -25,18 +28,9 @@ export function getUrl (data) {
 	return url;
 }
 
-const serviceMap = {
-	youtube: youtube,
-	vimeo: vimeo,
-	kaltura: kaltura
-};
-
-// let getVimeoId = vimeo.getId;
-// let getYouTubeId = youtube.getId;
-
 
 export function getHandler (src) {
-	let url = (typeof src === 'string') ? Url.parse(src) : getUrl(src);
+	let url = (typeof src === 'string') ? Url.parse(ensureProtocol(src)) : getUrl(src);
 	let service = ((src.sources || [])[0] || {}).service;
 
 	let handler = serviceMap[service];
