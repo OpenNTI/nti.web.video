@@ -1,10 +1,13 @@
 /*eslint react/no-multi-comp:0 react/display-name:0*/
 import React from 'react';
+import Logger from 'nti-util-logger';
 import getSources from './SourceGrabber';
 import selectSources from './SelectSources';
 
-import {getEventTarget} from 'nti-lib-dom';
 import url from 'url';
+
+const commands = Logger.get('video:kaltura:commands');
+const events = Logger.get('video:kaltura:events');
 
 function Loading () {
 	return (
@@ -56,7 +59,7 @@ export default React.createClass({
 	},
 
 
-	componentDidMount () {
+	componentWillMount () {
 		this.setupSource(this.props);
 	},
 
@@ -68,16 +71,21 @@ export default React.createClass({
 	},
 
 
-	setupSource (props) {
-		let data = props.source;
+	componentDidMount () {
+		// this.setupSource(this.props);
+	},
+
+
+	setupSource (props = this.props) {
+		const data = props.source;
 		// kaltura://1500101/0_4ol5o04l/
-		let src = typeof data === 'string' && data;
-		let parsed = src && url.parse(src);
+		const src = typeof data === 'string' && data;
 
 		let partnerId;
 		let entryId;
 
 		if (src) {
+			const parsed = src && url.parse(src);
 			partnerId = parsed.host;
 			entryId = /\/(.*)\/$/.exec(parsed.path)[1];
 		} else if (data) {
@@ -86,32 +94,37 @@ export default React.createClass({
 				source = source[0];
 			}
 
-			parsed = (source || '').split(':');
+			const parsed = (source || '').split(':');
 			partnerId = parsed[0];
 			entryId = parsed[1];
 		}
 
-		this.setState({entryId, partnerId}, () => {
-			getSources({ entryId, partnerId })
-			.then(sources => {
+		events.debug('Setting source: entryId: %s, partnerId: %s', entryId, partnerId);
+
+		this.setState({entryId, partnerId},
+
+			() => getSources({ entryId, partnerId }).then(sources => {
 				if(this.state.entryId === entryId) {
+					events.debug('Resolved Sources: %o', sources);
 					this.setSources(sources);
+				} else {
+					events.debug('Ignoring late sources resolve for %s', entryId);
 				}
-			});
-		});
+
+			})
+			.catch(error => events.error('Error setting video source %s %o', entryId, error))
+		);
 	},
 
 
 	setSources (data) {
-		if (!this.isMounted()) {
-			return;
-		}
-
 		const {state: {quality, interacted}, props: {autoPlay}} = this;
 
-		let qualityPreference = quality;//TODO: allow selection...
-		let sources = selectSources(data.sources || [], qualityPreference);
-		let availableQualities = sources.qualities;
+		const qualityPreference = quality;//TODO: allow selection...
+		const sources = selectSources(data.sources || [], qualityPreference);
+		const availableQualities = sources.qualities;
+
+		events.debug('Selected sources: %o', sources);
 
 		this.setState({
 			duration: data.duration,
@@ -121,11 +134,16 @@ export default React.createClass({
 			qualities: availableQualities,
 			sourcesLoaded: true,
 			isError: (data.objectType === 'KalturaAPIException')
-		});
+		}, () => {
+			const {video} = this.refs;
+			if (video) {
+				video.load();
+			}
 
-		if (autoPlay || interacted) {
-			this.doPlay();
-		}
+			if (autoPlay || interacted) {
+				this.play();
+			}
+		});
 	},
 
 
@@ -146,6 +164,7 @@ export default React.createClass({
 
 		if (prevProps.source !== this.props.source) {
 			if (video) {
+				events.debug('Loading');
 				video.load();
 			}
 		}
@@ -153,11 +172,7 @@ export default React.createClass({
 
 
 	render () {
-		const {poster, sourcesLoaded, isError, interacted} = this.state;
-
-		if(!sourcesLoaded) {
-			return <Loading/>;
-		}
+		const {props: {deferred}, state: {poster, sourcesLoaded, isError, interacted, sources = []}} = this;
 
 		if(isError) {
 			return (<div className="error">Unable to load video.</div>);
@@ -165,11 +180,11 @@ export default React.createClass({
 
 		let videoProps = Object.assign({}, this.props, {
 			ref: 'video',
-			controls: !/iP(hone|od)/i.test(navigator.userAgent),
+			controls: true,// !/iP(hone|od)/i.test(navigator.userAgent),
 			poster,
 			src: null,
 			source: null,
-			onClick: this.doPlay
+			onClick: this.onClick
 		});
 
 		Object.keys(this.props).forEach(key => {
@@ -179,41 +194,34 @@ export default React.createClass({
 		});
 
 		const interactedClass = interacted ? 'loaded' : '';
+		const posterStyle = poster ? {backgroundImage: `url(${poster})`} : null;
 
 		return (
 			<div className={'video-wrapper ' + interactedClass}>
-				<video {...videoProps}
-					onError={this.onError}
-					onPlaying={this.onPlaying}
-					onPause={this.onPause}
-					onEnded={this.onEnded}
-					onSeeked={this.onSeeked}
-					onTimeUpdate={this.onTimeUpdate}>
-					{this.renderSources()}
-				</video>
-				{!interacted && <a className="tap-area play" href="#" onClick={this.doPlay}
-						style={{backgroundImage: `url(${poster})`}}/>}
+				{!sourcesLoaded ? (
+					<Loading/>
+				) : (
+					<video {...videoProps}
+						onError={this.onError}
+						onPlaying={this.onPlaying}
+						onPause={this.onPause}
+						onEnded={this.onEnded}
+						onSeeked={this.onSeeked}
+						onTimeUpdate={this.onTimeUpdate}>
+						{(deferred && !interacted) ? null : sources.map(source=> (
+							<source key={source.src} src={source.src} type={source.type}/>
+						))}
+					</video>
+				)}
+				{!interacted && ( <a className="tap-area play" href="#" onClick={this.onClick} style={posterStyle}/>)}
 			</div>
 		);
 	},
 
 
-	renderSources () {
-		let {interacted, sources = {}} = this.state;
-
-		if (this.props.deferred && !interacted) {
-			return null;
-		}
-
-		return sources.map(source=> (
-			<source key={source.src} src={source.src} type={source.type}/>
-		));
-	},
-
-
 	onPlaying (e) {
 		const {props: {onPlaying}} = this;
-
+		events.debug('playing %o', e);
 		if (onPlaying) {
 			onPlaying(e);
 		}
@@ -222,7 +230,7 @@ export default React.createClass({
 
 	onPause (e) {
 		const {props: {onPause}} = this;
-
+		events.debug('pause %o', e);
 		if (onPause) {
 			onPause(e);
 		}
@@ -231,9 +239,13 @@ export default React.createClass({
 
 	onEnded (e) {
 		const {props: {onEnded}} = this;
+		events.debug('ended %o', e);
 
-		this.setCurrentTime(0);
-		this.setState({interacted: false});
+		this.setState({interacted: false}, () => {
+
+			this.setCurrentTime(0);
+			
+		});
 
 		if (onEnded) {
 			onEnded(e);
@@ -243,7 +255,7 @@ export default React.createClass({
 
 	onSeeked (e) {
 		const {props: {onSeeked}} = this;
-
+		events.debug('seeked %o', e);
 		if (onSeeked) {
 			onSeeked(e);
 		}
@@ -252,6 +264,7 @@ export default React.createClass({
 
 	onTimeUpdate (e) {
 		const {props: {onTimeUpdate}, state: {interacted}} = this;
+		events.debug('timeUpdate %o', e);
 
 		if (!interacted && e.target.currentTime > 0) {
 			this.setState({interacted: true});
@@ -263,59 +276,70 @@ export default React.createClass({
 	},
 
 
-	onError () {
+	onError (event) {
+		events.debug('error %o', event);
 		this.setState({
 			error: 'Could not play video. Network or Browser error.'
 		});
 	},
 
 
-	doPlay (e) {
-		let isAnchor = e && getEventTarget(e, 'a');
-		let {refs: {video}, state: {interacted}} = this;
-		if (!video || (interacted && video.paused)) {
+	onClick (e) {
+		const {video} = this.refs;
+
+		if (/Gecko\//.test(navigator.userAgent)) {
 			return;
 		}
 
-		if (isAnchor) {
+		if (e) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
 
-		this.play();
-	},
-
-
-	play () {
-		let {video} = this.refs;
-		this.setState({interacted: true});
-		if (video && this.isMounted()) {
-			if (video.play) {
-				video.play();
+		if (video) {
+			if (video.paused || video.ended) {
+				this.play();
+			} else {
+				this.pause();
 			}
 		}
 	},
 
 
+	play () {
+		const {video} = this.refs;
+		this.setState({interacted: true});
+
+		commands.debug('play');
+
+		if (video && video.play) {
+			video.play();
+		}
+	},
+
+
 	pause () {
-		let video = this.refs;
-		if (video && this.isMounted()) {
-			if (video.pause) { video.pause(); }
+		const {video} = this.refs;
+		commands.debug('pause');
+		if (video && video.pause) {
+			video.pause();
 		}
 	},
 
 
 	stop () {
-		let {video} = this.refs;
-		if (video && this.isMounted()) {
-			if (video.stop) { video.stop(); }
+		const {video} = this.refs;
+		commands.debug('stop');
+		if (video && video.stop) {
+			video.stop();
 		}
 	},
 
 
 	setCurrentTime (time) {
-		let {video} = this.refs;
-		if (video && this.isMounted()) {
+		const {video} = this.refs;
+		commands.debug('setCurrentTime = %s', time);
+		if (video) {
 			video.currentTime = time;
 		}
 	}

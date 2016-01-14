@@ -1,5 +1,8 @@
 import React from 'react';
-import {getEventTarget} from 'nti-lib-dom';
+import Logger from 'nti-util-logger';
+
+const commands = Logger.get('video:html5:commands');
+const events = Logger.get('video:html5:events');
 
 export default React.createClass({
 	displayName: 'HTML5Video',
@@ -28,8 +31,6 @@ export default React.createClass({
 
 	getInitialState () {
 		return {
-			sources: [],
-			sourcesLoaded: false,
 			error: false,
 			interacted: false
 		};
@@ -55,7 +56,7 @@ export default React.createClass({
 			video.setAttribute('webkit-playsinline', true);
 
 			if (autoPlay) {
-				this.doPlay();
+				this.play();
 			}
 		}
 	},
@@ -64,10 +65,11 @@ export default React.createClass({
 	setupSource (props) {
 		let {source} = props;
 		if (typeof source !== 'string') {
-			console.warn('What is this?', source);
+			events.warn('What is this? %o', source);
 			source = null;
 		}
 
+		events.debug('Setting source: entryId: %s, partnerId: %s', source);
 		this.setState({src: source});
 	},
 
@@ -94,10 +96,10 @@ export default React.createClass({
 
 		let videoProps = Object.assign({}, this.props, {
 			ref: 'video',
-			controls: !/iP(hone|od)/i.test(navigator.userAgent),
+			controls: true,
 			src,
 			source: null,
-			onClick: this.doPlay
+			onClick: this.onClick
 		});
 
 		Object.keys(this.props).forEach(key => {
@@ -118,7 +120,7 @@ export default React.createClass({
 					onSeeked={this.onSeeked}
 					onTimeUpdate={this.onTimeUpdate}
 					/>
-				{!interacted && <a className="tap-area play" href="#" onClick={this.doPlay} style={{backgroundColor: 'transparent'}}/>}
+				{!interacted && <a className="tap-area play" href="#" onClick={this.onClick} style={{backgroundColor: 'transparent'}}/>}
 			</div>
 		);
 	},
@@ -126,7 +128,7 @@ export default React.createClass({
 
 	onPlaying (e) {
 		const {props: {onPlaying}} = this;
-
+		events.debug('playing %o', e);
 		if (onPlaying) {
 			onPlaying(e);
 		}
@@ -135,7 +137,7 @@ export default React.createClass({
 
 	onPause (e) {
 		const {props: {onPause}} = this;
-
+		events.debug('pause %o', e);
 		if (onPause) {
 			onPause(e);
 		}
@@ -144,9 +146,9 @@ export default React.createClass({
 
 	onEnded (e) {
 		const {props: {onEnded}} = this;
+		events.debug('ended %o', e);
 
-		this.setCurrentTime(0);
-		this.setState({interacted: false});
+		this.setState({interacted: false}, () => this.setCurrentTime(0));
 
 		if (onEnded) {
 			onEnded(e);
@@ -156,7 +158,7 @@ export default React.createClass({
 
 	onSeeked (e) {
 		const {props: {onSeeked}} = this;
-
+		events.debug('seeked %o', e);
 		if (onSeeked) {
 			onSeeked(e);
 		}
@@ -165,6 +167,7 @@ export default React.createClass({
 
 	onTimeUpdate (e) {
 		const {props: {onTimeUpdate}, state: {interacted}} = this;
+		events.debug('timeUpdate %o', e);
 
 		if (!interacted && e.target.currentTime > 0) {
 			this.setState({interacted: true});
@@ -176,26 +179,32 @@ export default React.createClass({
 	},
 
 
-	onError () {
+	onError (e) {
+		events.debug('error %o', e);
 		this.setState({
 			error: 'Could not play video. Network or Browser error.'
 		});
 	},
 
 
-	doPlay (e) {
-		const isAnchor = e && getEventTarget(e, 'a');
-		const {refs: {video}, state: {interacted}} = this;
-		const paused = video && video.paused;
-		const stopEvent = isAnchor || (paused && interacted);
+	onClick (e) {
+		const {video} = this.refs;
 
-		if (stopEvent) {
+		if (/Gecko\//.test(navigator.userAgent)) {
+			return;
+		}
+
+		if (e) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
 
-		if (paused) {
-			this.play();
+		if (video) {
+			if (video.paused || video.ended) {
+				this.play();
+			} else {
+				this.pause();
+			}
 		}
 	},
 
@@ -203,6 +212,9 @@ export default React.createClass({
 	play () {
 		const {video} = this.refs;
 		this.setState({interacted: true});
+
+		commands.debug('play');
+
 		if (video && this.isMounted()) {
 			if (video.play) {
 				video.play();
@@ -213,6 +225,9 @@ export default React.createClass({
 
 	pause () {
 		const {video} = this.refs;
+
+		commands.debug('pause');
+
 		if (video) {
 			if (video.pause) { video.pause(); }
 		}
@@ -221,6 +236,9 @@ export default React.createClass({
 
 	stop () {
 		const {video} = this.refs;
+
+		commands.debug('stop');
+
 		if (video && video.stop) {
 			video.stop();
 		}
@@ -229,6 +247,9 @@ export default React.createClass({
 
 	setCurrentTime (time) {
 		const {video} = this.refs;
+
+		commands.debug('set currentTime = %s', time);
+
 		if (video) {
 			video.currentTime = time;
 		}

@@ -1,9 +1,12 @@
 import React from 'react';
-import {getHandler} from './services';
+import emptyFunction from 'fbjs/lib/emptyFunction';
+import Logger from 'nti-util-logger';
 
+import {getHandler} from './services';
 import Fallback from './services/html5';
 
-import emptyFunction from 'fbjs/lib/emptyFunction';
+const commands = Logger.get('video:commands');
+const events = Logger.get('video:events');
 
 export default React.createClass({
 	displayName: 'Video',
@@ -26,11 +29,6 @@ export default React.createClass({
 	},
 
 
-	getInitialState () {
-		return {};
-	},
-
-
 	getDefaultProps () {
 		return {
 			onTimeUpdate: emptyFunction,
@@ -43,46 +41,55 @@ export default React.createClass({
 
 
 	onTimeUpdate (event) {
+		events.debug('timeUpdate %o', event);
 		this.props.onTimeUpdate(event);
 	},
 
 
 	onSeeked (event) {
+		events.debug('seeked %o', event);
 		this.props.onSeeked(event);
 	},
 
 
 	onPlaying (event) {
+		events.debug('played %o', event);
 		this.props.onPlaying(event);
 	},
 
 
 	onPause (event) {
+		events.debug('pause %o', event);
 		this.props.onPause(event);
 	},
 
 
 	onEnded (event) {
+		events.debug('ended %o', event);
 		this.props.onEnded(event);
 	},
 
 
 	play  () {
+		commands.debug('Play');
 		this.refs.activeVideo.play();
 	},
 
 
 	pause  () {
+		commands.debug('Pause');
 		this.refs.activeVideo.pause();
 	},
 
 
 	stop  () {
+		commands.debug('Stop');
 		this.refs.activeVideo.stop();
 	},
 
 
 	setCurrentTime (time) {
+		commands.debug('Set CurrentTime %s', time);
 		this.refs.activeVideo.setCurrentTime(time);
 	},
 

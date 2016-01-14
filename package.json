@@ -31,7 +31,7 @@
     "fbjs": "^0.4.0",
     "invariant": "^2.1.1",
     "node-uuid": "^1.4.3",
-    "nti-lib-dom": "^1.2.0",
+    "nti-util-logger": "^1.0.0",
     "query-string": "^3.0.0"
   },
   "devDependencies": {
