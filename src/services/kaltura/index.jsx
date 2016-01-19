@@ -244,7 +244,8 @@ export default React.createClass({
 		this.setState({interacted: false}, () => {
 
 			this.setCurrentTime(0);
-			
+			this.stop();
+
 		});
 
 		if (onEnded) {

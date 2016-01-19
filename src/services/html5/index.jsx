@@ -148,7 +148,12 @@ export default React.createClass({
 		const {props: {onEnded}} = this;
 		events.debug('ended %o', e);
 
-		this.setState({interacted: false}, () => this.setCurrentTime(0));
+		this.setState({interacted: false}, () => {
+
+			this.setCurrentTime(0);
+			this.stop();
+
+		});
 
 		if (onEnded) {
 			onEnded(e);

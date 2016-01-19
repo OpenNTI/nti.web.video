@@ -40,6 +40,15 @@ export default React.createClass({
 	},
 
 
+	componentWillUnmount () {
+		try {
+			this.stop();
+		} catch (e) {
+			//don't care
+		}
+	},
+
+
 	onTimeUpdate (event) {
 		events.debug('timeUpdate %o', event);
 		this.props.onTimeUpdate(event);
