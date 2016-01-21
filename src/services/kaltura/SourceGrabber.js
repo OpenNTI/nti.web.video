@@ -4,7 +4,6 @@
  */
 
 import QueryString from 'query-string';
-import {thatReturnsArgument as is} from 'fbjs/lib/emptyFunction';
 
 const test = RegExp.prototype.test;
 const isHLS = test.bind(/ip(hone|ad)new/i);
@@ -43,7 +42,7 @@ function parseResult ( result ) { // API result
 	let baseUrl = protocol + serviceUrl + '/p/' + entryInfo.partnerId +
 			'/sp/' + entryInfo.partnerId + '00/playManifest';
 
-	let adaptiveFlavors = assets.map(a => isHLS(a.tags) && a.id).filter(is);
+	let adaptiveFlavors = assets.map(a => isHLS(a.tags) && a.id).filter(x => x);
 
 	let deviceSources = assets
 		.filter(asset=> asset.status === 2 && asset.width)
