@@ -208,8 +208,8 @@ let Source = React.createClass({
 			}
 			return x;
 		};
-
-		const data = JSON.parse(event.data);
+		const getData = x => typeof x === 'string' ? JSON.parse(x) : x;
+		const data = getData(event.data);
 		const eventName = unwrap(data && data.event) || '';
 		const handlerName = 'handle' + eventName.charAt(0).toUpperCase() + eventName.substr(1);
 		const implemented = !!this[handlerName];
