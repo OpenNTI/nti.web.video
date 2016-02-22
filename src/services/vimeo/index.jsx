@@ -184,7 +184,6 @@ let Source = React.createClass({
 
 
 	render () {
-		this.iframe = null;
 
 		if (!this.state.playerURL) {
 			return (<div>No source</div>);

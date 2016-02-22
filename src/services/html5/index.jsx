@@ -94,8 +94,6 @@ export default React.createClass({
 	render () {
 		let {error, interacted, src} = this.state;
 
-		this.video = null;
-
 		let videoProps = Object.assign({}, this.props, {
 			controls: true,
 			src,

@@ -159,7 +159,6 @@ let Source = React.createClass({
 
 
 	render () {
-		this.iframe = null;
 		const {autoPlay, id} = this.state;
 		const {source, deferred} = this.props;
 

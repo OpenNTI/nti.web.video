@@ -174,8 +174,6 @@ export default React.createClass({
 	render () {
 		const {props: {deferred}, state: {poster, sourcesLoaded, isError, interacted, sources = []}} = this;
 
-		this.video = null;
-
 		if(isError) {
 			return (<div className="error">Unable to load video.</div>);
 		}

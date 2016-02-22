@@ -104,7 +104,6 @@ export default React.createClass({
 
 
 	render () {
-		this.activeVideo = null;
 		const video = this.props.src;
 		const Provider = getHandler(video) || Fallback;
 		const videoSource = video && (video.sources || {})[0];
