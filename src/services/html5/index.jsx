@@ -82,7 +82,7 @@ export default React.createClass({
 
 
 	componentDidUpdate (prevProps) {
-		let {video} = this.refs;
+		let {video} = this;
 		if (prevProps.source !== this.props.source) {
 			if (video) {
 				video.load();
@@ -94,8 +94,9 @@ export default React.createClass({
 	render () {
 		let {error, interacted, src} = this.state;
 
+		this.video = null;
+
 		let videoProps = Object.assign({}, this.props, {
-			ref: 'video',
 			controls: true,
 			src,
 			source: null,
@@ -113,6 +114,7 @@ export default React.createClass({
 		) : (
 			<div className={'video-wrapper ' + (interacted ? 'loaded' : '')}>
 				<video {...videoProps}
+					ref={x => this.video = x}
 					onError={this.onError}
 					onPlaying={this.onPlaying}
 					onPause={this.onPause}
@@ -193,7 +195,7 @@ export default React.createClass({
 
 
 	onClick (e) {
-		const {video} = this.refs;
+		const {video} = this;
 
 		if (/Gecko\//.test(navigator.userAgent)) {
 			return;
@@ -215,7 +217,7 @@ export default React.createClass({
 
 
 	play () {
-		const {video} = this.refs;
+		const {video} = this;
 		this.setState({interacted: true});
 
 		commands.debug('play');
@@ -229,7 +231,7 @@ export default React.createClass({
 
 
 	pause () {
-		const {video} = this.refs;
+		const {video} = this;
 
 		commands.debug('pause');
 
@@ -240,7 +242,7 @@ export default React.createClass({
 
 
 	stop () {
-		const {video} = this.refs;
+		const {video} = this;
 
 		commands.debug('stop');
 
@@ -251,7 +253,7 @@ export default React.createClass({
 
 
 	setCurrentTime (time) {
-		const {video} = this.refs;
+		const {video} = this;
 
 		commands.debug('set currentTime = %s', time);
 

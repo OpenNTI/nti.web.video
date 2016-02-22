@@ -135,7 +135,7 @@ export default React.createClass({
 			sourcesLoaded: true,
 			isError: (data.objectType === 'KalturaAPIException')
 		}, () => {
-			const {video} = this.refs;
+			const {video} = this;
 			if (video) {
 				video.load();
 			}
@@ -155,7 +155,7 @@ export default React.createClass({
 
 
 	componentDidUpdate (prevProps) {
-		const {video} = this.refs;
+		const {video} = this;
 
 		if (video) {
 			//attempt to tell the WebView to play inline...
@@ -174,12 +174,13 @@ export default React.createClass({
 	render () {
 		const {props: {deferred}, state: {poster, sourcesLoaded, isError, interacted, sources = []}} = this;
 
+		this.video = null;
+
 		if(isError) {
 			return (<div className="error">Unable to load video.</div>);
 		}
 
 		let videoProps = Object.assign({}, this.props, {
-			ref: 'video',
 			controls: true,// !/iP(hone|od)/i.test(navigator.userAgent),
 			poster,
 			src: null,
@@ -202,6 +203,7 @@ export default React.createClass({
 					<Loading/>
 				) : (
 					<video {...videoProps}
+						ref={x => this.video = x}
 						onError={this.onError}
 						onPlaying={this.onPlaying}
 						onPause={this.onPause}
@@ -286,7 +288,7 @@ export default React.createClass({
 
 
 	onClick (e) {
-		const {video} = this.refs;
+		const {video} = this;
 
 		if (/Gecko\//.test(navigator.userAgent)) {
 			return;
@@ -308,7 +310,7 @@ export default React.createClass({
 
 
 	play () {
-		const {video} = this.refs;
+		const {video} = this;
 		this.setState({interacted: true});
 
 		commands.debug('play');
@@ -320,7 +322,7 @@ export default React.createClass({
 
 
 	pause () {
-		const {video} = this.refs;
+		const {video} = this;
 		commands.debug('pause');
 		if (video && video.pause) {
 			video.pause();
@@ -329,7 +331,7 @@ export default React.createClass({
 
 
 	stop () {
-		const {video} = this.refs;
+		const {video} = this;
 		commands.debug('stop');
 		if (video && video.stop) {
 			video.stop();
@@ -338,7 +340,7 @@ export default React.createClass({
 
 
 	setCurrentTime (time) {
-		const {video} = this.refs;
+		const {video} = this;
 		commands.debug('setCurrentTime = %s', time);
 		if (video) {
 			video.currentTime = time;

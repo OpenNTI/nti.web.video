@@ -1,5 +1,6 @@
 import React from 'react';
 import invariant from 'invariant';
+import Logger from 'nti-util-logger';
 
 import {EventHandlers} from '../../Constants';
 
@@ -9,6 +10,8 @@ import QueryString from 'query-string';
 
 import Task from '../Task';
 import uuid from 'node-uuid';
+
+const logger = Logger.get('video:youtube');
 
 const YOU_TUBE = 'https://www.youtube.com';
 
@@ -150,17 +153,18 @@ let Source = React.createClass({
 
 
 	getPlayerContext () {
-		const {iframe} = this.refs;
+		const {iframe} = this;
 		return iframe && (iframe.contentWindow || window.frames[iframe.name]);
 	},
 
 
 	render () {
+		this.iframe = null;
 		const {autoPlay, id} = this.state;
 		const {source, deferred} = this.props;
 
 		if (!id) {
-			console.error('No ID');
+			logger.error('No ID');
 			return;
 		}
 
@@ -168,17 +172,21 @@ let Source = React.createClass({
 			return (<div>No source</div>);
 		}
 
-		const props = Object.assign({}, props, {
+		const props = Object.assign({}, this.props, {
 			name: id,
 			deferred: null,
-			frameBorder: 0,
-			ref: 'iframe'
+			frameBorder: 0
 		});
 
 		const render = !deferred || autoPlay;
 
 		return !render ? null : (
-			<iframe {...props} src={this.state.playerURL} allowFullScreen allowTransparency />
+			<iframe {...props}
+				ref={x => this.iframe = x}
+				src={this.state.playerURL}
+				allowFullScreen
+				allowTransparency
+				/>
 		);
 	},
 
@@ -202,7 +210,7 @@ let Source = React.createClass({
 		const unwrap = x => {
 			if (Array.isArray(x)) {
 				if (x.length !== 1) {
-					console.warn('Unexpected Data!!', x);
+					logger.warn('Unexpected Data!!', x);
 				}
 				return x[0];
 			}
@@ -221,7 +229,7 @@ let Source = React.createClass({
 
 		if (originMismatch || idMismatch) {
 
-			// console.debug('[YouTube] Ignoring Event (because origin mismatch: %o %o %o, or id mismatch %o, %o) %o',
+			// logger.debug('[YouTube] Ignoring Event (because origin mismatch: %o %o %o, or id mismatch %o, %o) %o',
 			// 	originMismatch, event.origin, this.state.scope,
 			// 	idMismatch, data.id || data,
 			// 	event);
@@ -229,7 +237,7 @@ let Source = React.createClass({
 		}
 
 		if (window.debugYT || !implemented) {
-			console[implemented ? 'debug' : 'warn']('[YouTube] Event: %s %s %o', data.id, data.event, data);
+			logger[implemented ? 'debug' : 'warn']('[YouTube] Event: %s %s %o', data.id, data.event, data);
 		}
 
 		if (!this.state.initialized) {
@@ -245,7 +253,7 @@ let Source = React.createClass({
 	postMessage (method, ...params) {
 		const context = this.getPlayerContext();
 		if (!context) {
-			console.warn(this.state.id, ' No Player Context!');
+			logger.warn(this.state.id, ' No Player Context!');
 			return;
 		}
 
@@ -261,7 +269,7 @@ let Source = React.createClass({
 			};
 
 		if (window.debugYT) {
-			console.debug('[YouTube] Sending: %s %o', method || 'listening', data);
+			logger.debug('[YouTube] Sending: %s %o', method || 'listening', data);
 		}
 		context.postMessage(JSON.stringify(data), this.state.scope);
 	},

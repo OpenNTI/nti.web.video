@@ -11,7 +11,7 @@ export class WindowMessageListener {
 			try {
 				fn(event);
 			} catch (e) {
-				console.error(e.stack || e.message || e);
+				console.error(e.stack || e.message || e); //eslint-disable-line no-console
 			}
 		});
 	}

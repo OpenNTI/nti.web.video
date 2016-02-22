@@ -1,4 +1,3 @@
-
 export const EventHandlers = {
 	playing: 'onPlaying',
 	pause: 'onPause',

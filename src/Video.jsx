@@ -81,37 +81,38 @@ export default React.createClass({
 
 	play  () {
 		commands.debug('Play');
-		this.refs.activeVideo.play();
+		this.activeVideo.play();
 	},
 
 
 	pause  () {
 		commands.debug('Pause');
-		this.refs.activeVideo.pause();
+		this.activeVideo.pause();
 	},
 
 
 	stop  () {
 		commands.debug('Stop');
-		this.refs.activeVideo.stop();
+		this.activeVideo.stop();
 	},
 
 
 	setCurrentTime (time) {
 		commands.debug('Set CurrentTime %s', time);
-		this.refs.activeVideo.setCurrentTime(time);
+		this.activeVideo.setCurrentTime(time);
 	},
 
 
 	render () {
-		let video = this.props.src;
-		let Provider = getHandler(video) || Fallback;
-		let videoSource = video && (video.sources || {})[0];
+		this.activeVideo = null;
+		const video = this.props.src;
+		const Provider = getHandler(video) || Fallback;
+		const videoSource = video && (video.sources || {})[0];
 
 		return (
 			<div className={'flex-video widescreen ' + Provider.displayName}>
 				<Provider {...this.props}
-					ref="activeVideo"
+					ref={x => this.activeVideo = x}
 					source={videoSource || video}
 					onTimeUpdate={this.onTimeUpdate}
 					onSeeked={this.onSeeked}

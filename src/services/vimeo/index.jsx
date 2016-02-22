@@ -1,4 +1,5 @@
 import React from 'react';
+import Logger from 'nti-util-logger';
 
 import MESSAGES from '../WindowMessageListener';
 
@@ -6,6 +7,8 @@ import {EventHandlers} from '../../Constants';
 
 import uuid from 'node-uuid';
 import QueryString from 'query-string';
+
+const logger = Logger.get('video:vimeo');
 
 const VIMEO_EVENTS_TO_HTML5 = {
 	play: 'playing',
@@ -84,7 +87,7 @@ let Source = React.createClass({
 		}
 
 		if (!id) {
-			console.error('Player ID missing');
+			logger.error('Player ID missing');
 		}
 
 		const args = {
@@ -113,7 +116,7 @@ let Source = React.createClass({
 
 
 	getPlayerContext () {
-		const {refs: {iframe}} = this;
+		const {iframe} = this;
 		return iframe && (iframe.contentWindow || window.frames[iframe.name]);
 	},
 
@@ -130,7 +133,7 @@ let Source = React.createClass({
 			return;
 		}
 
-		console.debug('Vimeo Event: %s: %o', event, data.data || data);
+		logger.debug('Vimeo Event: %s: %o', event, data.data || data);
 
 		data = data.data;
 
@@ -167,7 +170,7 @@ let Source = React.createClass({
 	postMessage (method, params) {
 		let context = this.getPlayerContext(), data;
 		if (!context) {
-			console.warn(this.state.id, ' No Player Context!');
+			logger.warn(this.state.id, ' No Player Context!');
 			return;
 		}
 
@@ -181,6 +184,8 @@ let Source = React.createClass({
 
 
 	render () {
+		this.iframe = null;
+
 		if (!this.state.playerURL) {
 			return (<div>No source</div>);
 		}
@@ -193,7 +198,7 @@ let Source = React.createClass({
 		});
 
 		return (
-			<iframe ref="iframe" {...props} src={this.state.playerURL}
+			<iframe ref={x => this.iframe = x} {...props} src={this.state.playerURL}
 				frameBorder="0" seemless allowFullScreen allowTransparency />
 		);
 	},
