@@ -195,13 +195,16 @@ export default React.createClass({
 	onClick (e) {
 		const {video} = this;
 
+		if (e) {
+			e.stopPropagation();
+		}
+
 		if (/Gecko\//.test(navigator.userAgent)) {
 			return;
 		}
 
 		if (e) {
 			e.preventDefault();
-			e.stopPropagation();
 		}
 
 		if (video) {
