@@ -27,6 +27,7 @@
     "component"
   ],
   "dependencies": {
+    "babel-runtime": "^6.5.0",
     "classnames": "^2.0.0",
     "invariant": "^2.1.1",
     "node-uuid": "^1.4.3",
