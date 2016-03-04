@@ -286,13 +286,13 @@ export default React.createClass({
 
 
 	onClick (e) {
-		const {video} = this;
+		const {state: {interacted}, video} = this;
 
 		if (e) {
 			e.stopPropagation();
 		}
 
-		if (/Gecko\//.test(navigator.userAgent)) {
+		if (interacted && /Gecko\//.test(navigator.userAgent)) {
 			return;
 		}
 
