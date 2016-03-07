@@ -1,5 +1,6 @@
 /*eslint no-var: 0*/
 var path = require('path');
+var pkg = require('./package.json');
 
 module.exports = function (config) {
 	config.set({
@@ -53,7 +54,7 @@ module.exports = function (config) {
 		junitReporter: {
 			outputDir: 'reports/test-results/',
 			outputFile: 'index.xml',
-			suite: 'react-editor-component',
+			suite: pkg.name,
 			useBrowserName: false
 		},
 
@@ -88,8 +89,7 @@ module.exports = function (config) {
 
 		webpack: {
 			cache: true,
-			debug: true,
-			devtool: 'inline-source-map',
+			debug: false,
 
 			resolve: {
 				root: path.resolve(__dirname, 'src'),
