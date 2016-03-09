@@ -264,10 +264,11 @@ export default React.createClass({
 
 
 	onTimeUpdate (e) {
+		const {target: video} = e;
 		const {props: {onTimeUpdate}, state: {interacted}} = this;
 		events.debug('timeUpdate %o', e);
 
-		if (!interacted && e.target.currentTime > 0) {
+		if (!interacted && !video.paused && video.currentTime > 0.05) {
 			this.setState({interacted: true});
 		}
 
