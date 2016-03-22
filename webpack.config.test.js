@@ -7,7 +7,6 @@ exports = module.exports = Object.assign(require('./webpack.config'), {
 	},
 
 	cache: true,
-	debug: true,
 	devtool: 'source-map',
 
 	externals: []
