@@ -5,7 +5,8 @@ module.exports = function (config) {
 
 	config.set(Object.assign(baseConfig, {
 		files: [
-			'test/**/*.js'
+			'test/helpers/**/*.js',
+			'test/*.js'
 		],
 
 		preprocessors: {
