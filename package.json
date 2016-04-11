@@ -49,8 +49,8 @@
     "eslint-config-nti-codestyle-jsx": "^1.0.0",
     "in-publish": "^2.0.0",
     "nti-unittesting-clientside": "^1.0.3",
-    "react": "^0.14.0",
-    "react-dom": "^0.14.0",
+    "react": "^15.0.1",
+    "react-dom": "^15.0.1",
     "webpack": "^1.8.4",
     "webpack-dev-server": "^1.8.0"
   }
