@@ -1,6 +1,7 @@
-/*eslint no-var:0, no-extra-strict: 0, strict: 0*/
+require('babel-polyfill');//applies hooks into global
+
 (function () {
-	'use strict';
+	/*eslint no-var: 0*/
 	var Ap = Array.prototype;
 	var slice = Ap.slice;
 	var Fp = Function.prototype;
@@ -21,7 +22,7 @@
 					// constructors such as BaseClass.call(this, ...) or super(...).
 					!invokedAsConstructor && context || this,
 					args.concat(slice.call(arguments))
-				);
+					);
 			}
 
 			// The bound function must share the .prototype of the unbound
