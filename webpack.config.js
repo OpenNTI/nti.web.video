@@ -27,7 +27,14 @@ exports = module.exports = {
 
 	module: {
 		loaders: [
-			{ test: /\.js(x?)$/, exclude: /node_modules/, loader: 'babel' },
+			{
+				test: /\.js(x?)$/i,
+				exclude: /node_modules/,
+				loader: 'babel',
+				query: {
+					sourceMaps: true
+				}
+			},
 			{ test: /\.json$/, loader: 'json' }
 		]
 	}
