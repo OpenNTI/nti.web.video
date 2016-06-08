@@ -10,3 +10,5 @@ exports = module.exports = Object.assign(require('./webpack.config'), {
 
 	externals: []
 });
+
+delete exports.node;
