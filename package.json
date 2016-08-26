@@ -21,7 +21,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "ssh://repos.nextthought.com/nti.web.component.video"
+    "url": "https://repos.nextthought.com/git/nti.web.component.video"
   },
   "keywords": [
     "react",
