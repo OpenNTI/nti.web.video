@@ -39,7 +39,7 @@
     "query-string": "^4.0.0"
   },
   "devDependencies": {
-    "babel-core": "^6.1.0",
+    "babel-cli": "^6.1.0",
     "babel-eslint": "^7.0.0",
     "babel-loader": "^6.2.0",
     "babel-polyfill": "^6.1.0",
