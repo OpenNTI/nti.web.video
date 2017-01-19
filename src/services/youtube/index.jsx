@@ -69,6 +69,9 @@ let Source = React.createClass({
 	},
 
 
+	attachRef (x) { this.iframe = x; },
+
+
 	getInitialState () {
 		return {id: uuid.v4(), scope: YOU_TUBE, playerState: -1};
 	},
@@ -181,7 +184,7 @@ let Source = React.createClass({
 
 		return !render ? null : (
 			<iframe {...props}
-				ref={x => this.iframe = x}
+				ref={this.attachRef}
 				src={this.state.playerURL}
 				allowFullScreen
 				allowTransparency
@@ -256,8 +259,8 @@ let Source = React.createClass({
 			return;
 		}
 
-		const data = method ?
-			{
+		const data = method
+			? {
 				event: 'command',
 				func: method,
 				args: params,

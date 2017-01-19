@@ -49,6 +49,7 @@ let Source = React.createClass({
 		autoPlay: React.PropTypes.bool
 	},
 
+	attachRef (x) { this.iframe = x; },
 
 	getInitialState () {
 		return {};
@@ -197,7 +198,7 @@ let Source = React.createClass({
 		});
 
 		return (
-			<iframe ref={x => this.iframe = x} {...props} src={this.state.playerURL}
+			<iframe ref={this.attachRef} {...props} src={this.state.playerURL}
 				frameBorder="0" seemless allowFullScreen allowTransparency />
 		);
 	},

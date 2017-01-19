@@ -40,6 +40,9 @@ export default React.createClass({
 	},
 
 
+	attachRef (x) { this.activeVideo = x; },
+
+
 	componentWillUnmount () {
 		try {
 			this.stop();
@@ -111,7 +114,7 @@ export default React.createClass({
 		return (
 			<div className={'flex-video widescreen ' + Provider.displayName}>
 				<Provider {...this.props}
-					ref={x => this.activeVideo = x}
+					ref={this.attachRef}
 					source={videoSource || video}
 					onTimeUpdate={this.onTimeUpdate}
 					onSeeked={this.onSeeked}

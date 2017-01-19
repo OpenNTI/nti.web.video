@@ -12,7 +12,7 @@ const events = Logger.get('video:kaltura:events');
 function Loading () {
 	return (
 		<figure className="loading">
-			<div className="m spinner"></div>
+			<div className="m spinner"/>
 			<figcaption>Loading...</figcaption>
 		</figure>
 	);
@@ -48,6 +48,7 @@ export default React.createClass({
 		onTimeUpdate: React.PropTypes.func
 	},
 
+	attachRef (x) { this.video = x; },
 
 	getInitialState () {
 		return {
@@ -201,7 +202,7 @@ export default React.createClass({
 					<Loading/>
 				) : (
 					<video {...videoProps}
-						ref={x => this.video = x}
+						ref={this.attachRef}
 						onError={this.onError}
 						onPlaying={this.onPlaying}
 						onPause={this.onPause}

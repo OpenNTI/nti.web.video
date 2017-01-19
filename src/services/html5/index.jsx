@@ -28,12 +28,21 @@ export default React.createClass({
 		onTimeUpdate: React.PropTypes.func
 	},
 
+	attachRef (x) {
+		this.video = x;
+	},
+
 
 	getInitialState () {
 		return {
 			error: false,
 			interacted: false
 		};
+	},
+
+
+	componentWillUnmount () {
+		this.isUnmounted = true;
 	},
 
 
@@ -112,7 +121,7 @@ export default React.createClass({
 		) : (
 			<div className={'video-wrapper ' + (interacted ? 'loaded' : '')}>
 				<video {...videoProps}
-					ref={x => this.video = x}
+					ref={this.attachRef}
 					onError={this.onError}
 					onPlaying={this.onPlaying}
 					onPause={this.onPause}
@@ -224,7 +233,7 @@ export default React.createClass({
 
 		commands.debug('play');
 
-		if (video && this.isMounted()) {
+		if (video && !this.isUnmounted) {
 			if (video.play) {
 				video.play();
 			}
