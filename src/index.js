@@ -1,6 +1,13 @@
 import {getHandler, getUrl} from './services';
-import Component from './Video';
+import ComponentRaw from './Video';
+import Component from './VideoWithAnalytics';
+import Placeholder from './Placeholder';
 
-export default Component;
+export default ComponentRaw;
 
-export {getHandler, getUrl};
+export {
+	getHandler,
+	getUrl,
+	Component,
+	Placeholder
+};
