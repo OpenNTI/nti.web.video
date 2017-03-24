@@ -13,10 +13,10 @@
     "npm": ">=3.3.0"
   },
   "scripts": {
-    "test": "karma start --single-run --reporters dots,html,junit,coverage",
-    "start": "make check && webpack-dev-server -d --config ./webpack.config.test.js  --host 0.0.0.0 --port 8000 --watch --progress --inline --info false --content-base ./test/app/ || true",
+    "test": "make test",
+    "start": "make check; webpack-dev-server -d --config ./webpack.config.test.js  --host 0.0.0.0 --port 8000 --quiet --watch --progress --inline --info false --content-base ./test/app/ || true",
     "prepublish": "not-in-install && make || in-install",
-    "bump": "npm version",
+    "preversion": "make test",
     "postversion": "git push && git push --tags && npm publish"
   },
   "repository": {
@@ -31,28 +31,59 @@
   "dependencies": {
     "classnames": "^2.0.0",
     "invariant": "^2.1.1",
-    "node-uuid": "^1.4.3",
     "nti-analytics": "^1.1.0",
     "nti-lib-interfaces": "^1.42.0",
     "nti-util-logger": "^1.0.0",
     "nti-web-client": "^1.1.1",
-    "query-string": "^4.0.0"
+    "query-string": "^4.0.0",
+    "uuid": "^3.0.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.1.0",
+    "autoprefixer": "^6.3.6",
+    "babel-core": "^6.1.0",
     "babel-eslint": "^7.0.0",
+    "babel-jest": "^19.0.0",
     "babel-loader": "^6.2.0",
     "babel-polyfill": "^6.1.0",
-    "babel-preset-es2015": "^6.1.0",
+    "babel-preset-env": "^1.1.4",
     "babel-preset-react": "^6.1.0",
-    "babel-preset-stage-2": "^6.1.0",
+    "babel-preset-stage-1": "^6.1.0",
+    "baggage-loader": "^0.3.0",
+    "css-loader": "0.x.x",
     "eslint-config-nti-codestyle-js": "^1.1.0",
     "eslint-config-nti-codestyle-jsx": "^1.0.0",
+    "extract-text-webpack-plugin": "^2.0.0",
+    "file-loader": "0.x.x",
     "in-publish": "^2.0.0",
-    "nti-unittesting-clientside": "^1.0.3",
-    "react": "^15.0.1",
-    "react-dom": "^15.0.1",
-    "webpack": "^1.8.4",
-    "webpack-dev-server": "^1.8.0"
+    "jest": "^19.0.2",
+    "jest-junit": "^1.4.0",
+    "node-sass": "^4.5.0",
+    "normalize.css": "^5.0.0",
+    "nti-style-common": "^1.1.11",
+    "postcss-loader": "^1.3.0",
+    "react": "^15.1.0",
+    "react-dom": "^15.1.0",
+    "resolve-url-loader": "^2.0.0",
+    "sass-loader": "^6.0.0",
+    "style-loader": "0.x.x",
+    "url-loader": "0.x.x",
+    "webpack": "^2.2.0",
+    "webpack-dev-server": "^2.4.0"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx}",
+      "!**/*.spec.js"
+    ],
+    "coverageDirectory": "reports/coverage",
+    "testResultsProcessor": "./node_modules/jest-junit",
+    "roots": ["<rootDir>/src/"],
+    "testMatch": [
+      "**/__test__/**/*.(spec).js?(x)"
+    ]
+  },
+  "jest-junit": {
+    "output": "reports/test-results/index.xml"
   }
 }

@@ -5,7 +5,7 @@ import MESSAGES from '../WindowMessageListener';
 
 import {EventHandlers} from '../../Constants';
 
-import uuid from 'node-uuid';
+import uuid from 'uuid';
 import QueryString from 'query-string';
 
 const logger = Logger.get('video:vimeo');
@@ -57,7 +57,7 @@ let Source = React.createClass({
 
 
 	componentWillMount () {
-		const id = uuid.v4();
+		const id = uuid();
 		this.setState({id});
 		this.updateURL(this.props, id);
 	},

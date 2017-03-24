@@ -9,7 +9,7 @@ import MESSAGES from '../WindowMessageListener';
 import QueryString from 'query-string';
 
 import Task from '../Task';
-import uuid from 'node-uuid';
+import uuid from 'uuid';
 
 const logger = Logger.get('video:youtube');
 
@@ -73,7 +73,7 @@ let Source = React.createClass({
 
 
 	getInitialState () {
-		return {id: uuid.v4(), scope: YOU_TUBE, playerState: -1};
+		return {id: uuid(), scope: YOU_TUBE, playerState: -1};
 	},
 
 

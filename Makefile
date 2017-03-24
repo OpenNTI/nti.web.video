@@ -1,6 +1,5 @@
 .PHONY: bundle clean check test
 
-
 ROOT_DIR = $(patsubst %/,%, $(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 
 SRC = $(shell find src -name '*.js' -o -name '*.jsx')
@@ -10,7 +9,8 @@ LIBDIR = lib
 
 MAKE_PACKAGE=webpack --progress --cache --bail
 
-all: node_modules lib
+all: node_modules bundle
+#all: node_modules lib
 
 node_modules: package.json
 #	@rm -rf node_modules
@@ -19,7 +19,7 @@ node_modules: package.json
 	@touch $@
 
 test: node_modules check
-	@karma start --single-run
+	@jest
 
 check:
 	@eslint --ext .js,.jsx ./src
@@ -30,13 +30,14 @@ clean:
 bundle:
 	@$(MAKE_PACKAGE)
 
-lib: $(LIB) $(LIBX)
-lib/%.js: src/%.js
-#	@echo babel	$@...
-	@mkdir -p $(@D)
-	babel $< -o $@
 
-lib/%.js: src/%.jsx
-#	@echo babel	$@...
-	@mkdir -p $(@D)
-	babel $< -o $@
+# lib: $(LIB) $(LIBX)
+# lib/%.js: src/%.js
+# #	@echo babel	$@...
+# 	@mkdir -p $(@D)
+# 	babel $< -o $@
+#
+# lib/%.js: src/%.jsx
+# #	@echo babel	$@...
+# 	@mkdir -p $(@D)
+# 	babel $< -o $@
