@@ -1,15 +1,12 @@
 import React from 'react';
 import invariant from 'invariant';
 import Logger from 'nti-util-logger';
-
-import {EventHandlers} from '../../Constants';
-
-import MESSAGES from '../WindowMessageListener';
-
+import uuid from 'uuid';
 import QueryString from 'query-string';
 
+import {EventHandlers} from '../../Constants';
+import MESSAGES from '../WindowMessageListener';
 import Task from '../Task';
-import uuid from 'uuid';
 
 const logger = Logger.get('video:youtube');
 

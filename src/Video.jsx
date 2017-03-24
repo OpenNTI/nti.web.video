@@ -1,10 +1,10 @@
 import React from 'react';
-import emptyFunction from 'fbjs/lib/emptyFunction';
 import Logger from 'nti-util-logger';
 
 import {getHandler} from './services';
 import Fallback from './services/html5';
 
+const emptyFunction = () => {};
 const commands = Logger.get('video:commands');
 const events = Logger.get('video:events');
 

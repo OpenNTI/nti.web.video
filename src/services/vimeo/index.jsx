@@ -1,12 +1,11 @@
 import React from 'react';
 import Logger from 'nti-util-logger';
-
-import MESSAGES from '../WindowMessageListener';
-
-import {EventHandlers} from '../../Constants';
-
 import uuid from 'uuid';
 import QueryString from 'query-string';
+
+import {EventHandlers} from '../../Constants';
+import MESSAGES from '../WindowMessageListener';
+
 
 const logger = Logger.get('video:vimeo');
 

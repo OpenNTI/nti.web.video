@@ -1,14 +1,13 @@
 import React from 'react';
-
-import Video from './Video';
 import Logger from 'nti-util-logger';
-
 import {
 	eventStarted,
 	eventEnded,
 	toAnalyticsPath,
 	WatchVideoEvent
 } from 'nti-analytics';
+
+import Video from './Video';
 
 const logger = Logger.get('video:component:VideoWrapper');
 

@@ -1,10 +1,12 @@
 /*eslint react/no-multi-comp:0 react/display-name:0*/
+import url from 'url';
+
 import React from 'react';
 import Logger from 'nti-util-logger';
+
 import getSources from './SourceGrabber';
 import selectSources from './SelectSources';
 
-import url from 'url';
 
 const commands = Logger.get('video:kaltura:commands');
 const events = Logger.get('video:kaltura:events');

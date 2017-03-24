@@ -1,11 +1,9 @@
 import React from 'react';
-
 import Logger from 'nti-util-logger';
 import {getModel} from 'nti-lib-interfaces';
-import {getHandler} from './services';
-
 import {getService} from 'nti-web-client';
 
+import {getHandler} from './services';
 import Video from './Video';
 
 const logger = Logger.get('video:components:VideoPlaceholder');
