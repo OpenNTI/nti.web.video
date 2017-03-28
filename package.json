@@ -77,7 +77,7 @@
       "!**/*.spec.js"
     ],
     "coverageDirectory": "reports/coverage",
-    "coverageReporters": ["lcov", "cobertura"],
+    "coverageReporters": ["text", "lcov", "cobertura"],
     "testResultsProcessor": "./node_modules/jest-junit",
     "roots": [
       "<rootDir>/src/"
