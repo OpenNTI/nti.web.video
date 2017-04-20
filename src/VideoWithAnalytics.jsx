@@ -94,6 +94,13 @@ export default React.createClass({
 
 	componentWillUnmount () {
 		this.mounted = false;
+
+		let {playStartEvent} = this.state;
+
+		if (playStartEvent) {
+			eventEnded(playStartEvent);
+		}
+
 	},
 
 	getAnalyticsEventData (event) {
