@@ -1,6 +1,6 @@
 {
   "name": "nti-web-video",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "author": "nextthought",
   "description": "A Video component for ReactJS",
   "license": "UNLICENSED",
@@ -77,7 +77,11 @@
       "!**/*.spec.js"
     ],
     "coverageDirectory": "reports/coverage",
-    "coverageReporters": ["text", "lcov", "cobertura"],
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "cobertura"
+    ],
     "testResultsProcessor": "./node_modules/jest-junit",
     "roots": [
       "<rootDir>/src/"
