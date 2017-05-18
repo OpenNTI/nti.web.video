@@ -1,6 +1,5 @@
 {
 	"extends": [
-		"nti-codestyle-js",
 		"nti-codestyle-jsx"
 	],
 	"parser": "babel-eslint"
