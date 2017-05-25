@@ -23,7 +23,7 @@ export default React.createClass({
 		onPlaying: React.PropTypes.func,
 		onPause: React.PropTypes.func,
 		onEnded: React.PropTypes.func,
-
+		onError: React.PropTypes.func,
 
 		deferred: React.PropTypes.bool
 	},
@@ -121,6 +121,7 @@ export default React.createClass({
 					onPlaying={this.onPlaying}
 					onPause={this.onPause}
 					onEnded={this.onEnded}
+					onError={this.props.onError}
 					/>
 			</div>
 		);
