@@ -65,5 +65,6 @@ export function createMediaSourceFromUrl (url) {
 	const canonicalUrl = handler && handler.getCanonicalURL && handler.getCanonicalURL(url);
 
 	return getService()
-		.then(service => new MediaSource(service, null, {service: handler.service, href: canonicalUrl, source: videoId}));
+		.then(service => new MediaSource(service, null, {service: handler.service, href: canonicalUrl, source: videoId}))
+		.catch(() => Function.prototype());
 }
