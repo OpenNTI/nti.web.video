@@ -25,7 +25,8 @@ export default React.createClass({
 		onPause: React.PropTypes.func,
 		onEnded: React.PropTypes.func,
 		onSeeked: React.PropTypes.func,
-		onTimeUpdate: React.PropTypes.func
+		onTimeUpdate: React.PropTypes.func,
+		onError: React.PropTypes.func
 	},
 
 	attachRef (x) {
@@ -117,7 +118,7 @@ export default React.createClass({
 		});
 
 		return error ? (
-			<div className="error">Unable to load video.</div>
+			this.props.onError()
 		) : (
 			<div className={'video-wrapper ' + (interacted ? 'loaded' : '')}>
 				<video {...videoProps}

@@ -83,7 +83,8 @@ export default React.createClass({
 		onPause: React.PropTypes.func,
 		onEnded: React.PropTypes.func,
 		onSeeked: React.PropTypes.func,
-		onTimeUpdate: React.PropTypes.func
+		onTimeUpdate: React.PropTypes.func,
+		onError: React.PropTypes.func
 	},
 
 	attachRef (x) { this.video = x; },
@@ -214,7 +215,7 @@ export default React.createClass({
 		const {props: {deferred}, state: {poster, sourcesLoaded, isError, interacted, sources = []}} = this;
 
 		if(isError) {
-			return (<div className="error">Unable to load video.</div>);
+			return this.props.onError();
 		}
 
 		let videoProps = Object.assign({}, this.props, {
