@@ -29,7 +29,43 @@ export default React.createClass({
 	displayName: 'KalturaVideo',
 
 	statics: {
-		service: 'kaltura'
+		service: 'kaltura',
+		/**
+		 * ID should take the form `${partnerId}/${entryId}` for consistency
+		 * with Vimeo and YouTube (and the Video component), but in rst the
+		 * server expects `${partnerId}:${entryId}`.
+		 * @param  {string} url kaltura video href
+		 * @return {string} id of the form `${partnerId}/${entryId}`
+		 */
+		getIDParts (url) {
+			if (Array.isArray(url)) {
+				return url;
+			};
+			const [service, rest] = url.split('://');
+			if (!(/^kaltura/i.test(service) && rest)) {
+				return;
+			}
+
+			const [providerId, videoId] = rest.split('/');
+			if (!(providerId && videoId)) {
+				return;
+			}
+
+			return [providerId, videoId];
+		},
+		getURLID (url) {
+			const parts = [...this.getIDParts(url),];
+			const urlId = parts && Array.isArray(parts) && parts.join('/');
+			return `${urlId}/`; //trailing / is required...
+		},
+		getID (url) {
+			const parts = this.getIDParts(url);
+			return parts && Array.isArray(parts) && parts.join(':');
+		},
+		getCanonicalURL (url) {
+			const id = this.getURLID(this.getIDParts(url));
+			return `kaltura://${id}`;
+		}
 	},
 
 	propTypes: {
