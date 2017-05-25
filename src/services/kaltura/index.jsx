@@ -175,7 +175,12 @@ export default React.createClass({
 			sourcesLoaded: true,
 			isError: (data.objectType === 'KalturaAPIException')
 		}, () => {
-			const {video} = this;
+			const {video, state: {isError}} = this;
+
+			if (isError) {
+				this.onError();
+			}
+
 			if (video) {
 				video.load();
 			}
@@ -215,7 +220,7 @@ export default React.createClass({
 		const {props: {deferred}, state: {poster, sourcesLoaded, isError, interacted, sources = []}} = this;
 
 		if(isError) {
-			return this.props.onError();
+			return (<div className="error">Unable to load video.</div>);
 		}
 
 		let videoProps = Object.assign({}, this.props, {
@@ -323,6 +328,10 @@ export default React.createClass({
 		this.setState({
 			error: 'Could not play video. Network or Browser error.'
 		});
+
+		if (this.props.onError) {
+			this.props.onError();
+		}
 	},
 
 

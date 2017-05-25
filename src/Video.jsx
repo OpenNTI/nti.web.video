@@ -52,6 +52,13 @@ export default React.createClass({
 	},
 
 
+	onError () {
+		if (this.props.onError) {
+			this.props.onError();
+		}
+	},
+
+
 	onTimeUpdate (event) {
 		events.debug('timeUpdate %o', event);
 		this.props.onTimeUpdate(event);
@@ -121,7 +128,7 @@ export default React.createClass({
 					onPlaying={this.onPlaying}
 					onPause={this.onPause}
 					onEnded={this.onEnded}
-					onError={this.props.onError}
+					onError={this.onError}
 					/>
 			</div>
 		);
