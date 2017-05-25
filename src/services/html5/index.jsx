@@ -81,6 +81,10 @@ export default React.createClass({
 
 		events.debug('Setting source: entryId: %s, partnerId: %s', source);
 		this.setState({src: source});
+
+		if (this.state.error) {
+			this.onError();
+		}
 	},
 
 
@@ -118,7 +122,7 @@ export default React.createClass({
 		});
 
 		return error ? (
-			this.props.onError()
+			<div className="error">Unable to load video.</div>
 		) : (
 			<div className={'video-wrapper ' + (interacted ? 'loaded' : '')}>
 				<video {...videoProps}
@@ -200,6 +204,10 @@ export default React.createClass({
 		this.setState({
 			error: 'Could not play video. Network or Browser error.'
 		});
+
+		if (this.props.onError) {
+			this.props.onError();
+		}
 	},
 
 
