@@ -34,14 +34,14 @@ export default React.createClass({
 		 * ID should take the form `${partnerId}/${entryId}` for consistency
 		 * with Vimeo and YouTube (and the Video component), but in rst the
 		 * server expects `${partnerId}:${entryId}`.
-		 * @param  {string} url kaltura video href
+		 * @param  {string} href kaltura video href
 		 * @return {string} id of the form `${partnerId}/${entryId}`
 		 */
-		getIDParts (url) {
-			if (Array.isArray(url)) {
-				return url;
-			};
-			const [service, rest] = url.split('://');
+		getIDParts (href) {
+			if (Array.isArray(href)) {
+				return href;
+			}
+			const [service, rest] = href.split('://');
 			if (!(/^kaltura/i.test(service) && rest)) {
 				return;
 			}
@@ -53,17 +53,17 @@ export default React.createClass({
 
 			return [providerId, videoId];
 		},
-		getURLID (url) {
-			const parts = [...this.getIDParts(url),];
-			const urlId = parts && Array.isArray(parts) && parts.join('/');
-			return `${urlId}/`; //trailing / is required...
+		getURLID (href) {
+			const parts = [...this.getIDParts(href)];
+			const hrefId = parts && Array.isArray(parts) && parts.join('/');
+			return `${hrefId}/`; //trailing / is required...
 		},
-		getID (url) {
-			const parts = this.getIDParts(url);
+		getID (href) {
+			const parts = this.getIDParts(href);
 			return parts && Array.isArray(parts) && parts.join(':');
 		},
-		getCanonicalURL (url) {
-			const id = this.getURLID(this.getIDParts(url));
+		getCanonicalURL (href) {
+			const id = this.getURLID(this.getIDParts(href));
 			return `kaltura://${id}`;
 		}
 	},
