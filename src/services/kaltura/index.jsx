@@ -2,6 +2,7 @@
 import url from 'url';
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import Logger from 'nti-util-logger';
 
 import getSources from './SourceGrabber';
@@ -25,95 +26,99 @@ function Loading () {
  *
  * The Kaltura Video source implementation
  */
-export default React.createClass({
-	displayName: 'KalturaVideo',
 
-	statics: {
-		service: 'kaltura',
-		/**
-		 * ID should take the form `${partnerId}/${entryId}` for consistency
-		 * with Vimeo and YouTube (and the Video component), but in rst the
-		 * server expects `${partnerId}:${entryId}`.
-		 * @param  {string} href kaltura video href
-		 * @return {string} id of the form `${partnerId}/${entryId}`
-		 */
-		getIDParts (href) {
-			if (Array.isArray(href)) {
-				return href;
-			}
-			const [service, rest] = href.split('://');
-			if (!(/^kaltura/i.test(service) && rest)) {
-				return;
-			}
+export default class KalturaVideo extends React.Component {
 
-			const [providerId, videoId] = rest.split('/');
-			if (!(providerId && videoId)) {
-				return;
-			}
+	static service = 'kaltura';
 
-			return [providerId, videoId];
-		},
-		getURLID (href) {
-			const parts = [...this.getIDParts(href)];
-			const hrefId = parts && Array.isArray(parts) && parts.join('/');
-			return `${hrefId}/`; //trailing / is required...
-		},
-		getID (href) {
-			const parts = this.getIDParts(href);
-			return parts && Array.isArray(parts) && parts.join(':');
-		},
-		getCanonicalURL (href) {
-			const id = this.getURLID(this.getIDParts(href));
-			return `kaltura://${id}`;
+	/**
+	 * ID should take the form `${partnerId}/${entryId}` for consistency
+	 * with Vimeo and YouTube (and the Video component), but in rst the
+	 * server expects `${partnerId}:${entryId}`.
+	 * @param  {string} href kaltura video href
+	 * @return {string} id of the form `${partnerId}/${entryId}`
+	 */
+	static getIDParts (href) {
+		if (Array.isArray(href)) {
+			return href;
 		}
-	},
+		const [service, rest] = href.split('://');
+		if (!(/^kaltura/i.test(service) && rest)) {
+			return;
+		}
 
-	propTypes: {
+		const [providerId, videoId] = rest.split('/');
+		if (!(providerId && videoId)) {
+			return;
+		}
+
+		return [providerId, videoId];
+	}
+
+
+	static getURLID (href) {
+		const parts = [...this.getIDParts(href)];
+		const hrefId = parts && Array.isArray(parts) && parts.join('/');
+		return `${hrefId}/`; //trailing / is required...
+	}
+
+
+	static getID (href) {
+		const parts = this.getIDParts(href);
+		return parts && Array.isArray(parts) && parts.join(':');
+	}
+
+
+	static getCanonicalURL (href) {
+		const id = this.getURLID(this.getIDParts(href));
+		return `kaltura://${id}`;
+	}
+
+	static propTypes = {
 		/**
 		 * Either a URL string or a source descriptor object.
 		 *
 		 * @type {String/MediaSource}
 		 */
-		source: React.PropTypes.any.isRequired,
+		source: PropTypes.any.isRequired,
 
-		autoPlay: React.PropTypes.bool,
-		deferred: React.PropTypes.bool,
+		autoPlay: PropTypes.bool,
+		deferred: PropTypes.bool,
 
-		onPlaying: React.PropTypes.func,
-		onPause: React.PropTypes.func,
-		onEnded: React.PropTypes.func,
-		onSeeked: React.PropTypes.func,
-		onTimeUpdate: React.PropTypes.func,
-		onError: React.PropTypes.func
-	},
+		onPlaying: PropTypes.func,
+		onPause: PropTypes.func,
+		onEnded: PropTypes.func,
+		onSeeked: PropTypes.func,
+		onTimeUpdate: PropTypes.func,
+		onError: PropTypes.func
+	}
 
-	attachRef (x) { this.video = x; },
+	state = {
+		sources: [],
+		sourcesLoaded: false,
+		isError: false,
+		interacted: false
+	}
 
-	getInitialState () {
-		return {
-			sources: [],
-			sourcesLoaded: false,
-			isError: false,
-			interacted: false
-		};
-	},
+
+	attachRef = (x) => this.video = x
 
 
 	componentWillMount () {
 		this.setupSource(this.props);
-	},
+	}
 
 
 	componentWillReceiveProps (nextProps) {
 		if (this.props.source !== nextProps.source) {
 			this.setupSource(nextProps);
 		}
-	},
+	}
 
 
 	componentDidMount () {
 		// this.setupSource(this.props);
-	},
+	}
 
 
 	setupSource (props = this.props) {
@@ -154,7 +159,7 @@ export default React.createClass({
 			})
 			.catch(error => events.error('Error setting video source %s %o', entryId, error))
 		);
-	},
+	}
 
 
 	setSources (data) {
@@ -189,14 +194,14 @@ export default React.createClass({
 				this.play();
 			}
 		});
-	},
+	}
 
 
 	componentWillUpdate (nextProps) {
 		if (nextProps.source !== this.props.source) {
 			this.setState(this.getInitialState());
 		}
-	},
+	}
 
 
 	componentDidUpdate (prevProps) {
@@ -213,7 +218,7 @@ export default React.createClass({
 				video.load();
 			}
 		}
-	},
+	}
 
 
 	render () {
@@ -223,13 +228,14 @@ export default React.createClass({
 			return (<div className="error">Unable to load video.</div>);
 		}
 
-		let videoProps = Object.assign({}, this.props, {
+		let videoProps = {
+			...this.props,
 			controls: true,// !/iP(hone|od)/i.test(navigator.userAgent),
 			poster,
 			src: null,
 			source: null,
 			onClick: this.onClick
-		});
+		};
 
 		Object.keys(this.props).forEach(key => {
 			if (/^on/i.test(key)) {
@@ -261,28 +267,28 @@ export default React.createClass({
 				{!interacted && ( <a className="tap-area play" href="#" onClick={this.onClick} style={posterStyle}/>)}
 			</div>
 		);
-	},
+	}
 
 
-	onPlaying (e) {
+	onPlaying = (e) => {
 		const {props: {onPlaying}} = this;
 		events.debug('playing %o', e);
 		if (onPlaying) {
 			onPlaying(e);
 		}
-	},
+	}
 
 
-	onPause (e) {
+	onPause = (e) => {
 		const {props: {onPause}} = this;
 		events.debug('pause %o', e);
 		if (onPause) {
 			onPause(e);
 		}
-	},
+	}
 
 
-	onEnded (e) {
+	onEnded = (e) => {
 		const {props: {onEnded}} = this;
 		events.debug('ended %o', e);
 
@@ -296,19 +302,19 @@ export default React.createClass({
 		if (onEnded) {
 			onEnded(e);
 		}
-	},
+	}
 
 
-	onSeeked (e) {
+	onSeeked = (e) => {
 		const {props: {onSeeked}} = this;
 		events.debug('seeked %o', e);
 		if (onSeeked) {
 			onSeeked(e);
 		}
-	},
+	}
 
 
-	onTimeUpdate (e) {
+	onTimeUpdate = (e) => {
 		const {target: video} = e;
 		const {props: {onTimeUpdate}, state: {interacted}} = this;
 		events.debug('timeUpdate %o', e);
@@ -320,10 +326,10 @@ export default React.createClass({
 		if (onTimeUpdate) {
 			onTimeUpdate(e);
 		}
-	},
+	}
 
 
-	onError (event) {
+	onError = (event) => {
 		events.debug('error %o', event);
 		this.setState({
 			error: 'Could not play video. Network or Browser error.'
@@ -332,10 +338,10 @@ export default React.createClass({
 		if (this.props.onError) {
 			this.props.onError();
 		}
-	},
+	}
 
 
-	onClick (e) {
+	onClick = (e) => {
 		const {state: {interacted}, video} = this;
 
 		if (e) {
@@ -357,10 +363,10 @@ export default React.createClass({
 				this.pause();
 			}
 		}
-	},
+	}
 
 
-	play () {
+	play = () => {
 		const {video} = this;
 		this.setState({interacted: true});
 
@@ -369,32 +375,32 @@ export default React.createClass({
 		if (video && video.play) {
 			video.play();
 		}
-	},
+	}
 
 
-	pause () {
+	pause = () => {
 		const {video} = this;
 		commands.debug('pause');
 		if (video && video.pause) {
 			video.pause();
 		}
-	},
+	}
 
 
-	stop () {
+	stop = () => {
 		const {video} = this;
 		commands.debug('stop');
 		if (video && video.stop) {
 			video.stop();
 		}
-	},
+	}
 
 
-	setCurrentTime (time) {
+	setCurrentTime = (time) => {
 		const {video} = this;
 		commands.debug('setCurrentTime = %s', time);
 		if (video) {
 			video.currentTime = time;
 		}
 	}
-});
+}

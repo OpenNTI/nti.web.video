@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Logger from 'nti-util-logger';
 import {
 	eventStarted,
@@ -15,11 +16,10 @@ const emptyFunction = () => {};
 
 function deprecated (o, k) { if (o[k]) { return new Error(`Deprecated prop: \`${k}\`, use \`newWatchEventFactory\` callback prop.`); } }
 
-export default React.createClass({
-	displayName: 'VideoWrapper',
+export default class extends React.Component {
+	static displayName = 'VideoWrapper';
 
-
-	propTypes: {
+	static propTypes = {
 		context: deprecated,
 		courseId: deprecated,
 		transcript: deprecated,
@@ -29,9 +29,9 @@ export default React.createClass({
 		 * The Video source. Either a URL or a Video model.
 		 * @type {String/Video}
 		 */
-		src: React.PropTypes.oneOfType([
-			React.PropTypes.string,
-			React.PropTypes.object
+		src: PropTypes.oneOfType([
+			PropTypes.string,
+			PropTypes.object
 		]).isRequired,
 
 
@@ -45,14 +45,14 @@ export default React.createClass({
 		 *
 		 * @type {onTimeUpdate}
 		 */
-		onTimeUpdate: React.PropTypes.func,
-		onSeeked: React.PropTypes.func,
-		onPlaying: React.PropTypes.func,
-		onPause: React.PropTypes.func,
-		onEnded: React.PropTypes.func,
+		onTimeUpdate: PropTypes.func,
+		onSeeked: PropTypes.func,
+		onPlaying: PropTypes.func,
+		onPause: PropTypes.func,
+		onEnded: PropTypes.func,
 
 
-		deferred: React.PropTypes.bool,
+		deferred: PropTypes.bool,
 
 		/**
 		 * A factory method to construct a contextually relevant WatchVideoEvent.
@@ -61,36 +61,32 @@ export default React.createClass({
 		 *
 		 * The factory should return a new WatchVideoEvent instance.
 		 */
-		newWatchEventFactory: React.PropTypes.func.isRequired
-	},
+		newWatchEventFactory: PropTypes.func.isRequired
+	}
 
 
-	getInitialState () {
-		return {
-			// keep track of the play start event so we can push analytics including duration
-			// when the video is paused, stopped, seeked, or ends.
-			playStartEvent: null
-		};
-	},
+	static defaultProps = {
+		onTimeUpdate: emptyFunction,
+		onSeeked: emptyFunction,
+		onPlaying: emptyFunction,
+		onPause: emptyFunction,
+		onEnded: emptyFunction
+	}
 
 
-	getDefaultProps () {
-		return {
-			onTimeUpdate: emptyFunction,
-			onSeeked: emptyFunction,
-			onPlaying: emptyFunction,
-			onPause: emptyFunction,
-			onEnded: emptyFunction
-		};
-	},
+	state = {
+		// keep track of the play start event so we can push analytics including duration
+		// when the video is paused, stopped, seeked, or ends.
+		playStartEvent: null
+	}
 
 
-	attachRef (x) { this.activeVideo = x; },
+	attachRef = (x) => this.activeVideo = x
 
 
 	componentDidMount () {
 		this.mounted = true;
-	},
+	}
 
 	componentWillUnmount () {
 		this.mounted = false;
@@ -101,9 +97,10 @@ export default React.createClass({
 			eventEnded(playStartEvent);
 		}
 
-	},
+	}
 
-	getAnalyticsEventData (event) {
+
+	getAnalyticsEventData = (event) => {
 		return {
 			// timestamp: event.timeStamp,
 			target: event.target,
@@ -111,10 +108,10 @@ export default React.createClass({
 			duration: event.target.duration,
 			type: event.type
 		};
-	},
+	}
 
 
-	recordPlaybackStarted (event) {
+	recordPlaybackStarted = (event) => {
 		if (this.state.playStartEvent) {
 			// this can be triggered by a tap on the transcript, which jumps the video to that location.
 			logger.warn('We already have a playStartEvent. How did we get another one without a ' +
@@ -134,10 +131,10 @@ export default React.createClass({
 			}
 			return analyticsEvent;
 		}
-	},
+	}
 
 
-	newWatchVideoEvent (browserEvent) {
+	newWatchVideoEvent = (browserEvent) => {
 		let {newWatchEventFactory, src} = this.props;
 
 		if (!src.ntiid) {
@@ -170,10 +167,10 @@ export default React.createClass({
 		);
 
 		return analyticsEvent;
-	},
+	}
 
 
-	recordPlaybackStopped (event) {
+	recordPlaybackStopped = (event) => {
 		let {playStartEvent} = this.state;
 		if (!playStartEvent) {
 			logger.warn('We don\'t have a playStartEvent. Dropping playbackStopped event on the floor.');
@@ -186,59 +183,59 @@ export default React.createClass({
 		if (this.mounted) {
 			this.setState({playStartEvent: null});
 		}
-	},
+	}
 
 
-	onTimeUpdate (event) {
+	onTimeUpdate = (event) => {
 		this.props.onTimeUpdate(event);
-	},
+	}
 
 
-	onSeeked (event) {
+	onSeeked = (event) => {
 		this.props.onSeeked(event);
-	},
+	}
 
 
-	onPlaying (event) {
+	onPlaying = (event) => {
 		// as soon as it starts, record an empty event. (matches webapp behavior)
 		// we do this so if the user closes the window we still ahve a record of them having played the video.
 		// this.emitEmptyAnalyticsEvent();
 
 		this.recordPlaybackStarted(event);
 		this.props.onPlaying(event);
-	},
+	}
 
 
-	onPause (event) {
+	onPause = (event) => {
 		this.recordPlaybackStopped(event);
 		this.props.onPause(event);
-	},
+	}
 
 
-	onEnded (event) {
+	onEnded = (event) => {
 		this.recordPlaybackStopped(event);
 		this.props.onEnded(event);
-	},
+	}
 
 
-	play  () {
+	play = () => {
 		this.activeVideo.play();
-	},
+	}
 
 
-	pause  () {
+	pause = () => {
 		this.activeVideo.pause();
-	},
+	}
 
 
-	stop  () {
+	stop = () => {
 		this.activeVideo.stop();
-	},
+	}
 
 
-	setCurrentTime (time) {
+	setCurrentTime = (time) => {
 		this.activeVideo.setCurrentTime(time);
-	},
+	}
 
 
 	render () {
@@ -253,4 +250,4 @@ export default React.createClass({
 				/>
 		);
 	}
-});
+}

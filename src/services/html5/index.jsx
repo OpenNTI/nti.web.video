@@ -1,62 +1,56 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Logger from 'nti-util-logger';
 
 const commands = Logger.get('video:html5:commands');
 const events = Logger.get('video:html5:events');
 
-export default React.createClass({
-	displayName: 'HTML5Video',
+export default class HTML5Video extends React.Component {
+	static service = 'html5'
 
-	statics: {
-		service: 'html5'
-	},
-
-	propTypes: {
+	static propTypes = {
 		/**
 		 * Either a URL string or a source descriptor object.
 		 *
 		 * @type {String/MediaSource}
 		 */
-		source: React.PropTypes.any.isRequired,
+		source: PropTypes.any.isRequired,
 
-		autoPlay: React.PropTypes.bool,
+		autoPlay: PropTypes.bool,
 
-		onPlaying: React.PropTypes.func,
-		onPause: React.PropTypes.func,
-		onEnded: React.PropTypes.func,
-		onSeeked: React.PropTypes.func,
-		onTimeUpdate: React.PropTypes.func,
-		onError: React.PropTypes.func
-	},
-
-	attachRef (x) {
-		this.video = x;
-	},
+		onPlaying: PropTypes.func,
+		onPause: PropTypes.func,
+		onEnded: PropTypes.func,
+		onSeeked: PropTypes.func,
+		onTimeUpdate: PropTypes.func,
+		onError: PropTypes.func
+	}
 
 
-	getInitialState () {
-		return {
-			error: false,
-			interacted: false
-		};
-	},
+	state = {
+		error: false,
+		interacted: false
+	}
+
+
+	attachRef = (x) => this.video = x
 
 
 	componentWillUnmount () {
 		this.isUnmounted = true;
-	},
+	}
 
 
 	componentWillMount () {
 		this.setupSource(this.props);
-	},
+	}
 
 
 	componentWillReceiveProps (nextProps) {
 		if (this.props.source !== nextProps.source) {
 			this.setupSource(nextProps);
 		}
-	},
+	}
 
 
 	componentDidMount () {
@@ -69,7 +63,24 @@ export default React.createClass({
 				this.play();
 			}
 		}
-	},
+	}
+
+
+	componentWillUpdate (nextProps) {
+		if (nextProps.source !== this.props.source) {
+			this.setState(this.getInitialState());
+		}
+	}
+
+
+	componentDidUpdate (prevProps) {
+		let {video} = this;
+		if (prevProps.source !== this.props.source) {
+			if (video) {
+				video.load();
+			}
+		}
+	}
 
 
 	setupSource (props) {
@@ -85,35 +96,19 @@ export default React.createClass({
 		if (this.state.error) {
 			this.onError();
 		}
-	},
-
-
-	componentWillUpdate (nextProps) {
-		if (nextProps.source !== this.props.source) {
-			this.setState(this.getInitialState());
-		}
-	},
-
-
-	componentDidUpdate (prevProps) {
-		let {video} = this;
-		if (prevProps.source !== this.props.source) {
-			if (video) {
-				video.load();
-			}
-		}
-	},
+	}
 
 
 	render () {
-		let {error, interacted, src} = this.state;
+		const {error, interacted, src} = this.state;
 
-		let videoProps = Object.assign({}, this.props, {
+		const videoProps = {
+			...this.props,
 			controls: true,
 			src,
 			source: null,
 			onClick: this.onClick
-		});
+		};
 
 		Object.keys(this.props).forEach(key => {
 			if (/^on/i.test(key)) {
@@ -137,28 +132,28 @@ export default React.createClass({
 				{!interacted && <a className="tap-area play" href="#" onClick={this.onClick} style={{backgroundColor: 'transparent'}}/>}
 			</div>
 		);
-	},
+	}
 
 
-	onPlaying (e) {
+	onPlaying = (e) => {
 		const {props: {onPlaying}} = this;
 		events.debug('playing %o', e);
 		if (onPlaying) {
 			onPlaying(e);
 		}
-	},
+	}
 
 
-	onPause (e) {
+	onPause = (e) => {
 		const {props: {onPause}} = this;
 		events.debug('pause %o', e);
 		if (onPause) {
 			onPause(e);
 		}
-	},
+	}
 
 
-	onEnded (e) {
+	onEnded = (e) => {
 		const {props: {onEnded}} = this;
 		events.debug('ended %o', e);
 
@@ -172,19 +167,19 @@ export default React.createClass({
 		if (onEnded) {
 			onEnded(e);
 		}
-	},
+	}
 
 
-	onSeeked (e) {
+	onSeeked = (e) => {
 		const {props: {onSeeked}} = this;
 		events.debug('seeked %o', e);
 		if (onSeeked) {
 			onSeeked(e);
 		}
-	},
+	}
 
 
-	onTimeUpdate (e) {
+	onTimeUpdate = (e) => {
 		const {target: video} = e;
 		const {props: {onTimeUpdate}, state: {interacted}} = this;
 		events.debug('timeUpdate %o', e);
@@ -196,10 +191,10 @@ export default React.createClass({
 		if (onTimeUpdate) {
 			onTimeUpdate(e);
 		}
-	},
+	}
 
 
-	onError (e) {
+	onError = (e) => {
 		events.debug('error %o', e);
 		this.setState({
 			error: 'Could not play video. Network or Browser error.'
@@ -208,10 +203,10 @@ export default React.createClass({
 		if (this.props.onError) {
 			this.props.onError();
 		}
-	},
+	}
 
 
-	onClick (e) {
+	onClick = (e) => {
 		const {state: {interacted}, video} = this;
 
 		if (e) {
@@ -233,10 +228,10 @@ export default React.createClass({
 				this.pause();
 			}
 		}
-	},
+	}
 
 
-	play () {
+	play = () => {
 		const {video} = this;
 		this.setState({interacted: true});
 
@@ -247,10 +242,10 @@ export default React.createClass({
 				video.play();
 			}
 		}
-	},
+	}
 
 
-	pause () {
+	pause = () => {
 		const {video} = this;
 
 		commands.debug('pause');
@@ -258,10 +253,10 @@ export default React.createClass({
 		if (video) {
 			if (video.pause) { video.pause(); }
 		}
-	},
+	}
 
 
-	stop () {
+	stop = () => {
 		const {video} = this;
 
 		commands.debug('stop');
@@ -269,10 +264,10 @@ export default React.createClass({
 		if (video && video.stop) {
 			video.stop();
 		}
-	},
+	}
 
 
-	setCurrentTime (time) {
+	setCurrentTime = (time) => {
 		const {video} = this;
 
 		commands.debug('set currentTime = %s', time);
@@ -281,4 +276,4 @@ export default React.createClass({
 			video.currentTime = time;
 		}
 	}
-});
+}

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import invariant from 'invariant';
 import Logger from 'nti-util-logger';
 import uuid from 'uuid';
@@ -39,39 +40,33 @@ const YT_STATE_TO_EVENTS = {
 };
 
 
-let Source = React.createClass({
-	displayName: 'YouTube-Video',
+class Source extends React.Component {
+	static displayName = 'YouTube-Video'
+	static service = 'youtube'
 
-	statics: {
-		service: 'youtube',
-		getID (url) {
-			let regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&\?]*).*/,
-				match = url.match(regExp);
-			if (match && match[2].length === 11) {
-				return match[2];
-			}
-			return null;
-		},
-
-		getCanonicalURL (url) {
-			const id = this.getID(url);
-			return `${YOU_TUBE}/embed/${id}`;
+	static getID (url) {
+		const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&\?]*).*/;
+		const match = url.match(regExp);
+		if (match && match[2].length === 11) {
+			return match[2];
 		}
-	},
+		return null;
+	}
+
+	static getCanonicalURL (url) {
+		const id = this.getID(url);
+		return `${YOU_TUBE}/embed/${id}`;
+	}
+
+	static propTypes = {
+		source: PropTypes.any.isRequired,
+		deferred: PropTypes.bool
+	}
+
+	state = {id: uuid(), scope: YOU_TUBE, playerState: -1}
 
 
-	propTypes: {
-		source: React.PropTypes.any.isRequired,
-		deferred: React.PropTypes.bool
-	},
-
-
-	attachRef (x) { this.iframe = x; },
-
-
-	getInitialState () {
-		return {id: uuid(), scope: YOU_TUBE, playerState: -1};
-	},
+	attachRef = (x) => { this.iframe = x; }
 
 
 	componentWillMount () {
@@ -79,24 +74,24 @@ let Source = React.createClass({
 		this.setState({
 			initTask: new Task(this.sendListening, 250)
 		});
-	},
+	}
 
 
 	componentDidMount () {
 		this.updateURL(this.props);
 		MESSAGES.add(this.onMessage);
-	},
+	}
 
 
 	componentWillUnmount () {
 		this.state.initTask.stop();
 		MESSAGES.remove(this.onMessage);
-	},
+	}
 
 
 	componentWillReceiveProps (props) {
 		this.updateURL(props);
-	},
+	}
 
 
 	componentDidUpdate (prevProps, prevState) {
@@ -119,16 +114,16 @@ let Source = React.createClass({
 		if (state.autoPlay !== prevState.autoPlay) {
 			this.updateURL(this.props);
 		}
-	},
+	}
 
 
-	buildURL (props) {
+	buildURL = (props) => {
 		const unwrap = x => Array.isArray(x) ? x[0] : x;
 		const {deferred, source: mediaSource} = props;
 
 		const videoId = typeof mediaSource === 'string'
-			? Source.getID(mediaSource)
-			: unwrap(mediaSource.source);
+		? Source.getID(mediaSource)
+		: unwrap(mediaSource.source);
 
 		const args = {
 			enablejsapi: 1,
@@ -144,18 +139,18 @@ let Source = React.createClass({
 		};
 
 		return `${YOU_TUBE}/embed/${videoId}?${QueryString.stringify(args)}`;
-	},
+	}
 
 
-	updateURL (props) {
+	updateURL = (props) => {
 		this.setState({playerURL: this.buildURL(props)});
-	},
+	}
 
 
-	getPlayerContext () {
+	getPlayerContext = () => {
 		const {iframe} = this;
 		return iframe && (iframe.contentWindow || window.frames[iframe.name]);
-	},
+	}
 
 
 	render () {
@@ -185,27 +180,27 @@ let Source = React.createClass({
 				src={this.state.playerURL}
 				allowFullScreen
 				allowTransparency
-				/>
+			/>
 		);
-	},
+	}
 
 
-	sendListening () {
+	sendListening = () => {
 		if (this.getPlayerContext()) {
 			this.postMessage();
 		}
-	},
+	}
 
 
-	finishInitialization () {
+	finishInitialization = () => {
 		this.setState({initialized: true});
 		this.postMessage('addEventListener', ['onReady']);
 		this.postMessage('addEventListener', ['onStateChange']);
 		this.postMessage('addEventListener', ['onError']);
-	},
+	}
 
 
-	onMessage (event) {
+	onMessage = (event) => {
 		const unwrap = x => {
 			if (Array.isArray(x)) {
 				if (x.length !== 1) {
@@ -246,10 +241,10 @@ let Source = React.createClass({
 		if (implemented) {
 			this[handlerName](data.info);
 		}
-	},
+	}
 
 
-	postMessage (method, ...params) {
+	postMessage = (method, ...params) => {
 		const context = this.getPlayerContext();
 		if (!context) {
 			logger.warn(this.state.id, ' No Player Context!');
@@ -271,27 +266,26 @@ let Source = React.createClass({
 			logger.debug('[YouTube] Sending: %s %o', method || 'listening', data);
 		}
 		context.postMessage(JSON.stringify(data), this.state.scope);
-	},
+	}
 
-
-	handleInfoDelivery (info) {
+	handleInfoDelivery = (info) => {
 		this.setState(info);
 		if (info.hasOwnProperty('currentTime')) {
 			this.fireEvent('timeupdate');
 		}
-	},
+	}
 
 
-	handleInitialDelivery (info) {
+	handleInitialDelivery = (info) => {
 		this.setState(info);
-	},
+	}
 
 
-	handleApiInfoDelivery () {},
-	handleOnReady () {},//nothing to do
+	handleApiInfoDelivery = () => {};
+	handleOnReady = () => {};//nothing to do
 
 
-	handleOnStateChange (state) {
+	handleOnStateChange = (state) => {
 		if (this.state.playerState !== state) {
 			this.setState({playerState: state});
 		}
@@ -300,10 +294,10 @@ let Source = React.createClass({
 		if (event) {
 			this.fireEvent(event);
 		}
-	},
+	}
 
 
-	fireEvent (event) {
+	fireEvent = (event) => {
 		if (this.props[EventHandlers[event]]) {
 
 			this.props[EventHandlers[event]]({
@@ -315,10 +309,10 @@ let Source = React.createClass({
 				type: event
 			});
 		}
-	},
+	}
 
 
-	play () {
+	play = () => {
 
 		if (this.props.deferred) {
 			if (!this.state.autoPlay) {
@@ -335,22 +329,22 @@ let Source = React.createClass({
 		}
 
 		this.postMessage('playVideo');
-	},
+	}
 
 
-	pause () {
+	pause = () => {
 		this.postMessage('pauseVideo');
-	},
+	}
 
 
-	stop () {
+	stop = () => {
 		this.postMessage('stopVideo');
-	},
+	}
 
 
-	setCurrentTime (time) {
+	setCurrentTime = (time) => {
 		this.postMessage('seekTo', time);
 	}
-});
+}
 
 export default Source;

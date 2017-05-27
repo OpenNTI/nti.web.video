@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Logger from 'nti-util-logger';
 
 import {getHandler} from './services';
@@ -8,39 +9,36 @@ const emptyFunction = () => {};
 const commands = Logger.get('video:commands');
 const events = Logger.get('video:events');
 
-export default React.createClass({
-	displayName: 'Video',
+export default class extends React.Component {
+	static displayName = 'Video';
 
-
-	propTypes: {
-		src: React.PropTypes.oneOfType([
-			React.PropTypes.string,
-			React.PropTypes.object
+	static propTypes = {
+		src: PropTypes.oneOfType([
+			PropTypes.string,
+			PropTypes.object
 		]).isRequired,
 
-		onTimeUpdate: React.PropTypes.func,
-		onSeeked: React.PropTypes.func,
-		onPlaying: React.PropTypes.func,
-		onPause: React.PropTypes.func,
-		onEnded: React.PropTypes.func,
-		onError: React.PropTypes.func,
+		onTimeUpdate: PropTypes.func,
+		onSeeked: PropTypes.func,
+		onPlaying: PropTypes.func,
+		onPause: PropTypes.func,
+		onEnded: PropTypes.func,
+		onError: PropTypes.func,
 
-		deferred: React.PropTypes.bool
-	},
-
-
-	getDefaultProps () {
-		return {
-			onTimeUpdate: emptyFunction,
-			onSeeked: emptyFunction,
-			onPlaying: emptyFunction,
-			onPause: emptyFunction,
-			onEnded: emptyFunction
-		};
-	},
+		deferred: PropTypes.bool
+	}
 
 
-	attachRef (x) { this.activeVideo = x; },
+	static defaultProps = {
+		onTimeUpdate: emptyFunction,
+		onSeeked: emptyFunction,
+		onPlaying: emptyFunction,
+		onPause: emptyFunction,
+		onEnded: emptyFunction
+	}
+
+
+	attachRef = (x) => this.activeVideo = x
 
 
 	componentWillUnmount () {
@@ -49,68 +47,67 @@ export default React.createClass({
 		} catch (e) {
 			//don't care
 		}
-	},
+	}
 
-
-	onError () {
+	onError = () => {
 		if (this.props.onError) {
 			this.props.onError();
 		}
-	},
+	}
 
 
-	onTimeUpdate (event) {
+	onTimeUpdate = (event) => {
 		events.debug('timeUpdate %o', event);
 		this.props.onTimeUpdate(event);
-	},
+	}
 
 
-	onSeeked (event) {
+	onSeeked = (event) => {
 		events.debug('seeked %o', event);
 		this.props.onSeeked(event);
-	},
+	}
 
 
-	onPlaying (event) {
+	onPlaying = (event) => {
 		events.debug('played %o', event);
 		this.props.onPlaying(event);
-	},
+	}
 
 
-	onPause (event) {
+	onPause = (event) => {
 		events.debug('pause %o', event);
 		this.props.onPause(event);
-	},
+	}
 
 
-	onEnded (event) {
+	onEnded = (event) => {
 		events.debug('ended %o', event);
 		this.props.onEnded(event);
-	},
+	}
 
 
-	play  () {
+	play = () => {
 		commands.debug('Play');
 		this.activeVideo.play();
-	},
+	}
 
 
-	pause  () {
+	pause = () => {
 		commands.debug('Pause');
 		this.activeVideo.pause();
-	},
+	}
 
 
-	stop  () {
+	stop = () => {
 		commands.debug('Stop');
 		this.activeVideo.stop();
-	},
+	}
 
 
-	setCurrentTime (time) {
+	setCurrentTime = (time) => {
 		commands.debug('Set CurrentTime %s', time);
 		this.activeVideo.setCurrentTime(time);
-	},
+	}
 
 
 	render () {
@@ -133,4 +130,4 @@ export default React.createClass({
 			</div>
 		);
 	}
-});
+}

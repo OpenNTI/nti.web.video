@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Logger from 'nti-util-logger';
 import {getModel} from 'nti-lib-interfaces';
 import {getService} from 'nti-web-client';
@@ -10,27 +11,26 @@ const logger = Logger.get('video:components:VideoPlaceholder');
 const Source = getModel('mediasource');
 
 
-export default React.createClass({
-	displayName: 'VideoPlaceholder',
+export default class VideoPlaceholder extends React.Component {
 
-	propTypes: {
-		src: React.PropTypes.string
-	},
+	static propTypes = {
+		src: PropTypes.string
+	}
 
-	getInitialState () {
-		return {};
-	},
+
+	state = {}
 
 
 	componentWillMount () {
 		this.setHandler(this.props);
-	},
+	}
+
 
 	componentWillReceiveProps (props) {
 		if (this.props.src !== props.src) {
 			this.setHandler(props);
 		}
-	},
+	}
 
 
 	setHandler (props) {
@@ -53,12 +53,13 @@ export default React.createClass({
 			})
 			.catch(error => logger.error('Could not resolve video poster/title', error))
 			.then(()=> this.setState({loading: false}));
-	},
+	}
 
 
-	onClick () {
+	onClick = () => {
 		this.setState({play: true});
-	},
+	}
+
 
 	render () {
 		const {state: {loading, play, poster, title}} = this;
@@ -82,4 +83,4 @@ export default React.createClass({
 			</div>
 		);
 	}
-});
+}
