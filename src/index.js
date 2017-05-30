@@ -1,4 +1,4 @@
-import {getHandler, getUrl, createMediaSourceFromUrl, getCanonicalUrlFromArguments} from './services';
+import {getHandler, getUrl, createMediaSourceFromUrl, getCanonicalUrlFrom} from './services';
 import ComponentRaw from './Video';
 import Component from './VideoWithAnalytics';
 import Placeholder from './Placeholder';
@@ -9,7 +9,7 @@ export {
 	getHandler,
 	getUrl,
 	createMediaSourceFromUrl,
-	getCanonicalUrlFromArguments,
+	getCanonicalUrlFrom,
 	Component,
 	Placeholder
 };
