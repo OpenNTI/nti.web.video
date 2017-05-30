@@ -35,8 +35,8 @@ export default class Source extends React.Component {
 		return id || null;
 	}
 
-	static getCanonicalURL (url) {
-		const id = this.getID(url);
+	static getCanonicalURL (url, videoId) {
+		const id = videoId || this.getID(url);
 		return `https://www.vimeo.com/${id}`;
 	}
 

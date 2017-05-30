@@ -69,8 +69,8 @@ export default class KalturaVideo extends React.Component {
 	}
 
 
-	static getCanonicalURL (href) {
-		const id = this.getURLID(this.getIDParts(href));
+	static getCanonicalURL (href, videoId) {
+		const id = videoId || this.getURLID(this.getIDParts(href));
 		return `kaltura://${id}`;
 	}
 
