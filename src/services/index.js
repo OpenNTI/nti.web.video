@@ -1,7 +1,8 @@
 import Url from 'url';
 
-import {getModel} from 'nti-lib-interfaces';
 import {getService} from 'nti-web-client';
+
+import {getModel} from 'nti-lib-interfaces';
 
 import kaltura from './kaltura';
 import vimeo from './vimeo';
@@ -34,6 +35,23 @@ export function getUrl (data) {
 }
 
 
+function getHandlerFromUrl (url) {
+	let handler = null;
+	if (kalturaRe.test(url.protocol)) {
+		handler = kaltura;
+	}
+
+	else if (vimeoRe.test(url.host) || vimeoRe.test(url.protocol)) {
+		handler = vimeo;
+	}
+
+	else if (youtubeRe.test(url.host)) {
+		handler = youtube;
+	}
+	return handler;
+}
+
+
 export function getHandler (src) {
 	let url = (typeof src === 'string') ? Url.parse(ensureProtocol(src)) : getUrl(src);
 	let service = ((src.sources || [])[0] || {}).service;
@@ -41,18 +59,7 @@ export function getHandler (src) {
 	let handler = serviceMap[service];
 
 	if (url && !handler) {
-		handler = null;
-		if (kalturaRe.test(url.protocol)) {
-			handler = kaltura;
-		}
-
-		else if (vimeoRe.test(url.host) || vimeoRe.test(url.protocol)) {
-			handler = vimeo;
-		}
-
-		else if (youtubeRe.test(url.host)) {
-			handler = youtube;
-		}
+		handler = getHandlerFromUrl(url);
 	}
 
 	return handler;
@@ -67,4 +74,34 @@ export function createMediaSourceFromUrl (url) {
 	return getService()
 		.then(service => new MediaSource(service, null, {service: handler.service, href: canonicalUrl, source: videoId}))
 		.catch(() => Function.prototype());
+}
+
+/**
+ * Get canonical URL from service and source
+ * @param  {string/object} args `${service} ${source}` or
+ * {service: ..., source: ...}
+ * @return {url} canonical url
+ */
+export function getCanonicalUrlFromArguments (args) {
+	const stringToObjectForm = str => {
+		const parts = str.split(' ');
+		return parts.length === 2 && {
+			service: parts[0],
+			source: parts[1]
+		};
+	};
+
+	const normalForm = typeof args === 'object'
+		? args
+		: stringToObjectForm(args);
+
+	const handler = getHandlerFromUrl({
+		host: normalForm.service,
+		protocol: normalForm.service
+	});
+
+	// For Kaltura
+	const src = String(normalForm.source).split(':').join('/');
+
+	return handler && handler.getCanonicalURL(undefined, src);
 }

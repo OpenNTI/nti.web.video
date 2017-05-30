@@ -53,8 +53,8 @@ class Source extends React.Component {
 		return null;
 	}
 
-	static getCanonicalURL (url) {
-		const id = this.getID(url);
+	static getCanonicalURL (url, videoId) {
+		const id = videoId || this.getID(url);
 		return `${YOU_TUBE}/embed/${id}`;
 	}
 
