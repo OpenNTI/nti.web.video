@@ -78,11 +78,10 @@ export function createMediaSourceFromUrl (url) {
 
 /**
  * Get canonical URL from service and source
- * @param  {string/object} args `${service} ${source}` or
- * {service: ..., source: ...}
- * @return {url} canonical url
+ * @param  {string|Object} args - `${service} ${source}` or {service: ..., source: ...}
+ * @return {string} canonical url
  */
-export function getCanonicalUrlFromArguments (args) {
+export function getCanonicalUrlFrom (args) {
 	const stringToObjectForm = str => {
 		const parts = str.split(' ');
 		return parts.length === 2 && {
