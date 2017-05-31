@@ -29,31 +29,31 @@ function kalturaSig (str) {
 
 function parseResult ( result ) { // API result
 
-	let protocol = location.protocol.substr(0, location.protocol.length - 1);
+	const protocol = location.protocol.substr(0, location.protocol.length - 1);
 	// Set the service url based on protocol type
-	let serviceUrl = (protocol === 'https') ?
+	const serviceUrl = (protocol === 'https') ?
 		'://www.kaltura.com' :
 		'://cdnbakmi.kaltura.com';
 
-	let data = result[1];
-	let entryInfo = result[2];
-	let assets = data.flavorAssets || [];
+	const [, data, entryInfo] = result;
+	const assets = data.flavorAssets || [];
 
-	let baseUrl = protocol + serviceUrl + '/p/' + entryInfo.partnerId +
+	const baseUrl = protocol + serviceUrl + '/p/' + entryInfo.partnerId +
 			'/sp/' + entryInfo.partnerId + '00/playManifest';
 
-	let adaptiveFlavors = assets.map(a => isHLS(a.tags) && a.id).filter(x => x);
+	const adaptiveFlavors = assets.map(a => isHLS(a.tags) && a.id).filter(x => x);
 
-	let deviceSources = assets
+	const deviceSources = assets
 		.filter(asset=> asset.status === 2 && asset.width)
 		.map(asset => {
-			let src = baseUrl + '/entryId/' + asset.entryId;
-			let source = {
+			const source = {
 				bitrate: asset.bitrate * 8,
 				width: asset.width,
 				height: asset.height,
 				tags: asset.tags
 			};
+
+			let src = baseUrl + '/entryId/' + asset.entryId;
 
 			// Check if Apple http streaming is enabled and the tags include applembr ( single stream HLS )
 			if ( isAppleMBR(asset.tags)) {
@@ -100,8 +100,8 @@ function parseResult ( result ) { // API result
 	}
 
 
-	let w = 1280;
-	let poster =	'//www.kaltura.com/p/' + entryInfo.partnerId +
+	const w = 1280;
+	const poster =	'//www.kaltura.com/p/' + entryInfo.partnerId +
 					'/thumbnail/entry_id/' + entryInfo.id +
 					'/width/' + w + '/';
 
@@ -120,7 +120,7 @@ function parseResult ( result ) { // API result
 
 export default function getSources (settings) {
 
-	let param = {
+	const param = {
 		service: 'multirequest',
 		apiVersion: '3.1',
 		expiry: '86400',
@@ -153,7 +153,7 @@ export default function getSources (settings) {
 	param.format = 1;
 	delete param.service;
 
-	let url = 'https://cdnapisec.kaltura.com/api_v3/index.php?service=multirequest&' + QueryString.stringify(param);
+	const url = 'https://cdnapisec.kaltura.com/api_v3/index.php?service=multirequest&' + QueryString.stringify(param);
 
 	return fetch(url)
 		.then(x => x.json())
