@@ -49,9 +49,9 @@ const findMin = (prop) => (m, s) => Math.min(m, s[prop]);
 function pickBestFromScreenSize (list) {
 	if (list.length === 1) { return list[0]; }
 
-	let screenWidth = getScreenWidth();
-	let minSourceWidth = list.reduce(findMin('width'), Infinity);
-	let target = Math.max(screenWidth, minSourceWidth);
+	const screenWidth = getScreenWidth();
+	const minSourceWidth = list.reduce(findMin('width'), Infinity);
+	const target = Math.max(screenWidth, minSourceWidth);
 
 	list = list.filter(o => {
 		// Filter out the sources wider then the screen (if they want those they
