@@ -21,6 +21,13 @@ function Loading () {
 	);
 }
 
+const initialState = {
+	sources: [],
+	sourcesLoaded: false,
+	isError: false,
+	interacted: false
+};
+
 /**
  * @class KalturaVideo
  *
@@ -93,12 +100,7 @@ export default class KalturaVideo extends React.Component {
 		onError: PropTypes.func
 	}
 
-	state = {
-		sources: [],
-		sourcesLoaded: false,
-		isError: false,
-		interacted: false
-	}
+	state = initialState;
 
 
 	attachRef = (x) => this.video = x
@@ -123,6 +125,7 @@ export default class KalturaVideo extends React.Component {
 
 	setupSource (props = this.props) {
 		const data = props.source;
+		const onError = props.onError;
 		// kaltura://1500101/0_4ol5o04l/
 		const src = typeof data === 'string' && data;
 
@@ -149,6 +152,11 @@ export default class KalturaVideo extends React.Component {
 		this.setState({entryId, partnerId},
 
 			() => getSources({ entryId, partnerId }).then(sources => {
+
+				if (sources.objectType === 'KalturaAPIException') {
+					return onError(sources.objectType);
+				}
+
 				if(this.state.entryId === entryId) {
 					events.debug('Resolved Sources: %o', sources);
 					this.setSources(sources);
@@ -157,7 +165,9 @@ export default class KalturaVideo extends React.Component {
 				}
 
 			})
-			.catch(error => events.error('Error setting video source %s %o', entryId, error))
+			.catch(error => {
+				events.error('Error setting video source %s %o', entryId, error);
+			})
 		);
 	}
 
@@ -180,11 +190,7 @@ export default class KalturaVideo extends React.Component {
 			sourcesLoaded: true,
 			isError: (data.objectType === 'KalturaAPIException')
 		}, () => {
-			const {video, state: {isError}} = this;
-
-			if (isError) {
-				this.onError();
-			}
+			const {video} = this;
 
 			if (video) {
 				video.load();
@@ -199,7 +205,7 @@ export default class KalturaVideo extends React.Component {
 
 	componentWillUpdate (nextProps) {
 		if (nextProps.source !== this.props.source) {
-			this.setState(this.getInitialState());
+			this.setState(initialState);
 		}
 	}
 
@@ -334,10 +340,6 @@ export default class KalturaVideo extends React.Component {
 		this.setState({
 			error: 'Could not play video. Network or Browser error.'
 		});
-
-		if (this.props.onError) {
-			this.props.onError();
-		}
 	}
 
 
