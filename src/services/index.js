@@ -66,14 +66,17 @@ export function getHandler (src) {
 }
 
 
-export function createMediaSourceFromUrl (url) {
+export async function createMediaSourceFromUrl (url) {
 	const handler = getHandler(url);
-	const videoId = handler && handler.getID && handler.getID(url);
-	const canonicalUrl = handler && handler.getCanonicalURL && handler.getCanonicalURL(url);
+	if (!handler) {
+		return;
+	}
 
-	return getService()
-		.then(service => new MediaSource(service, null, {service: handler.service, href: canonicalUrl, source: videoId}))
-		.catch(() => Function.prototype());
+	const videoId = await handler.getID(url);
+	const canonicalUrl = await handler.getCanonicalURL(url);
+	const service = await getService();
+
+	return new MediaSource(service, null, {service: handler.service, href: canonicalUrl, source: videoId});
 }
 
 /**
