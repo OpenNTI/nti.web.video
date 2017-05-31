@@ -38,6 +38,36 @@ export default class KalturaVideo extends React.Component {
 
 	static service = 'kaltura';
 
+	/*
+		Note: We do not support URLs that do not include both the partnerId and
+		entryId.
+	 */
+	static normalizeUrl = href => {
+		if (/^kaltura/i.test(href)) {
+			return href;
+		}
+
+		const parts = url.parse(href, true);
+
+		if (href.includes('/id/')) {
+			const partnerId = parts.query.playerId;
+			const pathname = parts.pathname.split('/id/');
+			const entryId = pathname[pathname.length - 1];
+			return `kaltura://${partnerId}/${entryId}`;
+		}
+
+		if (href.includes('index.php')) {
+			const regex = /\/partner_id\/(\d*)\/.*\/entry_id\/(\w*)/gi;
+
+			const ids = parts.path.split(regex);
+			if (ids.length >= 3) {
+				return `kaltura://${ids[1]}/${ids[2]}`;
+			}
+		}
+
+		return href;
+	};
+
 	/**
 	 * ID should take the form `${partnerId}/${entryId}` for consistency
 	 * with Vimeo and YouTube (and the Video component), but in rst the
@@ -49,7 +79,8 @@ export default class KalturaVideo extends React.Component {
 		if (Array.isArray(href)) {
 			return href;
 		}
-		const [service, rest] = href.split('://');
+
+		const [service, rest] = this.normalizeUrl(href).split('://');
 		if (!(/^kaltura/i.test(service) && rest)) {
 			return;
 		}
