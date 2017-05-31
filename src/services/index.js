@@ -8,7 +8,7 @@ import kaltura from './kaltura';
 import vimeo from './vimeo';
 import youtube from './youtube';
 
-const kalturaRe = /^kaltura/i;
+const kalturaRe = /kaltura/i;
 const vimeoRe = /vimeo/i;
 const youtubeRe = /youtu(\.?)be/i;
 
@@ -37,7 +37,7 @@ export function getUrl (data) {
 
 function getHandlerFromUrl (url) {
 	let handler = null;
-	if (kalturaRe.test(url.protocol)) {
+	if (kalturaRe.test(url.protocol) || kalturaRe.test(url.host)) {
 		handler = kaltura;
 	}
 
