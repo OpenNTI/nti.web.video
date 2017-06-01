@@ -44,10 +44,11 @@ export default class KalturaVideo extends React.Component {
 		}
 
 		const parseEmbedSrc = src => {
-			const srcRegex = /^.*playerId=(\w*).*entry_id=(\w*).*$/gi;
-			const ids = src.split(srcRegex);
-			if (ids.length >= 3) {
-				return `kaltura://${ids[1]}/${ids[2]}`;
+			const srcRegex = /^.*\/partner_id\/(\w*).*entry_id=(\w*).*$/gi;
+			const [, partnerId, entryId] = src.split(srcRegex);
+
+			if (partnerId && entryId) {
+				return `kaltura://${partnerId}/${entryId}`;
 			}
 
 			return src;
@@ -69,9 +70,9 @@ export default class KalturaVideo extends React.Component {
 		if (href.includes('index.php')) {
 			const regex = /\/partner_id\/(\d*)\/.*\/entry_id\/(\w*)/gi;
 
-			const ids = parts.path.split(regex);
-			if (ids.length >= 3) {
-				return `kaltura://${ids[1]}/${ids[2]}`;
+			const [, partnerId, entryId] = parts.path.split(regex);
+			if (partnerId && entryId) {
+				return `kaltura://${partnerId}/${entryId}`;
 			}
 		}
 
