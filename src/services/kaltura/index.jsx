@@ -38,13 +38,23 @@ export default class KalturaVideo extends React.Component {
 
 	static service = 'kaltura';
 
-	/*
-		Note: We do not support URLs that do not include both the partnerId and
-		entryId.
-	 */
 	static normalizeUrl = href => {
 		if (/^kaltura/i.test(href)) {
 			return href;
+		}
+
+		const parseEmbedSrc = src => {
+			const srcRegex = /^.*playerId=(\w*).*entry_id=(\w*).*$/gi;
+			const ids = src.split(srcRegex);
+			if (ids.length >= 3) {
+				return `kaltura://${ids[1]}/${ids[2]}`;
+			}
+
+			return src;
+		};
+
+		if (href.includes('/p/') && href.includes('/sp/')) {
+			return parseEmbedSrc(href);
 		}
 
 		const parts = url.parse(href, true);
