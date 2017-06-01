@@ -25,25 +25,14 @@ export default class Source extends React.Component {
 	static displayName = 'Vimeo-Video';
 	static service = 'vimeo';
 
-	static async getID (url) {
+	static getID (url) {
 		/** @see test */
 
 		const getFromCustomProtocol = x => x.match(VIMEO_PROTOCOL_PARTS);
 		const getFromURL = x => x.match(VIMEO_URL_PARTS);
 
 		const [/*matchedURL*/, /*albumId*/, id] = getFromCustomProtocol(url) || getFromURL(url) || [];
-
-		return id || await this.resolveID(url);
-	}
-
-	static async getCanonicalURL (url, videoId) {
-		const id = videoId || await this.getID(url);
-		return `https://www.vimeo.com/${id}`;
-	}
-
-	static propTypes = {
-		source: PropTypes.any.isRequired,
-		autoPlay: PropTypes.bool
+		return id || null;
 	}
 
 	static async resolveID (url) {
@@ -56,6 +45,16 @@ export default class Source extends React.Component {
 
 		const data = await response.json();
 		return data.video_id;
+	}
+
+	static getCanonicalURL (url, videoId) {
+		const id = videoId || this.getID(url);
+		return `https://www.vimeo.com/${id}`;
+	}
+
+	static propTypes = {
+		source: PropTypes.any.isRequired,
+		autoPlay: PropTypes.bool
 	}
 
 	state = {}
@@ -86,10 +85,10 @@ export default class Source extends React.Component {
 	}
 
 
-	async buildURL (props, id = this.state.id) {
+	buildURL = (props, id = this.state.id) => {
 		const {source: mediaSource, autoPlay} = props;
 
-		let videoId = typeof mediaSource === 'string' ? await Source.getID(mediaSource) : mediaSource.source;
+		let videoId = typeof mediaSource === 'string' ? Source.getID(mediaSource) : mediaSource.source;
 
 		if (Array.isArray(videoId)) {
 			videoId = videoId[0];
@@ -114,8 +113,8 @@ export default class Source extends React.Component {
 		return 'https://player.vimeo.com/video/' + videoId + '?' + QueryString.stringify(args);
 	}
 
-	async updateURL (props, id)  {
-		const url = await this.buildURL(props, id);
+	updateURL = (props, id) => {
+		const url = this.buildURL(props, id);
 		this.setState({
 			scope: url.split('?')[0],
 			playerURL: url
