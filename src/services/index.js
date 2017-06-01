@@ -72,8 +72,8 @@ export async function createMediaSourceFromUrl (url) {
 		return;
 	}
 
-	const videoId = await handler.getID(url);
-	const canonicalUrl = await handler.getCanonicalURL(url);
+	const videoId = handler.getID(url) || await handler.resolveID(url);
+	const canonicalUrl = handler.getCanonicalURL(url, videoId);
 	const service = await getService();
 
 	return new MediaSource(service, null, {service: handler.service, href: canonicalUrl, source: videoId});
