@@ -39,8 +39,10 @@ export default class KalturaVideo extends React.Component {
 	static service = 'kaltura';
 
 	static normalizeUrl = href => {
+		const forceTrailingSlash = x => String(x).substr(-1) === '/' ? x : `${x}/`;
+
 		if (/^kaltura/i.test(href)) {
-			return href;
+			return forceTrailingSlash(href);
 		}
 
 		const parseEmbedSrc = src => {
@@ -64,7 +66,7 @@ export default class KalturaVideo extends React.Component {
 			const partnerId = parts.query.playerId;
 			const pathname = parts.pathname.split('/id/');
 			const entryId = pathname[pathname.length - 1];
-			return `kaltura://${partnerId}/${entryId}`;
+			return `kaltura://${partnerId}/${entryId}/`;
 		}
 
 		if (href.includes('index.php')) {
@@ -72,7 +74,7 @@ export default class KalturaVideo extends React.Component {
 
 			const [, partnerId, entryId] = parts.path.split(regex);
 			if (partnerId && entryId) {
-				return `kaltura://${partnerId}/${entryId}`;
+				return `kaltura://${partnerId}/${entryId}/`;
 			}
 		}
 
@@ -177,7 +179,7 @@ export default class KalturaVideo extends React.Component {
 		if (src) {
 			const parsed = src && url.parse(src);
 			partnerId = parsed.host;
-			entryId = /\/(.*)\/$/.exec(parsed.path)[1];
+			entryId = /\/(.*)\/?$/.exec(parsed.path)[1];
 		} else if (data) {
 			let {source = ''} = data;
 			if (Array.isArray(source)) {
