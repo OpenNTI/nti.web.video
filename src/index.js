@@ -5,6 +5,8 @@ import Placeholder from './Placeholder';
 
 export default ComponentRaw;
 
+export EmbedInput from './EmbedInput';
+
 export {
 	getHandler,
 	getUrl,

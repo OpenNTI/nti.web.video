@@ -32,9 +32,12 @@
     "classnames": "^2.0.0",
     "invariant": "^2.1.1",
     "nti-analytics": "^1.1.0",
+    "nti-commons": "^2.5.5",
     "nti-lib-interfaces": "^1.42.0",
+    "nti-lib-locale": "^1.0.9",
     "nti-util-logger": "^1.0.0",
     "nti-web-client": "^1.1.1",
+    "nti-web-commons": "0.0.203",
     "prop-types": "^15.5.10",
     "query-string": "^4.0.0",
     "uuid": "^3.0.1"
