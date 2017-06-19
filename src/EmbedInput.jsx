@@ -96,7 +96,7 @@ export default class EmbedInput extends React.Component {
 				})
 				.catch(() => {
 					this.setState({
-						invalie: true,
+						invalid: true,
 						saving: false
 					});
 				});
