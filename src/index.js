@@ -1,11 +1,10 @@
 import {getHandler, getUrl, createMediaSourceFromUrl, getCanonicalUrlFrom} from './services';
+import Editor, {EmbedInput} from './editor';
 import ComponentRaw from './Video';
 import Component from './VideoWithAnalytics';
 import Placeholder from './Placeholder';
 
 export default ComponentRaw;
-
-export EmbedInput from './EmbedInput';
 
 export {
 	getHandler,
@@ -13,5 +12,7 @@ export {
 	createMediaSourceFromUrl,
 	getCanonicalUrlFrom,
 	Component,
-	Placeholder
+	Placeholder,
+	Editor,
+	EmbedInput
 };

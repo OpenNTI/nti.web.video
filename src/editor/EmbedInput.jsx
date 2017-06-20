@@ -5,7 +5,8 @@ import {scoped} from 'nti-lib-locale';
 import {Prompt, DialogButtons, Loading} from 'nti-web-commons';
 import {wait} from 'nti-commons';
 
-import {createMediaSourceFromUrl} from './services';
+import {createMediaSourceFromUrl} from '../services';
+
 import {normalizeSource, parseEmbedCode} from './utils';
 
 const DEFAULT_TEXT = {
@@ -16,7 +17,7 @@ const DEFAULT_TEXT = {
 	invalid: 'Invalid Link'
 };
 
-const t = scoped('nti-video.EmbedInput', DEFAULT_TEXT);
+const t = scoped('nti-video.editor.EmbedInput', DEFAULT_TEXT);
 
 async function getMediaSource (input) {
 	const url = parseEmbedCode(input) || input;
@@ -72,7 +73,9 @@ export default class EmbedInput extends React.Component {
 	onCancel = () => {
 		const {onCancel, onDismiss} = this.props;
 
-		onDismiss();
+		if (onDismiss) {
+			onDismiss();
+		}
 
 		if (onCancel) {
 			onCancel();
@@ -92,7 +95,7 @@ export default class EmbedInput extends React.Component {
 				.then((source) => {
 					if (onSelect) { onSelect(source); }
 
-					onDismiss();
+					if (onDismiss) { onDismiss(); }
 				})
 				.catch(() => {
 					this.setState({
