@@ -116,7 +116,7 @@ export default class KalturaVideo extends React.Component {
 
 	static getID (href) {
 		const parts = this.getIDParts(href);
-		return parts && Array.isArray(parts) && `${parts.join('/')}/`;
+		return parts && Array.isArray(parts) && `${parts.join(':')}`;
 	}
 
 
