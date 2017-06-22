@@ -28,7 +28,7 @@ async function getMediaSource (input) {
 }
 
 export default class EmbedInput extends React.Component {
-	static show (value, config) {
+	static show (value, config = {}) {
 		const {refocus} = config;
 
 		return new Promise((fulfill, reject) => {
