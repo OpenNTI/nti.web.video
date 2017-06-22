@@ -29,8 +29,6 @@ async function getMediaSource (input) {
 
 export default class EmbedInput extends React.Component {
 	static show (value, config = {}) {
-		const {refocus} = config;
-
 		return new Promise((fulfill, reject) => {
 			Prompt.modal(
 				<EmbedInput
@@ -38,10 +36,7 @@ export default class EmbedInput extends React.Component {
 					onSelect={fulfill}
 					onCancel={reject}
 				/>,
-				{
-					className: 'video-embed-input-container',
-					refocus
-				}
+				{...config, className: 'video-embed-input-container'}
 			);
 		});
 	}
