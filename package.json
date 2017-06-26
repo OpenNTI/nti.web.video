@@ -15,7 +15,7 @@
   "scripts": {
     "test": "make test",
     "start": "make check; webpack-dev-server -d --config ./webpack.config.test.js  --host 0.0.0.0 --port 8000 --quiet --watch --progress --inline --info false --content-base ./test/app/ || true",
-    "prepack": "not-in-install && make || in-install",
+    "prepack": "make",
     "preversion": "make test"
   },
   "repository": {
