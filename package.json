@@ -15,9 +15,8 @@
   "scripts": {
     "test": "make test",
     "start": "make check; webpack-dev-server -d --config ./webpack.config.test.js  --host 0.0.0.0 --port 8000 --quiet --watch --progress --inline --info false --content-base ./test/app/ || true",
-    "prepublish": "not-in-install && make || in-install",
-    "preversion": "make test",
-    "postversion": "git push && git push --tags && npm publish"
+    "prepack": "not-in-install && make || in-install",
+    "preversion": "make test"
   },
   "repository": {
     "type": "git",
