@@ -1,7 +1,6 @@
 import Url from 'url';
 
 import {getService} from 'nti-web-client';
-
 import {getModel} from 'nti-lib-interfaces';
 
 import kaltura from './kaltura';
@@ -106,4 +105,12 @@ export function getCanonicalUrlFrom (args) {
 	const src = String(normalForm.source).split(':').join('/');
 
 	return handler && handler.getCanonicalURL(undefined, src);
+}
+
+
+export async function doesSourceExist (source) {
+	const url = getCanonicalUrlFrom(source);
+	const media = await createMediaSourceFromUrl(url);
+
+	return media.getResolver();
 }

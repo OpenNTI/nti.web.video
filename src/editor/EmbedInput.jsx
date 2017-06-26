@@ -5,7 +5,7 @@ import {scoped} from 'nti-lib-locale';
 import {Prompt, DialogButtons, Loading} from 'nti-web-commons';
 import {wait} from 'nti-commons';
 
-import {createMediaSourceFromUrl} from '../services';
+import {createMediaSourceFromUrl, doesSourceExist} from '../services';
 
 import {normalizeSource, parseEmbedCode} from './utils';
 
@@ -93,9 +93,12 @@ export default class EmbedInput extends React.Component {
 			getMediaSource(value)
 				.then(wait.min(500))
 				.then((source) => {
-					if (onSelect) { onSelect(source); }
+					return doesSourceExist(source)
+						.then(() => {
+							if (onSelect) { onSelect(source); }
 
-					if (onDismiss) { onDismiss(); }
+							if (onDismiss) { onDismiss(); }
+						});
 				})
 				.catch(() => {
 					this.setState({
