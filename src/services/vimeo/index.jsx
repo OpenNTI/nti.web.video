@@ -4,7 +4,13 @@ import Logger from 'nti-util-logger';
 import uuid from 'uuid';
 import QueryString from 'query-string';
 
-import {EventHandlers} from '../../Constants';
+import {
+	EventHandlers,
+	UNSTARTED,
+	ENDED,
+	PLAYING,
+	PAUSED
+} from '../../Constants';
 import MESSAGES from '../WindowMessageListener';
 
 
@@ -122,6 +128,20 @@ export default class Source extends React.Component {
 	}
 
 
+	getPlayerState () {
+		const {videoData, playerState} = this.state;
+		const {duration, seconds} = videoData || {};
+
+		return {
+			service: Source.service,
+			time: seconds * 1000,//convert to milliseconds
+			state: playerState || UNSTARTED,
+			duration: duration * 1000,//convert to milliseconds
+			speed: 1
+		};
+	}
+
+
 	getPlayerContext = () => {
 		const {iframe} = this;
 		return iframe && (iframe.contentWindow || window.frames[iframe.name]);
@@ -159,8 +179,11 @@ export default class Source extends React.Component {
 			// this.flushQueue();
 		}
 
-		if(mappedEvent && handlerName) {
+		this.setState({
+			videoData: data
+		});
 
+		if(mappedEvent && handlerName) {
 			this.props[handlerName]({
 				timeStamp: Date.now(),
 				target: {
@@ -170,6 +193,9 @@ export default class Source extends React.Component {
 				type: mappedEvent
 			});
 
+			if (this[handlerName]) {
+				this[handlerName]();
+			}
 		}
 	}
 
@@ -215,6 +241,22 @@ export default class Source extends React.Component {
 			/>
 		);
 	}
+
+
+	onPlaying () {
+		this.setState({playerState: PLAYING});
+	}
+
+
+	onEnded () {
+		this.setState({playerState: ENDED});
+	}
+
+
+	onPause () {
+		this.setState({playerState: PAUSED});
+	}
+
 
 	play = () => {
 		//ready?

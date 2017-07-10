@@ -2,8 +2,19 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Logger from 'nti-util-logger';
 
+import {UNSTARTED, PLAYING, PAUSED, ENDED} from '../../Constants';
+
 const commands = Logger.get('video:html5:commands');
 const events = Logger.get('video:html5:events');
+
+
+export function getStateForVideo (video) {
+	return {
+		time: video ? video.currentTime : 0,
+		duration: video ? video.duration * 1000 : 0,
+		speed: video ? video.playbackRate : 1
+	};
+}
 
 export default class HTML5Video extends React.Component {
 	static service = 'html5'
@@ -83,6 +94,19 @@ export default class HTML5Video extends React.Component {
 	}
 
 
+	getPlayerState () {
+		const {video} = this;
+		const {playerState} = this.state;
+		const videoState = getStateForVideo(video);
+
+		return  {
+			service: HTML5Video.service,
+			state: playerState || UNSTARTED,
+			...videoState
+		};
+	}
+
+
 	setupSource (props) {
 		let {source} = props;
 		if (typeof source !== 'string') {
@@ -138,6 +162,9 @@ export default class HTML5Video extends React.Component {
 	onPlaying = (e) => {
 		const {props: {onPlaying}} = this;
 		events.debug('playing %o', e);
+
+		this.setState({playerState: PLAYING});
+
 		if (onPlaying) {
 			onPlaying(e);
 		}
@@ -147,6 +174,9 @@ export default class HTML5Video extends React.Component {
 	onPause = (e) => {
 		const {props: {onPause}} = this;
 		events.debug('pause %o', e);
+
+		this.setState({playerState: PAUSED});
+
 		if (onPause) {
 			onPause(e);
 		}
@@ -156,6 +186,8 @@ export default class HTML5Video extends React.Component {
 	onEnded = (e) => {
 		const {props: {onEnded}} = this;
 		events.debug('ended %o', e);
+
+		this.setState({playerState: ENDED});
 
 		this.setState({interacted: false}, () => {
 

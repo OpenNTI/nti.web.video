@@ -5,6 +5,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Logger from 'nti-util-logger';
 
+import {getStateForVideo} from '../html5/index';
+import {UNSTARTED, PLAYING, PAUSED, ENDED} from '../../Constants';
+
 import getSources from './SourceGrabber';
 import selectSources from './SelectSources';
 
@@ -269,6 +272,19 @@ export default class KalturaVideo extends React.Component {
 	}
 
 
+	getPlayerState () {
+		const {video} = this;
+		const {playerState} = this.state;
+		const videoState = getStateForVideo(video);
+
+		return {
+			service: KalturaVideo.service,
+			state: playerState || UNSTARTED,
+			...videoState
+		};
+	}
+
+
 	render () {
 		const {props: {deferred}, state: {poster, sourcesLoaded, isError, interacted, sources = []}} = this;
 
@@ -321,6 +337,9 @@ export default class KalturaVideo extends React.Component {
 	onPlaying = (e) => {
 		const {props: {onPlaying}} = this;
 		events.debug('playing %o', e);
+
+		this.setState({playerState: PLAYING});
+
 		if (onPlaying) {
 			onPlaying(e);
 		}
@@ -330,6 +349,9 @@ export default class KalturaVideo extends React.Component {
 	onPause = (e) => {
 		const {props: {onPause}} = this;
 		events.debug('pause %o', e);
+
+		this.setState({playerState: PAUSED});
+
 		if (onPause) {
 			onPause(e);
 		}
@@ -339,6 +361,8 @@ export default class KalturaVideo extends React.Component {
 	onEnded = (e) => {
 		const {props: {onEnded}} = this;
 		events.debug('ended %o', e);
+
+		this.setState({playerState: ENDED});
 
 		this.setState({interacted: false}, () => {
 

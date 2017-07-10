@@ -117,6 +117,19 @@ class Source extends React.Component {
 	}
 
 
+	getPlayerState () {
+		const {playerState, currentTime, duration, playbackRate} = this.state;
+
+		return {
+			service: Source.service,
+			time: currentTime,
+			state: playerState,
+			duration,
+			speed: playbackRate
+		};
+	}
+
+
 	buildURL = (props) => {
 		const unwrap = x => Array.isArray(x) ? x[0] : x;
 		const {deferred, source: mediaSource} = props;

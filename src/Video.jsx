@@ -41,6 +41,11 @@ export default class extends React.Component {
 	attachRef = (x) => this.activeVideo = x
 
 
+	getPlayerState () {
+		return this.activeVideo && this.activeVideo.getPlayerState();
+	}
+
+
 	componentWillUnmount () {
 		try {
 			this.stop();
@@ -126,7 +131,7 @@ export default class extends React.Component {
 					onPause={this.onPause}
 					onEnded={this.onEnded}
 					onError={this.onError}
-					/>
+				/>
 			</div>
 		);
 	}
