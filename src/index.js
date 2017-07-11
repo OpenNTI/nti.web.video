@@ -3,6 +3,7 @@ import Editor, {EmbedInput} from './editor';
 import ComponentRaw from './Video';
 import Component from './VideoWithAnalytics';
 import Placeholder from './Placeholder';
+import {UNSTARTED, ENDED, PLAYING, PAUSED, BUFFERING, CUED} from './Constants';
 
 export default ComponentRaw;
 
@@ -14,5 +15,11 @@ export {
 	Component,
 	Placeholder,
 	Editor,
-	EmbedInput
+	EmbedInput,
+	UNSTARTED,
+	ENDED,
+	PLAYING,
+	PAUSED,
+	BUFFERING,
+	CUED
 };
