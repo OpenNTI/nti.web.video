@@ -29,6 +29,7 @@ function kalturaSig (str) {
 
 function parseResult ( result ) { // API result
 
+	const {location} = global;
 	const protocol = location.protocol.substr(0, location.protocol.length - 1);
 	// Set the service url based on protocol type
 	const serviceUrl = (protocol === 'https') ?

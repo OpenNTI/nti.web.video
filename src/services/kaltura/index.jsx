@@ -212,7 +212,7 @@ export default class KalturaVideo extends React.Component {
 				}
 
 			})
-			.catch(error => events.error('Error setting video source %s %o', entryId, error))
+				.catch(error => events.error('Error setting video source %s %o', entryId, error))
 		);
 	}
 

@@ -152,7 +152,7 @@ export default class HTML5Video extends React.Component {
 					onEnded={this.onEnded}
 					onSeeked={this.onSeeked}
 					onTimeUpdate={this.onTimeUpdate}
-					/>
+				/>
 				{!interacted && <a className="tap-area play" href="#" onClick={this.onClick} style={{backgroundColor: 'transparent'}}/>}
 			</div>
 		);

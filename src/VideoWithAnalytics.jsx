@@ -247,7 +247,7 @@ export default class extends React.Component {
 				onPlaying={this.onPlaying}
 				onPause={this.onPause}
 				onEnded={this.onEnded}
-				/>
+			/>
 		);
 	}
 }

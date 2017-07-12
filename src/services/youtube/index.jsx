@@ -45,7 +45,7 @@ class Source extends React.Component {
 	static service = 'youtube'
 
 	static getID (url) {
-		const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&\?]*).*/;
+		const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
 		const match = url.match(regExp);
 		if (match && match[2].length === 11) {
 			return match[2];
@@ -133,10 +133,11 @@ class Source extends React.Component {
 	buildURL = (props) => {
 		const unwrap = x => Array.isArray(x) ? x[0] : x;
 		const {deferred, source: mediaSource} = props;
+		const {location} = global;
 
 		const videoId = typeof mediaSource === 'string'
-		? Source.getID(mediaSource)
-		: unwrap(mediaSource.source);
+			? Source.getID(mediaSource)
+			: unwrap(mediaSource.source);
 
 		const args = {
 			enablejsapi: 1,
