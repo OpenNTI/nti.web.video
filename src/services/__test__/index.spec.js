@@ -1,3 +1,4 @@
+/* eslint-env jest */
 import {createMediaSourceFromUrl} from '../';
 
 import vimeoMetaData from './mockMetaData';
@@ -54,7 +55,7 @@ describe('Create MediaSource From URL tests', () => {
 		}
 	});
 
-	it('should get meta data from Vimeo', () => metaDataTest(vimeoUrl, vimeoMetaData));
-	it('should get meta data from YouTube', () => metaDataTest(youtubeUrl, youtubeMetaData));
+	test('should get meta data from Vimeo', () => metaDataTest(vimeoUrl, vimeoMetaData));
+	test('should get meta data from YouTube', () => metaDataTest(youtubeUrl, youtubeMetaData));
 
 });

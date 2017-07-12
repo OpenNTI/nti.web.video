@@ -1,6 +1,6 @@
 export default {
 	'kind': 'youtube#videoListResponse',
-	'etag': '\"fpJ9onbY0Rl_LqYLG6rOCJ9h9N8/CMgINI45f83OPwUWT305gjJ9jEE\"',
+	'etag': '"fpJ9onbY0Rl_LqYLG6rOCJ9h9N8/CMgINI45f83OPwUWT305gjJ9jEE"',
 	'pageInfo': {
 		'totalResults': 1,
 		'resultsPerPage': 1
@@ -8,7 +8,7 @@ export default {
 	'items': [
 		{
 			'kind': 'youtube#video',
-			'etag': '\"fpJ9onbY0Rl_LqYLG6rOCJ9h9N8/MPcch5Trz9YsmE3KtFBaaW6LoOE\"',
+			'etag': '"fpJ9onbY0Rl_LqYLG6rOCJ9h9N8/MPcch5Trz9YsmE3KtFBaaW6LoOE"',
 			'id': '1234567890',
 			'snippet': {
 				'publishedAt': '2008-08-06T18:56:56.000Z',
