@@ -4,19 +4,19 @@
   "author": "nextthought",
   "description": "A Video component for ReactJS",
   "license": "UNLICENSED",
-  "main": "./lib/index.js",
+  "main": "./lib/cjs-index.js",
+  "module": "./lib/index.js",
   "files": [
     "lib"
   ],
-  "engines": {
-    "node": ">=5.0.0",
-    "npm": ">=3.3.0"
-  },
   "scripts": {
-    "test": "make test",
-    "start": "make check; webpack-dev-server -d --config ./webpack.config.test.js  --host 0.0.0.0 --port 8000 --quiet --watch --progress --inline --info false --content-base ./test/app/ || true",
-    "prepack": "make",
-    "preversion": "make test"
+    "test": "nti-cmp-scripts test",
+    "start": "nti-cmp-scripts start",
+    "prepack": "nti-cmp-scripts build",
+    "build": "nti-cmp-scripts build",
+    "clean": "nti-cmp-scripts clean",
+    "check": "nti-cmp-scripts check",
+    "release": "nti-cmp-scripts release"
   },
   "repository": {
     "type": "git",
@@ -42,58 +42,9 @@
     "uuid": "^3.0.1"
   },
   "devDependencies": {
-    "autoprefixer": "^7.1.1",
-    "babel-core": "^6.1.0",
-    "babel-eslint": "^7.0.0",
-    "babel-jest": "^20.0.3",
-    "babel-loader": "^7.0.0",
-    "babel-polyfill": "^6.1.0",
-    "babel-preset-env": "^1.1.4",
-    "babel-preset-react": "^6.1.0",
-    "babel-preset-stage-1": "^6.1.0",
-    "baggage-loader": "^0.3.0",
-    "css-loader": "0.x.x",
-    "eslint-config-nti-codestyle-js": "^1.1.0",
-    "eslint-config-nti-codestyle-jsx": "^1.0.0",
-    "extract-text-webpack-plugin": "^2.0.0",
-    "file-loader": "0.x.x",
-    "in-publish": "^2.0.0",
-    "jest": "^20.0.4",
-    "jest-junit": "^1.4.0",
-    "node-sass": "^4.5.0",
-    "normalize.css": "^7.0.0",
+    "nti-cmp-scripts": "^1.0.1",
     "nti-style-common": "^1.1.11",
-    "postcss-loader": "^2.0.5",
     "react": "^15.1.0",
-    "react-dom": "^15.1.0",
-    "resolve-url-loader": "^2.0.0",
-    "sass-loader": "^6.0.0",
-    "style-loader": "0.x.x",
-    "url-loader": "0.x.x",
-    "webpack": "^2.2.0",
-    "webpack-dev-server": "^2.4.0"
-  },
-  "jest": {
-    "collectCoverage": true,
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx}",
-      "!**/*.spec.js"
-    ],
-    "coverageDirectory": "reports/coverage",
-    "coverageReporters": [
-      "text",
-      "lcov",
-      "cobertura"
-    ],
-    "testResultsProcessor": "./node_modules/jest-junit",
-    "roots": [
-      "<rootDir>/src/"
-    ],
-    "testMatch": [
-      "**/__test__/**/*.(spec).js?(x)"
-    ]
-  },
-  "jest-junit": {
-    "output": "reports/test-results/index.xml"
+    "react-dom": "^15.1.0"
   }
 }

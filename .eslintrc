@@ -1,6 +1,3 @@
 {
-	"extends": [
-		"nti-codestyle-jsx"
-	],
-	"parser": "babel-eslint"
+	"extends": "./node_modules/nti-cmp-scripts/config/eslintrc.js"
 }
