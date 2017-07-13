@@ -12,6 +12,7 @@ const DEFAULT_TEXT = {
 		label: 'Title',
 		placeholder: 'Enter a title'
 	},
+	captions: 'Captions (Optional)',
 	cancel: 'Cancel',
 	save: 'Save',
 	error: 'Unable to save video'
@@ -43,6 +44,11 @@ export default class VideoEditor extends React.Component {
 	}
 
 
+	onFileChange = (file) => {
+		this.setState({captionsFile : file});
+	}
+
+
 	onCancel = () => {
 		const {onCancel} = this.props;
 
@@ -52,32 +58,38 @@ export default class VideoEditor extends React.Component {
 	}
 
 
-	onSave = () => {
-		const {title} = this.state;
+	onSave = async () => {
+		const {title, captionsFile} = this.state;
 		const {onSave, video} = this.props;
 
-		this.setState({
-			saving: true
-		}, () => {
-			video.save({title})
-				.then(wait(wait.SHORT))
-				.then(() => {
-					if (onSave) {
-						onSave();
-					}
+		const onError = (msg) => {
+			this.setState({
+				error: true,
+				errorMsg: msg,
+				saving: false
+			});
+		};
 
-					this.setState({
-						saving: false
-					});
-				})
-				.catch(() => {
-					this.setState({
-						error: true,
-						saving: false
-					});
+		try {
+			const newVideo = await video.save({title});
+
+			try {
+				await video.applyCaptions(newVideo, captionsFile);
+				await wait(wait.SHORT);
+
+				if (onSave) {
+					onSave();
+				}
+
+				this.setState({
+					saving: false
 				});
-		});
-
+			} catch (e) {
+				onError('Unable to update caption');
+			}
+		} catch (e) {
+			onError('Unable to update title');
+		}
 	}
 
 
@@ -98,6 +110,9 @@ export default class VideoEditor extends React.Component {
 						{error && (<span className="error">{error}</span>)}
 						<Input.Label className="title-label" label={t('title.label')}>
 							<Input.Text className="title-input" value={title} onChange={this.onTitleChange} />
+						</Input.Label>
+						<Input.Label className="title-label" label={t('captions')}>
+							<Input.File onFileChange={this.onFileChange}/>
 						</Input.Label>
 					</div>
 				</div>
