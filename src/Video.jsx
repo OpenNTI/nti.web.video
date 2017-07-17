@@ -9,9 +9,7 @@ const emptyFunction = () => {};
 const commands = Logger.get('video:commands');
 const events = Logger.get('video:events');
 
-export default class extends React.Component {
-	static displayName = 'Video';
-
+export default class Video extends React.Component {
 	static propTypes = {
 		src: PropTypes.oneOfType([
 			PropTypes.string,
@@ -37,6 +35,10 @@ export default class extends React.Component {
 		onEnded: emptyFunction
 	}
 
+	state = {
+		activeIndex: 0
+	}
+
 
 	attachRef = (x) => this.activeVideo = x
 
@@ -54,9 +56,26 @@ export default class extends React.Component {
 		}
 	}
 
-	onError = () => {
+	onError = (e) => {
+		if (e.nonRecoverable) {
+			this.onNonRecoverableError();
+		}
+
 		if (this.props.onError) {
-			this.props.onError();
+			this.props.onError(e);
+		}
+	}
+
+
+	onNonRecoverableError = () => {
+		const {src:video} = this.props;
+		const {activeIndex} = this.state;
+		const sources = video && video.sources ? video.sources : [];
+
+		if (activeIndex + 1 < sources.length) {
+			this.setState({
+				activeIndex: activeIndex + 1
+			});
 		}
 	}
 
@@ -116,9 +135,10 @@ export default class extends React.Component {
 
 
 	render () {
-		const video = this.props.src;
-		const Provider = getHandler(video) || Fallback;
-		const videoSource = video && (video.sources || {})[0];
+		const {src:video} = this.props;
+		const {activeIndex} = this.state;
+		const Provider = getHandler(video, activeIndex) || Fallback;
+		const videoSource = video && (video.sources || {})[activeIndex];
 
 		return (
 			<div className={'flex-video widescreen ' + Provider.displayName}>

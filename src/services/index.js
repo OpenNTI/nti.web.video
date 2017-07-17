@@ -17,8 +17,12 @@ const ensureProtocol = x => PROTOCOL_LESS.test(x) ? `http:${x}` : x;
 
 const MediaSource = getModel('mediasource');
 
+function getSource (data) {
+	return data && data.sources ? data.sources[0] : data;
+}
+
 export function getUrl (data) {
-	let src = data && data.sources[0];
+	let src = getSource(data);
 	let url = src && Url.parse(src.source[0]);
 
 	if (!data || !/^kaltura/i.test(src.service)) {
@@ -51,9 +55,9 @@ function getHandlerFromUrl (url) {
 }
 
 
-export function getHandler (src) {
+export function getHandler (src, srcIndex = 0) {
 	let url = (typeof src === 'string') ? Url.parse(ensureProtocol(src)) : getUrl(src);
-	let service = ((src.sources || [])[0] || {}).service;
+	let service = ((src.sources || [])[srcIndex] || {}).service;
 
 	let handler = serviceMap[service];
 
