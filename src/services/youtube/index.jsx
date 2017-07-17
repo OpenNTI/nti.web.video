@@ -31,6 +31,11 @@ const YOU_TUBE_STATES = {
 };
 */
 
+//TODO: To detect an unrecoverable error try pinging the youtube API
+//instead of waiting for the to fail. That should catch both cases:
+//1) Youtube is blocked
+//2) The video doesn't exist
+
 
 const YT_STATE_TO_EVENTS = {
 	0: 'ended',
@@ -60,7 +65,8 @@ class Source extends React.Component {
 
 	static propTypes = {
 		source: PropTypes.any.isRequired,
-		deferred: PropTypes.bool
+		deferred: PropTypes.bool,
+		onError: PropTypes.func
 	}
 
 	state = {id: uuid(), scope: YOU_TUBE, playerState: -1}
@@ -292,11 +298,26 @@ class Source extends React.Component {
 
 	handleInitialDelivery = (info) => {
 		this.setState(info);
+
+		const {onError} = this.props;
+		const {videoData} = info || {};
+		const {video_id:videoId} = videoData || {};
+
+		if (!videoId) {
+			const error = new Error('Missing Video');
+
+			error.nonRecoverable = true;
+
+			if (onError) {
+				onError(error);
+			}
+		}
 	}
 
 
-	handleApiInfoDelivery = () => {};
-	handleOnReady = () => {};//nothing to do
+	handleApiInfoDelivery = () => {}
+
+	handleOnReady = () => {}//nothing to do
 
 
 	handleOnStateChange = (state) => {

@@ -27,6 +27,11 @@ const VIMEO_EVENTS_TO_HTML5 = {
 const VIMEO_URL_PARTS = /(?:https?:)?\/\/(?:(?:www|player)\.)?vimeo.com\/(?:(?:channels|video)\/(?:\w+\/)?|groups\/(?:[^/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?|#)/i;
 const VIMEO_PROTOCOL_PARTS = /vimeo:\/\/(\d+\/)?(\d+)/i;
 
+//TODO: To detect an unrecoverable error try pinging the Vimeo API
+//instead of waiting for the to fail. That should catch both cases:
+//1) Vimeo is blocked
+//2) The video doesn't exist
+
 export default class Source extends React.Component {
 	static displayName = 'Vimeo-Video';
 	static service = 'vimeo';
@@ -178,6 +183,7 @@ export default class Source extends React.Component {
 			this.postMessage('addEventListener', 'playProgress'); //timeupdate
 			// this.flushQueue();
 		}
+
 
 		this.setState({
 			videoData: data
