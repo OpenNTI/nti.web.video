@@ -12,7 +12,7 @@ const DEFAULT_TEXT = {
 		label: 'Title',
 		placeholder: 'Enter a title'
 	},
-	captions: 'Captions (Optional)',
+	captions: 'Transcript File (Optional)',
 	cancel: 'Cancel',
 	save: 'Save',
 	error: 'Unable to save video'
@@ -24,6 +24,7 @@ const t = scoped('nti-video.editor.Editor', DEFAULT_TEXT);
 export default class VideoEditor extends React.Component {
 	static propTypes = {
 		video: PropTypes.object.isRequired,
+		transcript: PropTypes.object,
 		onSave: PropTypes.func,
 		onCancel: PropTypes.func
 	}
@@ -92,7 +93,6 @@ export default class VideoEditor extends React.Component {
 		}
 	}
 
-
 	render () {
 		const {video} = this.props;
 		const {title, error, saving} = this.state;
@@ -101,6 +101,12 @@ export default class VideoEditor extends React.Component {
 			{label: t('cancel'), onClick: () => this.onCancel()},
 			{label: t('save'), onClick: () => this.onSave()}
 		];
+
+		let defaultText = 'No file selected';
+
+		if(this.props.transcript) {
+			defaultText = 'This video currently has a transcript (' + this.props.transcript.lang.toUpperCase() + ' language)';
+		}
 
 		return (
 			<div className="video-editor">
@@ -112,7 +118,7 @@ export default class VideoEditor extends React.Component {
 							<Input.Text className="title-input" value={title} onChange={this.onTitleChange} />
 						</Input.Label>
 						<Input.Label className="title-label" label={t('captions')}>
-							<Input.File onFileChange={this.onFileChange}/>
+							<Input.File onFileChange={this.onFileChange} defaultText={defaultText} accept=".vtt" value={this.state.captionsFile}/>
 						</Input.Label>
 					</div>
 				</div>
