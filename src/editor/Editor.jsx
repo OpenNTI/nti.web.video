@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import moment from 'moment';
 import cx from 'classnames';
 import {scoped} from 'nti-lib-locale';
-import {Input, DialogButtons, Loading} from 'nti-web-commons';
+import {Input, DialogButtons, Loading, Flyout} from 'nti-web-commons';
 import {wait} from 'nti-commons';
 
 import Video from '../Video';
@@ -12,7 +13,8 @@ const DEFAULT_TEXT = {
 		label: 'Title',
 		placeholder: 'Enter a title'
 	},
-	captions: 'Captions (Optional)',
+	captions: 'Transcript File (Optional)',
+	transcriptNote: 'Only .vtt files are accepted at this time.',
 	cancel: 'Cancel',
 	save: 'Save',
 	error: 'Unable to save video'
@@ -24,6 +26,8 @@ const t = scoped('nti-video.editor.Editor', DEFAULT_TEXT);
 export default class VideoEditor extends React.Component {
 	static propTypes = {
 		video: PropTypes.object.isRequired,
+		transcript: PropTypes.object,
+		error: PropTypes.string,
 		onSave: PropTypes.func,
 		onCancel: PropTypes.func
 	}
@@ -34,10 +38,13 @@ export default class VideoEditor extends React.Component {
 		const {video: {title}} = this.props;
 
 		this.state = {
-			title
+			title,
+			transcript: this.props.transcript,
+			error: this.props.error
 		};
 	}
 
+	attachFlyoutRef = x => this.flyout = x
 
 	onTitleChange = (title) => {
 		this.setState({title, error: false});
@@ -45,7 +52,7 @@ export default class VideoEditor extends React.Component {
 
 
 	onFileChange = (file) => {
-		this.setState({captionsFile : file});
+		this.setState({transcriptFile : file});
 	}
 
 
@@ -59,7 +66,7 @@ export default class VideoEditor extends React.Component {
 
 
 	onSave = async () => {
-		const {title, captionsFile} = this.state;
+		const {title, transcriptFile, transcriptFlaggedForRemoval, transcript} = this.state;
 		const {onSave, video} = this.props;
 
 		const onError = (msg) => {
@@ -74,7 +81,19 @@ export default class VideoEditor extends React.Component {
 			const newVideo = await video.save({title});
 
 			try {
-				await video.applyCaptions(newVideo, captionsFile);
+				if(transcriptFile && !transcript) {
+					// no transcript to update, just add a new file
+					await video.applyCaptions(newVideo, transcriptFile);
+				}
+				else if(transcriptFile && transcript) {
+					// replace transcript
+					await video.replaceTranscript(transcript, transcriptFile);
+				}
+				else if(transcriptFlaggedForRemoval) {
+					// remove transcript
+					await video.removeTranscript(transcript);
+				}
+
 				await wait(wait.SHORT);
 
 				if (onSave) {
@@ -92,28 +111,98 @@ export default class VideoEditor extends React.Component {
 		}
 	}
 
+	renderEdit () {
+		const onFileSelected = (e) => {
+			const {target: {files}} = e;
+
+			if(files && files.length === 1) {
+				this.setState({transcriptFile : files[0]});
+				this.flyout.dismiss();
+			}
+		};
+
+		const removeHandler = () => {
+			this.setState( { transcriptFlaggedForRemoval: true, transcriptFile: null });
+		};
+
+		return (<Flyout.Triggered
+			className="video-editor-flyout-inner"
+			trigger={this.renderEditButton()}
+			horizontalAlign={Flyout.ALIGNMENTS.LEFT}
+			sizing={Flyout.SIZES.MATCH_SIDE}
+			ref={this.attachFlyoutRef}
+		>
+			<div>
+				<div className="change-transcript"><input type="file" accept=".vtt" onChange={onFileSelected}/><span>Change File</span></div>
+				<div className="remove-transcript" onClick={removeHandler}><i className="icon-delete" />Remove</div>
+			</div>
+		</Flyout.Triggered>);
+	}
+
+	renderEditButton () {
+		return (
+			<span className="edit-link">Edit</span>
+		);
+	}
+
+	getTime (time) {
+		let date = new Date(time * 1000);
+		return moment(date).format('MMMM Do YYYY, h:mm:ss a');
+	}
+
+	getPurposeLabel (purpose) {
+		if(purpose === 'normal') {
+			return 'transcript';
+		}
+
+		return purpose;
+	}
+
+	renderFileWidget () {
+		if(this.state.transcriptFile) {
+			return (<div className="current-transcript">{this.state.transcriptFile.name}{this.renderEdit()}</div>);
+		}
+		else if(!this.state.transcriptFlaggedForRemoval && this.state.transcript) {
+			return (
+				<div>
+					<div className="current-transcript">{this.getPurposeLabel(this.state.transcript.purpose)} - {this.state.transcript.lang.toUpperCase()}{this.renderEdit()}</div>
+					<div className="modified-date">Uploaded on {this.getTime(this.state.transcript.CreatedTime)}</div>
+				</div>);
+		}
+		else {
+			return (
+				<div>
+					<div className="transcript-note">{t('transcriptNote')}</div>
+					<Input.File onFileChange={this.onFileChange} label="Upload a File" accept=".vtt" value={this.state.transcriptFile}/>
+				</div>);
+		}
+	}
 
 	render () {
 		const {video} = this.props;
 		const {title, error, saving} = this.state;
 
-		const buttons = [
+		let buttons = [
 			{label: t('cancel'), onClick: () => this.onCancel()},
-			{label: t('save'), onClick: () => this.onSave()}
 		];
+
+		if(!error) {
+			buttons.push({label: t('save'), onClick: () => this.onSave()});
+		}
 
 		return (
 			<div className="video-editor">
 				<div className="editor-container">
 					<Video src={video} />
 					<div className="meta">
-						{error && (<span className="error">{error}</span>)}
+						{error && (<div className="error">{error}</div>)}
 						<Input.Label className="title-label" label={t('title.label')}>
 							<Input.Text className="title-input" value={title} onChange={this.onTitleChange} />
 						</Input.Label>
-						<Input.Label className="title-label" label={t('captions')}>
-							<Input.File onFileChange={this.onFileChange}/>
-						</Input.Label>
+						<div className="nti-labeled-input">
+							<div className="label">{t('captions')}</div>
+							{this.renderFileWidget()}
+						</div>
 					</div>
 				</div>
 				<DialogButtons buttons={buttons} />
