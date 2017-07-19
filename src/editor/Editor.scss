@@ -29,6 +29,13 @@
 			width: 100%;
 			margin-bottom: 10px;
 		}
+
+		.error {
+			margin-top: 0;
+			color: $primary-red;
+			font-size: .85rem;
+			line-height: 24px;
+		}
 	}
 
 	.saving-mask {
