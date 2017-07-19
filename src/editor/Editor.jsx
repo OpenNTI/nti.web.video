@@ -27,7 +27,8 @@ export default class VideoEditor extends React.Component {
 	static propTypes = {
 		video: PropTypes.object.isRequired,
 		transcript: PropTypes.object,
-		error: PropTypes.string,
+		error: PropTypes.bool,
+		errorMsg: PropTypes.string,
 		onSave: PropTypes.func,
 		onCancel: PropTypes.func
 	}
@@ -39,8 +40,10 @@ export default class VideoEditor extends React.Component {
 
 		this.state = {
 			title,
+			hasSaved: false,
 			transcript: this.props.transcript,
-			error: this.props.error
+			error: this.props.error,
+			errorMsg: this.props.errorMsg
 		};
 	}
 
@@ -66,7 +69,7 @@ export default class VideoEditor extends React.Component {
 
 
 	onSave = async () => {
-		const {title, transcriptFile, transcriptFlaggedForRemoval, transcript} = this.state;
+		const {title, transcriptFile, hasSaved, video: savedVideo, transcriptFlaggedForRemoval, transcript} = this.state;
 		const {onSave, video} = this.props;
 
 		const onError = msg => {
@@ -208,7 +211,7 @@ export default class VideoEditor extends React.Component {
 				<div className="editor-container">
 					<Video src={video} />
 					<div className="meta">
-						{error && (<div className="error">{error}</div>)}
+						{error && (<div className="error">{errorMsg}</div>)}
 						<Input.Label className="title-label" label={t('title.label')}>
 							<Input.Text className="title-input" value={title} onChange={this.onTitleChange} />
 						</Input.Label>
