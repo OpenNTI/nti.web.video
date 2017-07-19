@@ -34,7 +34,8 @@ export default class VideoEditor extends React.Component {
 		const {video: {title}} = this.props;
 
 		this.state = {
-			title
+			title,
+			hasSaved: false
 		};
 	}
 
@@ -59,10 +60,10 @@ export default class VideoEditor extends React.Component {
 
 
 	onSave = async () => {
-		const {title, captionsFile} = this.state;
+		const {title, captionsFile, hasSaved, video: savedVideo} = this.state;
 		const {onSave, video} = this.props;
 
-		const onError = (msg) => {
+		const onError = msg => {
 			this.setState({
 				error: true,
 				errorMsg: msg,
@@ -71,7 +72,18 @@ export default class VideoEditor extends React.Component {
 		};
 
 		try {
-			const newVideo = await video.save({title});
+			if (!video.update) {
+				video.update = (v, obj) => v.save(obj);
+			}
+
+			const newVideo = hasSaved
+				? await video.update(savedVideo, {title})
+				: await video.save({title});
+
+			this.setState({
+				video: newVideo,
+				hasSaved: true
+			});
 
 			try {
 				await video.applyCaptions(newVideo, captionsFile);
@@ -86,7 +98,7 @@ export default class VideoEditor extends React.Component {
 				});
 			} catch (e) {
 				const response = JSON.parse(e.responseText || '{}');
-				const errorMsg = (response && response.message || '').toLowerCase();
+				const errorMsg = (response.message || '').toLowerCase();
 				onError(`Unable to update transcript${errorMsg ? `: ${errorMsg}` : ''}`);
 			}
 		} catch (e) {
