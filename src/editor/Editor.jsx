@@ -104,7 +104,9 @@ export default class VideoEditor extends React.Component {
 					saving: false
 				});
 			} catch (e) {
-				onError('Unable to update caption');
+				const response = JSON.parse(e.responseText || '{}');
+				const errorMsg = (response && response.message || '').toLowerCase();
+				onError(`Unable to update transcript${errorMsg ? `: ${errorMsg}` : ''}`);
 			}
 		} catch (e) {
 			onError('Unable to update title');
@@ -180,7 +182,7 @@ export default class VideoEditor extends React.Component {
 
 	render () {
 		const {video} = this.props;
-		const {title, error, saving} = this.state;
+		const {title, error, errorMsg, saving} = this.state;
 
 		let buttons = [
 			{label: t('cancel'), onClick: () => this.onCancel()},
