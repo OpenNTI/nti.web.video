@@ -27,8 +27,7 @@ export default class VideoEditor extends React.Component {
 	static propTypes = {
 		video: PropTypes.object.isRequired,
 		transcript: PropTypes.object,
-		error: PropTypes.bool,
-		errorMsg: PropTypes.string,
+		badTranscriptState: PropTypes.bool,
 		onSave: PropTypes.func,
 		onCancel: PropTypes.func
 	}
@@ -41,9 +40,7 @@ export default class VideoEditor extends React.Component {
 		this.state = {
 			title,
 			hasSaved: false,
-			transcript: this.props.transcript,
-			error: this.props.error,
-			errorMsg: this.props.errorMsg
+			transcript: this.props.transcript
 		};
 	}
 
@@ -194,6 +191,19 @@ export default class VideoEditor extends React.Component {
 		}
 	}
 
+	renderTranscriptWidget () {
+		const {badTranscriptState} = this.props;
+
+		if(badTranscriptState) {
+			return (<div className="meta"><div className="error">Unable to edit transcripts</div></div>);
+		}
+
+		return (<div className="nti-labeled-input">
+			<div className="label">{t('captions')}</div>
+			{this.renderFileWidget()}
+		</div>);
+	}
+
 	render () {
 		const {video} = this.props;
 		const {title, error, errorMsg, saving} = this.state;
@@ -215,10 +225,7 @@ export default class VideoEditor extends React.Component {
 						<Input.Label className="title-label" label={t('title.label')}>
 							<Input.Text className="title-input" value={title} onChange={this.onTitleChange} />
 						</Input.Label>
-						<div className="nti-labeled-input">
-							<div className="label">{t('captions')}</div>
-							{this.renderFileWidget()}
-						</div>
+						{this.renderTranscriptWidget()}
 					</div>
 				</div>
 				<DialogButtons buttons={buttons} />
