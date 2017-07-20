@@ -105,7 +105,7 @@ export default class VideoEditor extends React.Component {
 					// replace transcript
 					await video.replaceTranscript(transcript, transcriptFile);
 				}
-				else if(transcriptFlaggedForRemoval) {
+				else if(transcriptFlaggedForRemoval && transcript) {
 					// remove transcript
 					await video.removeTranscript(transcript);
 				}
