@@ -52,7 +52,12 @@ export default class VideoEditor extends React.Component {
 
 
 	onFileChange = (file) => {
-		this.setState({transcriptFile : file});
+		if(file.name.toLowerCase().endsWith('.vtt')) {
+			this.setState({error: false, errorMsg: null, transcriptFile : file});
+		}
+		else {
+			this.setState({error: true, errorMsg: 'Selected file must be a .vtt file'});
+		}
 	}
 
 
@@ -129,7 +134,13 @@ export default class VideoEditor extends React.Component {
 			const {target: {files}} = e;
 
 			if(files && files.length === 1) {
-				this.setState({transcriptFile : files[0]});
+				if(files[0].name.toLowerCase().endsWith('.vtt')) {
+					this.setState({error: false, errorMsg: null, transcriptFile : files[0]});
+				}
+				else {
+					this.setState({error: true, errorMsg: 'Selected file must be a .vtt file'});
+				}
+
 				this.flyout.dismiss();
 			}
 		};
@@ -183,10 +194,21 @@ export default class VideoEditor extends React.Component {
 				</div>);
 		}
 		else {
+			const checkValid = (file) => {
+				if(file.name.toLowerCase().endsWith('.vtt')) {
+					return true;
+				}
+				else {
+					this.setState({error: true, errorMsg: 'Selected file must be a .vtt file'});
+
+					return false;
+				}
+			};
+
 			return (
 				<div>
 					<div className="transcript-note">{t('transcriptNote')}</div>
-					<Input.File onFileChange={this.onFileChange} label="Upload a File" accept=".vtt" value={this.state.transcriptFile}/>
+					<Input.File onFileChange={this.onFileChange} checkValid={checkValid} label="Upload a File" accept=".vtt" value={this.state.transcriptFile}/>
 				</div>);
 		}
 	}
@@ -210,11 +232,8 @@ export default class VideoEditor extends React.Component {
 
 		let buttons = [
 			{label: t('cancel'), onClick: () => this.onCancel()},
+			{label: t('save'), onClick: () => this.onSave()}
 		];
-
-		if(!error) {
-			buttons.push({label: t('save'), onClick: () => this.onSave()});
-		}
 
 		return (
 			<div className="video-editor">
