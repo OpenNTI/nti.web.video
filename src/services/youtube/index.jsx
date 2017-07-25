@@ -8,6 +8,7 @@ import QueryString from 'query-string';
 import {EventHandlers} from '../../Constants';
 import MESSAGES from '../WindowMessageListener';
 import Task from '../Task';
+import {resolveCanAccessSource, createNonRecoverableError} from '../utils';
 
 const logger = Logger.get('video:youtube');
 
@@ -84,6 +85,7 @@ class Source extends React.Component {
 
 
 	componentDidMount () {
+		this.ensureAccess(this.props);
 		this.updateURL(this.props);
 		MESSAGES.add(this.onMessage);
 	}
@@ -119,6 +121,27 @@ class Source extends React.Component {
 
 		if (state.autoPlay !== prevState.autoPlay) {
 			this.updateURL(this.props);
+		}
+	}
+
+
+	async ensureAccess (props = this.props) {
+		const {source, onError} = props;
+
+		const onNoAccess = () => {
+			const error = createNonRecoverableError('Unable to access video');
+
+			if (onError) {
+				onError(error);
+			}
+		};
+
+		try {
+			const canAccess = await resolveCanAccessSource(source);
+
+			if (!canAccess) { onNoAccess(); }
+		} catch (e) {
+			onNoAccess(e);
 		}
 	}
 
