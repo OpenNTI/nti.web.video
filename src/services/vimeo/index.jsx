@@ -12,6 +12,7 @@ import {
 	PAUSED
 } from '../../Constants';
 import MESSAGES from '../WindowMessageListener';
+import {resolveCanAccessSource, createNonRecoverableError} from '../utils';
 
 
 const logger = Logger.get('video:vimeo');
@@ -82,17 +83,41 @@ export default class Source extends React.Component {
 
 
 	componentDidMount () {
+		this.ensureAccess(this.props);
 		MESSAGES.add(this.onMessage);
 	}
 
 
 	componentWillReceiveProps (nextProps) {
+		this.ensureAccess(nextProps);
 		this.updateURL(nextProps);
 	}
 
 
 	componentWillUnmount () {
 		MESSAGES.remove(this.onMessage);
+	}
+
+
+	async ensureAccess (props = this.props) {
+		const {source, onError} = props;
+
+		const onNoAccess = () => {
+			const error = createNonRecoverableError('Unable to access vimeo video');
+
+			if (onError) {
+				onError(error);
+			}
+		};
+
+		try {
+			debugger;
+			const canAccess = await resolveCanAccessSource(source);
+
+			if (!canAccess) { onNoAccess(); }
+		} catch (e) {
+			onNoAccess(e);
+		}
 	}
 
 
