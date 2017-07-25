@@ -98,6 +98,7 @@ class Source extends React.Component {
 
 
 	componentWillReceiveProps (props) {
+		this.ensureAccess(this.props);
 		this.updateURL(props);
 	}
 
@@ -129,7 +130,7 @@ class Source extends React.Component {
 		const {source, onError} = props;
 
 		const onNoAccess = () => {
-			const error = createNonRecoverableError('Unable to access video');
+			const error = createNonRecoverableError('Unable to access youtube video');
 
 			if (onError) {
 				onError(error);
