@@ -1,0 +1,62 @@
+@import "~nti-style-common";
+
+.video-editor {
+	position: relative;
+
+	.flex-video {
+		position: relative;
+		width: 704px;
+		height: 396px;
+
+		iframe, object, embed, video {
+			height: 100%;
+			position: absolute;
+			top: 0;
+			width: 100%;
+			left: 0;
+		}
+	}
+
+	.dialog-buttons {
+		background: $panel-background;
+	}
+
+	.meta {
+		padding: 1rem;
+
+		.title-input {
+			width: 100%;
+			margin-bottom: 10px;
+		}
+
+		.error {
+			margin-top: 0;
+			color: $primary-red;
+			font-size: .85rem;
+			line-height: 24px;
+			width: 650px;
+		}
+	}
+
+	.saving-mask {
+		position: absolute;
+		top: 0;
+		left: 0; right: 0;
+		background: white;
+		opacity: 0;
+		transition: opacity 0.2s;
+
+		.loading-spinner {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			margin-top: -12px;
+			margin-left: -12px;
+		}
+
+		&.saving {
+			opacity: 1;
+			bottom: 0;
+		}
+	}
+}

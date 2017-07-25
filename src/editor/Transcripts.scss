@@ -1,6 +1,6 @@
 @import "~nti-style-common";
 
-.video-editor-flyout-inner {
+.manage-video-transcripts-flyout-inner {
 	.flyout-inner {
 		width: 200px;
 
@@ -55,21 +55,62 @@
 	}
 }
 
-.video-editor {
+.manage-video-transcripts {
 	position: relative;
 
-	.flex-video {
+	div.add-transcript {
+		cursor: pointer;
 		position: relative;
-		width: 704px;
-		height: 396px;
+		overflow: hidden;
+		vertical-align: middle;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		display: inline-block;
+		color: #3fb3f6;
+		padding: 10px;
 
-		iframe, object, embed, video {
-			height: 100%;
-			position: absolute;
-			top: 0;
-			width: 100%;
-			left: 0;
+		&.disabled {
+			&, input {
+				pointer-events: none;
+				cursor: default;
+			}
+
+			> span {
+				color: $disabled-button-color;
+				background: $disabled-button-background;
+			}
 		}
+
+		input[type=file] {
+			position: absolute;
+			cursor: pointer;
+			right: 0;
+			bottom: 0;
+			padding: 0;
+			margin: 0;
+			font-size: 2rem;
+			border: 0;
+			background-color: red; //for debugging
+			opacity: 0;
+		}
+
+		> span {
+			display: inline-block;
+		}
+	}
+
+	.transcript-item {
+		padding: 10px;
+		border-bottom: solid 1px #ccc;
+		color: #454545;
+	}
+
+	.transcript-item select {
+		margin-right: 10px;
+	}
+
+	.transcript-file-name {
+		margin-right: 10px;
 	}
 
 	.current-transcript {
@@ -81,6 +122,7 @@
 		cursor: pointer;
 		font-size: 12px;
 		margin-left: 10px;
+		float: right;
 	}
 
 	.modified-date {
@@ -97,47 +139,5 @@
 		color: #747575;
 		margin-top: 5px;
 		margin-bottom: 5px;
-	}
-
-	.dialog-buttons {
-		background: $panel-background;
-	}
-
-	.meta {
-		padding: 1rem;
-
-		.title-input {
-			width: 100%;
-			margin-bottom: 10px;
-		}
-
-		.error {
-			margin-top: 0;
-			color: $primary-red;
-			font-size: .85rem;
-			line-height: 24px;
-		}
-	}
-
-	.saving-mask {
-		position: absolute;
-		top: 0;
-		left: 0; right: 0;
-		background: white;
-		opacity: 0;
-		transition: opacity 0.2s;
-
-		.loading-spinner {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			margin-top: -12px;
-			margin-left: -12px;
-		}
-
-		&.saving {
-			opacity: 1;
-			bottom: 0;
-		}
 	}
 }
