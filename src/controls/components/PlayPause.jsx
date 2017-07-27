@@ -2,9 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 
-import {PLAYING} from '../../Constants';
+import {isPlaying} from '../utils';
 
-export default class VideoControlsPlay extends React.Component {
+export default class VideoControlsPlayPause extends React.Component {
 	static propTypes = {
 		videoState: PropTypes.shape({
 			state: PropTypes.number
@@ -13,11 +13,10 @@ export default class VideoControlsPlay extends React.Component {
 		onPause: PropTypes.func
 	}
 
-	get isPlaying () {
+	get playing () {
 		const {videoState} = this.props;
-		const {state} = videoState || {};
 
-		return state === PLAYING;
+		return isPlaying(videoState);
 	}
 
 
@@ -25,12 +24,12 @@ export default class VideoControlsPlay extends React.Component {
 		e.stopPropagation();
 		e.preventDefault();
 
-		const {isPlaying} = this;
+		const {playing} = this;
 		const {onPlay, onPause} = this.props;
 
-		if (isPlaying && onPause) {
+		if (playing && onPause) {
 			onPause();
-		} else if (!isPlaying && onPlay) {
+		} else if (!playing && onPlay) {
 			onPlay();
 		}
 	}
@@ -38,8 +37,8 @@ export default class VideoControlsPlay extends React.Component {
 
 
 	render () {
-		const {isPlaying} = this;
-		const cls = cx('play-pause-control', {playing: isPlaying, paused: !isPlaying});
+		const {playing} = this;
+		const cls = cx('play-pause-control', {playing: playing, paused: !playing});
 
 		return (
 			<div className={cls} onClick={this.onClick}>
