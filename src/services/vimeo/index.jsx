@@ -111,7 +111,6 @@ export default class Source extends React.Component {
 		};
 
 		try {
-			debugger;
 			const canAccess = await resolveCanAccessSource(source);
 
 			if (!canAccess) { onNoAccess(); }

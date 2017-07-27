@@ -1,0 +1,17 @@
+@import "~nti-style-common";
+
+.play-pause-control {
+	color: white;
+
+	&.playing {
+		.play-icon {
+			display: none;
+		}
+	}
+
+	&.paused {
+		.pause-icon {
+			display: none;;
+		}
+	}
+}

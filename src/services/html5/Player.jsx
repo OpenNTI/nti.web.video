@@ -1,11 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import cx from 'classnames';
 import Logger from 'nti-util-logger';
 
+import {createNonRecoverableError} from '../utils';
+import {Overlay as ControlsOverlay} from '../../controls';
 import {UNSTARTED, PLAYING, PAUSED, ENDED} from '../../Constants';
 
 const commands = Logger.get('video:html5:commands');
 const events = Logger.get('video:html5:events');
+
 
 
 export function getStateForVideo (video) {
@@ -26,8 +30,13 @@ export default class HTML5Video extends React.Component {
 		 * @type {String/MediaSource}
 		 */
 		source: PropTypes.any.isRequired,
+		tracks: PropTypes.any,
+
+
+		poster: PropTypes.bool,
 
 		autoPlay: PropTypes.bool,
+		deferred: PropTypes.bool,
 
 		onPlaying: PropTypes.func,
 		onPause: PropTypes.func,
@@ -40,7 +49,8 @@ export default class HTML5Video extends React.Component {
 
 	state = {
 		error: false,
-		interacted: false
+		interacted: false,
+		videoState: {}
 	}
 
 
@@ -109,9 +119,9 @@ export default class HTML5Video extends React.Component {
 
 	setupSource (props) {
 		let {source} = props;
-		if (typeof source !== 'string') {
-			events.warn('What is this? %o', source);
-			source = null;
+
+		if (source.source) {
+			source = source.source;
 		}
 
 		events.debug('Setting source: entryId: %s, partnerId: %s', source);
@@ -123,28 +133,50 @@ export default class HTML5Video extends React.Component {
 	}
 
 
+	getVideoState () {
+		const {video} = this;
+		const {playerState} = this.state;
+
+		const get = (name, defaultValue = null) => video ? video[name] : defaultValue;
+
+		return {
+			state: playerState || UNSTARTED,
+			duration: get('duration', 0),
+			currentTime: get('currentTime', 0),
+			buffered: get('buffered'),
+			controls: get('controls', true),
+			loop: get('loop', true),
+			autoplay: get('autoplay', false),
+			muted: get('muted', false),
+			volume: get('volume'),
+			textTracks: get('textTracks'),
+			playbackRate: get('playbackRate', 1)
+		};
+	}
+
+
 	render () {
+		const {deferred, poster, ...otherProps} = this.props;
 		const {error, interacted, src} = this.state;
+		const cls = cx('video-wrapper', 'html5-video-wrapper', {error, interacted});
+
+		const loadVideo = !error && (!deferred || interacted);//if we have an error or we are deferred and we haven't been interacted with
+
+		const videoState = this.getVideoState();
 
 		const videoProps = {
-			...this.props,
-			controls: true,
-			src,
-			source: null,
+			...otherProps,
+			controls: false,
 			onClick: this.onClick
 		};
 
-		Object.keys(this.props).forEach(key => {
-			if (/^on/i.test(key)) {
-				videoProps[key] = null;
-			}
-		});
+		delete videoProps.source;
+		delete videoProps.src;
 
-		return error ? (
-			<div className="error">Unable to load video.</div>
-		) : (
-			<div className={'video-wrapper ' + (interacted ? 'loaded' : '')}>
-				<video {...videoProps}
+		return (
+			<div className={cls}>
+				<video
+					{...videoProps}
 					ref={this.attachRef}
 					onError={this.onError}
 					onPlaying={this.onPlaying}
@@ -152,16 +184,56 @@ export default class HTML5Video extends React.Component {
 					onEnded={this.onEnded}
 					onSeeked={this.onSeeked}
 					onTimeUpdate={this.onTimeUpdate}
+					onProgress={this.onProgress}
+				>
+					{loadVideo && this.renderSources(src)}
+					{loadVideo && this.renderTracks()}
+				</video>
+				<ControlsOverlay
+					className="controls"
+					poster={poster}
+					videoState={videoState}
+					onPlay={this.play}
+					onPause={this.pause}
 				/>
-				{!interacted && <a className="tap-area play" href="#" onClick={this.onClick} style={{backgroundColor: 'transparent'}}/>}
 			</div>
 		);
 	}
 
 
+	renderSources (sources) {
+		if (!Array.isArray(sources)) {
+			sources = [sources];
+		}
+
+		return sources
+			.map((src, index) => {
+				const srcURL = src.src ? src.src : src;
+				const type = src.type ? src.type : null;
+
+				if (typeof srcURL !== 'string') {
+					events.debug('Invalid Source: %o', src);
+					return null;
+				}
+
+				return (
+					<source key={index} src={srcURL} type={type} />
+				);
+			})
+			.filter(x => !!x);
+	}
+
+
+	renderTracks () {
+		//TODO: fill this out
+	}
+
+
+
 	onPlaying = (e) => {
-		const {props: {onPlaying}} = this;
 		events.debug('playing %o', e);
+
+		const {props: {onPlaying}} = this;
 
 		this.setState({playerState: PLAYING});
 
@@ -172,8 +244,9 @@ export default class HTML5Video extends React.Component {
 
 
 	onPause = (e) => {
-		const {props: {onPause}} = this;
 		events.debug('pause %o', e);
+
+		const {props: {onPause}} = this;
 
 		this.setState({playerState: PAUSED});
 
@@ -184,8 +257,9 @@ export default class HTML5Video extends React.Component {
 
 
 	onEnded = (e) => {
-		const {props: {onEnded}} = this;
 		events.debug('ended %o', e);
+
+		const {props: {onEnded}} = this;
 
 		this.setState({playerState: ENDED});
 
@@ -203,8 +277,9 @@ export default class HTML5Video extends React.Component {
 
 
 	onSeeked = (e) => {
-		const {props: {onSeeked}} = this;
 		events.debug('seeked %o', e);
+
+		const {props: {onSeeked}} = this;
 		if (onSeeked) {
 			onSeeked(e);
 		}
@@ -212,9 +287,12 @@ export default class HTML5Video extends React.Component {
 
 
 	onTimeUpdate = (e) => {
+		events.debug('timeUpdate %o', e);
+
 		const {target: video} = e;
 		const {props: {onTimeUpdate}, state: {interacted}} = this;
-		events.debug('timeUpdate %o', e);
+
+		this.forceUpdate();//Force the controls to redraw
 
 		if (!interacted && !video.paused && video.currentTime > 0.05) {
 			this.setState({interacted: true});
@@ -226,14 +304,22 @@ export default class HTML5Video extends React.Component {
 	}
 
 
+	onProgress = (e) => {
+		events.debug('progressUpdate %o', e);
+
+		this.forceUpdate();//Force the controls to redraw
+	}
+
+
 	onError = (e) => {
 		events.debug('error %o', e);
+
 		this.setState({
 			error: 'Could not play video. Network or Browser error.'
 		});
 
 		if (this.props.onError) {
-			this.props.onError();
+			this.props.onError(createNonRecoverableError('Unable to load html5 video.'));
 		}
 	}
 

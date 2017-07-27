@@ -58,7 +58,7 @@ export default class Video extends React.Component {
 
 	onError = (e) => {
 		if (e && e.nonRecoverable) {
-			this.onNonRecoverableError();
+			this.onNonRecoverableError(e);
 		}
 
 		if (this.props.onError) {
