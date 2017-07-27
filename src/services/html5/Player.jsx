@@ -135,14 +135,14 @@ export default class HTML5Video extends React.Component {
 
 	getVideoState () {
 		const {video} = this;
-		const {playerState} = this.state;
+		const {playerState, userSetTime} = this.state;
 
 		const get = (name, defaultValue = null) => video ? video[name] : defaultValue;
 
 		return {
 			state: playerState || UNSTARTED,
 			duration: get('duration', 0),
-			currentTime: get('currentTime', 0),
+			currentTime: userSetTime != null ? userSetTime : get('currentTime', 0),
 			buffered: get('buffered'),
 			controls: get('controls', true),
 			loop: get('loop', true),
@@ -195,6 +195,7 @@ export default class HTML5Video extends React.Component {
 					videoState={videoState}
 					onPlay={this.play}
 					onPause={this.pause}
+					setCurrentTime={this.setCurrentTime}
 				/>
 			</div>
 		);
@@ -362,6 +363,18 @@ export default class HTML5Video extends React.Component {
 
 	setCurrentTime = (time) => {
 		const {video} = this;
+
+		this.setState({
+			userSetTime: time
+		});
+
+		clearTimeout(this.clearUserSetTime);
+
+		this.clearUserSetTime = setTimeout(() => {
+			this.setState({
+				userSetTime: null
+			});
+		}, 1);
 
 		commands.debug('set currentTime = %s', time);
 
