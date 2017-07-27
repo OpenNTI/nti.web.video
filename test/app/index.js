@@ -5,6 +5,9 @@ import {getModel} from 'nti-lib-interfaces';
 
 import Video from '../../src/index';
 
+import 'nti-style-common/all.scss';
+import 'nti-web-commons/lib/index.css';
+
 window.$AppConfig = window.$AppConfig || {server: '/dataserver2/'};
 
 const MediaSource = getModel('mediasource');
@@ -28,9 +31,10 @@ class Test extends React.Component {
 		const service = await getService();
 		const video = {
 			sources: [
-				new MediaSource(service, null, {service: 'youtube', source: ['ip4z4k4jcRo']}),
-				new MediaSource(service, null, {service: 'vimeo', source: ['137531269']}),
-				new MediaSource(service, null, {service: 'kaltura', source: ['1500101:0_nmii7y4j']})
+				new MediaSource(service, null, {service: 'html5', source: ['http://media.w3.org/2010/05/bunny/movie.mp4']}),
+				new MediaSource(service, null, {service: 'kaltura', source: ['1500101:0_nmii7y4j']}),
+				// new MediaSource(service, null, {service: 'youtube', source: ['ip4z4k4jcRo']}),
+				// new MediaSource(service, null, {service: 'vimeo', source: ['137531269']}),
 			]
 		};
 

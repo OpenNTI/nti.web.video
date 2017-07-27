@@ -5,8 +5,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Logger from 'nti-util-logger';
 
-import {getStateForVideo} from '../html5/index';
-import {UNSTARTED, PLAYING, PAUSED, ENDED} from '../../Constants';
+import Video from '../html5/';
+import {createNonRecoverableError} from '../utils';
 
 import getSources from './SourceGrabber';
 import selectSources from './SelectSources';
@@ -201,7 +201,7 @@ export default class KalturaVideo extends React.Component {
 			() => getSources({ entryId, partnerId }).then(sources => {
 
 				if (sources.objectType === 'KalturaAPIException') {
-					return onError(sources.objectType);
+					return onError(createNonRecoverableError(sources.objectType));
 				}
 
 				if(this.state.entryId === entryId) {
@@ -218,7 +218,7 @@ export default class KalturaVideo extends React.Component {
 
 
 	setSources (data) {
-		const {state: {quality, interacted}, props: {autoPlay}} = this;
+		const {state: {quality}} = this;
 
 		const qualityPreference = quality;//TODO: allow selection...
 		const sources = selectSources(data.sources || [], qualityPreference);
@@ -234,16 +234,6 @@ export default class KalturaVideo extends React.Component {
 			qualities: availableQualities,
 			sourcesLoaded: true,
 			isError: (data.objectType === 'KalturaAPIException')
-		}, () => {
-			const {video} = this;
-
-			if (video) {
-				video.load();
-			}
-
-			if (autoPlay || interacted) {
-				this.play();
-			}
 		});
 	}
 
@@ -255,182 +245,36 @@ export default class KalturaVideo extends React.Component {
 	}
 
 
-	componentDidUpdate (prevProps) {
-		const {video} = this;
-
-		if (video) {
-			//attempt to tell the WebView to play inline...
-			video.setAttribute('webkit-playsinline', true);
-		}
-
-		if (prevProps.source !== this.props.source) {
-			if (video) {
-				events.debug('Loading');
-				video.load();
-			}
-		}
-	}
-
-
 	getPlayerState () {
 		const {video} = this;
-		const {playerState} = this.state;
-		const videoState = getStateForVideo(video);
+		const videoState = video ? video.getPlayerState() : {time: 0, duration: 0, speed: 1};
 
 		return {
-			service: KalturaVideo.service,
-			state: playerState || UNSTARTED,
-			...videoState
+			...videoState,
+			service: KalturaVideo.service
 		};
 	}
 
 
 	render () {
-		const {props: {deferred}, state: {poster, sourcesLoaded, isError, interacted, sources = []}} = this;
+		const {poster, sourcesLoaded, isError, sources} = this.state;
 
-		if(isError) {
+		if (isError) {
 			return (<div className="error">Unable to load video.</div>);
 		}
 
-		let videoProps = {
+		const videoProps = {
 			...this.props,
-			controls: true,// !/iP(hone|od)/i.test(navigator.userAgent),
 			poster,
-			src: null,
-			source: null,
-			onClick: this.onClick
+			source: sources
 		};
 
-		Object.keys(this.props).forEach(key => {
-			if (/^on/i.test(key)) {
-				videoProps[key] = null;
-			}
-		});
-
-		const interactedClass = interacted ? 'loaded' : '';
-		const posterStyle = poster ? {backgroundImage: `url(${poster})`} : null;
-
 		return (
-			<div className={'video-wrapper ' + interactedClass}>
-				{!sourcesLoaded ? (
-					<Loading/>
-				) : (
-					<video {...videoProps}
-						ref={this.attachRef}
-						onError={this.onError}
-						onPlaying={this.onPlaying}
-						onPause={this.onPause}
-						onEnded={this.onEnded}
-						onSeeked={this.onSeeked}
-						onTimeUpdate={this.onTimeUpdate}>
-						{(deferred && !interacted) ? null : sources.map(source=> (
-							<source key={source.src} src={source.src} type={source.type}/>
-						))}
-					</video>
-				)}
-				{!interacted && ( <a className="tap-area play" href="#" onClick={this.onClick} style={posterStyle}/>)}
+			<div className="kaltura-wrapper">
+				{!sourcesLoaded && (<Loading />)}
+				{sourcesLoaded && (<Video {...videoProps} ref={this.attachRef} />)}
 			</div>
 		);
-	}
-
-
-	onPlaying = (e) => {
-		const {props: {onPlaying}} = this;
-		events.debug('playing %o', e);
-
-		this.setState({playerState: PLAYING});
-
-		if (onPlaying) {
-			onPlaying(e);
-		}
-	}
-
-
-	onPause = (e) => {
-		const {props: {onPause}} = this;
-		events.debug('pause %o', e);
-
-		this.setState({playerState: PAUSED});
-
-		if (onPause) {
-			onPause(e);
-		}
-	}
-
-
-	onEnded = (e) => {
-		const {props: {onEnded}} = this;
-		events.debug('ended %o', e);
-
-		this.setState({playerState: ENDED});
-
-		this.setState({interacted: false}, () => {
-
-			this.setCurrentTime(0);
-			this.stop();
-
-		});
-
-		if (onEnded) {
-			onEnded(e);
-		}
-	}
-
-
-	onSeeked = (e) => {
-		const {props: {onSeeked}} = this;
-		events.debug('seeked %o', e);
-		if (onSeeked) {
-			onSeeked(e);
-		}
-	}
-
-
-	onTimeUpdate = (e) => {
-		const {target: video} = e;
-		const {props: {onTimeUpdate}, state: {interacted}} = this;
-		events.debug('timeUpdate %o', e);
-
-		if (!interacted && !video.paused && video.currentTime > 0.05) {
-			this.setState({interacted: true});
-		}
-
-		if (onTimeUpdate) {
-			onTimeUpdate(e);
-		}
-	}
-
-
-	onError = (event) => {
-		events.debug('error %o', event);
-		this.setState({
-			error: 'Could not play video. Network or Browser error.'
-		});
-	}
-
-
-	onClick = (e) => {
-		const {state: {interacted}, video} = this;
-
-		if (e) {
-			e.stopPropagation();
-		}
-
-		if (interacted && /Gecko\//.test(navigator.userAgent)) {
-			return;
-		}
-
-		if (e) {
-			e.preventDefault();
-		}
-
-		if (video) {
-			if (video.paused || video.ended) {
-				this.play();
-			} else {
-				this.pause();
-			}
-		}
 	}
 
 
@@ -468,7 +312,7 @@ export default class KalturaVideo extends React.Component {
 		const {video} = this;
 		commands.debug('setCurrentTime = %s', time);
 		if (video) {
-			video.currentTime = time;
+			video.setCurrentTime(time);
 		}
 	}
 }
