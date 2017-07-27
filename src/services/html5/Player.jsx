@@ -157,7 +157,7 @@ export default class HTML5Video extends React.Component {
 
 	render () {
 		const {deferred, poster, ...otherProps} = this.props;
-		const {error, interacted, src} = this.state;
+		const {error, src, interacted} = this.state;
 		const cls = cx('video-wrapper', 'html5-video-wrapper', {error, interacted});
 
 		const loadVideo = !error && (!deferred || interacted);//if we have an error or we are deferred and we haven't been interacted with
@@ -320,31 +320,6 @@ export default class HTML5Video extends React.Component {
 
 		if (this.props.onError) {
 			this.props.onError(createNonRecoverableError('Unable to load html5 video.'));
-		}
-	}
-
-
-	onClick = (e) => {
-		const {state: {interacted}, video} = this;
-
-		if (e) {
-			e.stopPropagation();
-		}
-
-		if (interacted && /Gecko\//.test(navigator.userAgent)) {
-			return;
-		}
-
-		if (e) {
-			e.preventDefault();
-		}
-
-		if (video) {
-			if (video.paused || video.ended) {
-				this.play();
-			} else {
-				this.pause();
-			}
 		}
 	}
 
