@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 
 import Slider from '../common/Slider';
 
+import LoadingProgress from './LoadingProgress';
+
 export default class VideoScrubber extends React.Component {
 	static propTypes = {
 		videoState: PropTypes.shape({
@@ -28,6 +30,7 @@ export default class VideoScrubber extends React.Component {
 
 		return (
 			<div className="video-control-scrubber">
+				<LoadingProgress videoState={videoState} />
 				<Slider min={0} max={duration} value={currentTime} onChange={this.onScrub} />
 			</div>
 		);

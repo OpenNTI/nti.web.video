@@ -17,7 +17,7 @@
 		border-radius: 50%;
 		background: $range-handle-color;
 		box-shadow: $range-handle-box-shadow;
-		transition: width height 0.2s;
+		transition: width 0.2s, height 0.2s;
 
 		&:hover {
 			width: $range-handle-hover-size;
