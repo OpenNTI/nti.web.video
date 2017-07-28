@@ -435,6 +435,10 @@ export default class HTML5Video extends React.Component {
 
 		if (video) {
 			video.volume = volume;
+
+			if (video.muted && volume > 0) {
+				video.muted = false;
+			}
 		}
 	}
 }
