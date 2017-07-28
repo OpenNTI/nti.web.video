@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 
+const normalize = v => parseFloat(v, 10);
+
 export default class Slider extends React.Component {
 	static propTypes = {
 		className: PropTypes.string,
@@ -16,7 +18,7 @@ export default class Slider extends React.Component {
 		const {onChange} = this.props;
 
 		if (onChange) {
-			onChange(e.target.value);
+			onChange(normalize(e.target.value));
 		}
 	}
 
