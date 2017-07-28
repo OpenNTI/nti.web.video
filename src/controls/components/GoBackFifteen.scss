@@ -1,0 +1,9 @@
+@import "~nti-style-common";
+
+.video-control-go-back-fifteen {
+	width: 1.5rem;
+	height: 1.5rem;
+	background-image: url('../assets/15-sec.svg');
+	background-size: contain;
+	cursor: pointer;
+}
