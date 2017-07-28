@@ -27,7 +27,9 @@ export default class VideoScrubber extends React.Component {
 		const {duration, currentTime} = videoState || {};
 
 		return (
-			<Slider min={0} max={duration} value={currentTime} onChange={this.onScrub} />
+			<div className="video-control-scrubber">
+				<Slider min={0} max={duration} value={currentTime} onChange={this.onScrub} />
+			</div>
 		);
 	}
 }
