@@ -1,0 +1,14 @@
+@import "~nti-style-common";
+
+.video-time-remaining {
+	color: white;
+	opacity: 0.8;
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1rem;
+
+	.remaining::before {
+		display: inline;
+		content:"\2013 ";
+	}
+}

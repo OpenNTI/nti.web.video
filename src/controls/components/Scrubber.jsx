@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import Slider from '../common/Slider';
+import {formatTime} from '../utils';
 
 import LoadingProgress from './LoadingProgress';
 
@@ -14,6 +15,41 @@ export default class VideoScrubber extends React.Component {
 		setCurrentTime: PropTypes.func
 	}
 
+	attachWrapperRef = x => this.wrapper = x
+
+	state = {label: null, percentage: 0}
+
+
+	get duration () {
+		const {videoState} = this.props;
+		const {duration} = videoState || {};
+
+		return duration;
+	}
+
+
+	get currentTime () {
+		const {videoState} = this.props;
+		const {currentTime} = videoState || {};
+
+		return currentTime;
+	}
+
+
+	get left () {
+		const {wrapper} = this;
+		const rect = wrapper ? wrapper.getBoundingClientRect() : { left: 0 };
+
+		return rect.left;
+	}
+
+
+	get width () {
+		const {wrapper} = this;
+
+		return wrapper.clientWidth || 0;
+	}
+
 
 	onScrub = (currentTime) => {
 		const {setCurrentTime} = this.props;
@@ -24,14 +60,50 @@ export default class VideoScrubber extends React.Component {
 	}
 
 
+	onMouseMove = (e) => {
+		const {left, width, duration} = this;
+		const {clientX} = e;
+
+		const percentage = (clientX - left) / width;
+		const label = formatTime(percentage * duration);
+
+		//If the mouse is down the mouse out won't fire
+		//so confirm that we are within the bounds of the
+		//scrubber
+		if (percentage >= 0 && percentage <= 1) {
+			this.setState({percentage, label});
+		}
+
+	}
+
+	onMouseOut = () => {
+		this.setState({
+			percentage: null,
+			label: null
+		});
+	}
+
+
 	render () {
+		const {duration, currentTime} = this;
 		const {videoState} = this.props;
-		const {duration, currentTime} = videoState || {};
+		const {percentage, label} = this.state;
 
 		return (
-			<div className="video-control-scrubber">
+			<div ref={this.attachWrapperRef} className="video-control-scrubber" onMouseMove={this.onMouseMove} onMouseOut={this.onMouseOut}>
 				<LoadingProgress videoState={videoState} />
 				<Slider min={0} max={duration} value={currentTime} onChange={this.onScrub} />
+				{label && this.renderTooltip(label, percentage)}
+			</div>
+		);
+	}
+
+
+	renderTooltip = (label, percentage) => {
+		return (
+			<div className="video-scrubber-tooltip" style={{left: `${percentage * 100}%`}}>
+				<span className="label">{label}</span>
+				<div className="arrow" />
 			</div>
 		);
 	}
