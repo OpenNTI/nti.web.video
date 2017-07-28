@@ -135,7 +135,7 @@ export default class HTML5Video extends React.Component {
 
 	getVideoState () {
 		const {video} = this;
-		const {playerState, userSetTime} = this.state;
+		const {playerState, userSetTime, userSetVolume} = this.state;
 
 		const get = (name, defaultValue = null) => video ? video[name] : defaultValue;
 
@@ -148,7 +148,7 @@ export default class HTML5Video extends React.Component {
 			loop: get('loop', true),
 			autoplay: get('autoplay', false),
 			muted: get('muted', false),
-			volume: get('volume'),
+			volume: userSetVolume != null ? userSetVolume : get('volume', 1),
 			textTracks: get('textTracks'),
 			playbackRate: get('playbackRate', 1)
 		};
@@ -196,6 +196,9 @@ export default class HTML5Video extends React.Component {
 					onPlay={this.play}
 					onPause={this.pause}
 					setCurrentTime={this.setCurrentTime}
+					onMute={this.mute}
+					onUnmute={this.unmute}
+					setVolume={this.setVolume}
 				/>
 			</div>
 		);
@@ -364,6 +367,7 @@ export default class HTML5Video extends React.Component {
 	setCurrentTime = (time) => {
 		const {video} = this;
 
+		//Keep track of the userSetTime to get rid of some lag
 		this.setState({
 			userSetTime: time
 		});
@@ -380,6 +384,57 @@ export default class HTML5Video extends React.Component {
 
 		if (video) {
 			video.currentTime = time;
+		}
+	}
+
+
+	mute = () => {
+		commands.debug('mute');
+
+		const {video} = this;
+
+		if (video) {
+			video.muted = true;
+		}
+
+	}
+
+
+	unmute = () => {
+		commands.debug('unmute');
+
+		const {video} = this;
+
+		if (video) {
+			video.muted = false;
+
+			if (video.volume === 0) {
+				video.volume = 1;
+			}
+		}
+	}
+
+
+	setVolume = (volume) => {
+		commands.debug('set volume = %s', volume);
+
+		//Keep track of the userSetVolume to prevent lag
+		this.setState({
+			userSetVolume: volume
+		});
+
+		clearTimeout(this.clearUserSetVolume);
+
+		this.clearUserSetVolume = setTimeout(() => {
+			this.setState({
+				userSetVolume: null
+			});
+		}, 1);
+
+		const {video} = this;
+
+		if (video) {
+			video.volume = volume;
 		}
 	}
 }

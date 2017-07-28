@@ -1,0 +1,16 @@
+@import "~nti-style-common";
+
+.video-mute-unmute-control {
+	.icon {
+		width: 1.5rem;
+		height: 1.5rem;
+		display: inline-block;
+		background-size: contain;
+		background-image: url('../assets/audio.svg');
+		cursor: pointer;
+
+		&.muted {
+			background-image: url('../assets/mute.svg');
+		}
+	}
+}

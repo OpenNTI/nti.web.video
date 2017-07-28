@@ -8,7 +8,7 @@ import Mask from './Mask';
 import UpperControls from './UpperControls';
 
 const HIDE_ON_INACTIVE = 5000;
-const HIDE_ON_LEAVE = 3000;
+const HIDE_ON_LEAVE = 1000;
 
 export default class VideoControlsOverlay extends React.Component {
 	static propTypes = {
