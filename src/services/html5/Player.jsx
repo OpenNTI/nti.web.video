@@ -111,7 +111,7 @@ export default class HTML5Video extends React.Component {
 
 		return  {
 			service: HTML5Video.service,
-			state: playerState || UNSTARTED,
+			state: playerState != null ? playerState : UNSTARTED,
 			...videoState
 		};
 	}
@@ -140,7 +140,7 @@ export default class HTML5Video extends React.Component {
 		const get = (name, defaultValue = null) => video ? video[name] : defaultValue;
 
 		return {
-			state: playerState || UNSTARTED,
+			state: playerState != null ? playerState : UNSTARTED,
 			duration: get('duration', 0),
 			currentTime: userSetTime != null ? userSetTime : get('currentTime', 0),
 			buffered: get('buffered'),
