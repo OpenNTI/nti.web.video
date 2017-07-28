@@ -39,7 +39,7 @@ export default class VideoVolumeSlider extends React.Component {
 		const {volume} = this;
 
 		return (
-			<div className="video-volume-slider-controls" onClick={stop}>
+			<div className="video-volume-slider-control" onClick={stop}>
 				<Slider min={0} max={100} value={volume} onChange={this.onChange} />
 			</div>
 		);
