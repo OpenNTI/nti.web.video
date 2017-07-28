@@ -1,0 +1,17 @@
+@import "~nti-style-common";
+
+.video-loading-progress {
+	display: flex;
+	align-items: center;
+	height: 1rem;
+	padding: rem-calc(6px 0);
+
+	.range {
+		flex: 0 0 auto;
+		height: 4px;
+
+		&.loaded {
+			background-color: rgba(255, 255, 255, 0.3);
+		}
+	}
+}
