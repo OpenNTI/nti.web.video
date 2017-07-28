@@ -42,8 +42,8 @@ export default class VideoControlsPlayPause extends React.Component {
 
 		return (
 			<div className={cls} onClick={this.onClick}>
-				<span className="play-icon">PL</span>
-				<span className="pause-icon">PA</span>
+				<span className="play-icon" title="play" />
+				<span className="pause-icon" title="pause" />
 			</div>
 		);
 	}

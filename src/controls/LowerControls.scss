@@ -1,0 +1,16 @@
+@import "~nti-style-common";
+
+.lower-video-controls {
+	display: flex;
+	padding: 1rem;
+	align-items: center;
+
+	.play-pause-control {
+		flex: 0 0 auto;
+		margin-right: 0.5rem;
+	}
+
+	.video-control-scrubber {
+		flex: 1 1 auto;
+	}
+}

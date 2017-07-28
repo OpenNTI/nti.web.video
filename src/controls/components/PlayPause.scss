@@ -2,6 +2,9 @@
 
 .play-pause-control {
 	color: white;
+	cursor: pointer;
+	width: 1.5rem;
+	height: 1.5rem;
 
 	&.playing {
 		.play-icon {
@@ -13,5 +16,20 @@
 		.pause-icon {
 			display: none;;
 		}
+	}
+
+	.play-icon, .pause-icon {
+		width: 100%;
+		height: 100%;
+		display: block;
+		background-size: contain;
+	}
+
+	.play-icon {
+		background-image: url('../assets/play.svg');
+	}
+
+	.pause-icon {
+		background-image: url('../assets/pause.svg');
 	}
 }
