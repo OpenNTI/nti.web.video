@@ -27,9 +27,9 @@ export default class VideoControlsOverlay extends React.Component {
 		this.stopHideTimer();
 
 		this.hideControlsTimeout = setTimeout(() => {
-			this.setState({
-				showControls: false
-			});
+			// this.setState({
+			// 	showControls: false
+			// });
 		}, timeout);
 	}
 

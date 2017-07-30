@@ -199,6 +199,7 @@ export default class HTML5Video extends React.Component {
 					onMute={this.mute}
 					onUnmute={this.unmute}
 					setVolume={this.setVolume}
+					setPlaybackRate={this.setPlaybackRate}
 				/>
 			</div>
 		);
@@ -439,6 +440,17 @@ export default class HTML5Video extends React.Component {
 			if (video.muted && volume > 0) {
 				video.muted = false;
 			}
+		}
+	}
+
+
+	setPlaybackRate = (rate) => {
+		commands.debug('set playback rate = %s', rate);
+
+		const {video} = this;
+
+		if (video) {
+			video.playbackRate = rate;
 		}
 	}
 }
