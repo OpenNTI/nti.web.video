@@ -4,6 +4,7 @@ import cx from 'classnames';
 import {scoped} from 'nti-lib-locale';
 
 import Speed from './Speed';
+import Captions from './Captions';
 
 const stop = (e) => {
 	e.stopPropagation();
@@ -12,6 +13,7 @@ const stop = (e) => {
 
 const DEFAULT_TEXT = {
 	speed: 'Speed',
+	captions: 'Captions',
 	back: 'Back'
 };
 
@@ -58,8 +60,8 @@ export default class VideoMoreMenu extends React.Component {
 
 	render () {
 		const {videoState, ...otherProps} = this.props;
-		const {speedActive} = this.state;
-		const cls = cx('video-more-controls-menu', {speed: speedActive});
+		const {speedActive, captionsActive} = this.state;
+		const cls = cx('video-more-controls-menu', {speed: speedActive, captions: captionsActive});
 
 		return (
 			<div className={cls}>
@@ -73,6 +75,7 @@ export default class VideoMoreMenu extends React.Component {
 					</div>
 					<div className="sub-level-container">
 						{speedActive && (<Speed videoState={videoState} {...otherProps} />)}
+						{captionsActive && (<Captions videoState={videoState} {...otherProps} />)}
 					</div>
 				</div>
 			</div>
@@ -87,6 +90,7 @@ export default class VideoMoreMenu extends React.Component {
 			<ul>
 				<li>
 					{this.renderTopLevelMenuItem(t('speed'), Speed.getFormattedPlaybackRate(videoState), true, this.setSpeedActive)}
+					{this.renderTopLevelMenuItem(t('captions'), Captions.getFormattedActiveTrack(videoState), Captions.hasPotentialTracks(videoState), this.setCaptionsActive)}
 				</li>
 			</ul>
 		);

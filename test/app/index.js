@@ -31,10 +31,25 @@ class Test extends React.Component {
 		const service = await getService();
 		const video = {
 			sources: [
-				new MediaSource(service, null, {service: 'html5', source: ['http://media.w3.org/2010/05/bunny/movie.mp4']}),
-				new MediaSource(service, null, {service: 'kaltura', source: ['1500101:0_nmii7y4j']}),
-				// new MediaSource(service, null, {service: 'youtube', source: ['ip4z4k4jcRo']}),
-				// new MediaSource(service, null, {service: 'vimeo', source: ['137531269']}),
+				new MediaSource(service, null, {
+					service: 'html5',
+					source: [
+						'https://s3.amazonaws.com/media-out.nextthought.com/PRMIA/Associate+PRM+Lesson+B/video_720p.mp4',
+						'https://s3.amazonaws.com/media-out.nextthought.com/PRMIA/Associate+PRM+Lesson+B/video_720p.webm'
+					]
+				}),
+			],
+			transcripts: [
+				{
+					lang: 'en',
+					purpose: 'normal',
+					src: '/content/sites/platform.ou.edu/PRMIA_APRM_Series_F_2016_Associate_PRM_Webinar_Series/resources/PRMIA_APRM_Series_F_2016_Associate_PRM_Webinar_Series/4fa71922243430d7708f1782d5bcd1a25ce9d1d9/90784fa2c5c148922446e05d45ff35f0aee3e69b.vtt'
+				},
+				{
+					lang: 'en',
+					purpose: 'captions',
+					src: '/content/sites/platform.ou.edu/PRMIA_APRM_Series_F_2016_Associate_PRM_Webinar_Series/resources/PRMIA_APRM_Series_F_2016_Associate_PRM_Webinar_Series/fcf153f1ef68555e43c6dbedf22b221ef34bbd77/90784fa2c5c148922446e05d45ff35f0aee3e69b.vtt'
+				}
 			]
 		};
 
