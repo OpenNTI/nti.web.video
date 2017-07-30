@@ -43,7 +43,9 @@ export default class HTML5Video extends React.Component {
 		onEnded: PropTypes.func,
 		onSeeked: PropTypes.func,
 		onTimeUpdate: PropTypes.func,
-		onError: PropTypes.func
+		onError: PropTypes.func,
+		onVolumeChange: PropTypes.func,
+		onRateChange: PropTypes.func
 	}
 
 
@@ -155,6 +157,11 @@ export default class HTML5Video extends React.Component {
 	}
 
 
+	onVideoStateUpdate = () => {
+		this.forceUpdate();
+	}
+
+
 	render () {
 		const {deferred, poster, ...otherProps} = this.props;
 		const {error, src, interacted} = this.state;
@@ -185,6 +192,8 @@ export default class HTML5Video extends React.Component {
 					onSeeked={this.onSeeked}
 					onTimeUpdate={this.onTimeUpdate}
 					onProgress={this.onProgress}
+					onVolumeChange={this.onVolumeChange}
+					onRateChange={this.onRateChange}
 				>
 					{loadVideo && this.renderSources(src)}
 					{loadVideo && this.renderTracks()}
@@ -297,7 +306,7 @@ export default class HTML5Video extends React.Component {
 		const {target: video} = e;
 		const {props: {onTimeUpdate}, state: {interacted}} = this;
 
-		this.forceUpdate();//Force the controls to redraw
+		this.onVideoStateUpdate();
 
 		if (!interacted && !video.paused && video.currentTime > 0.05) {
 			this.setState({interacted: true});
@@ -325,6 +334,28 @@ export default class HTML5Video extends React.Component {
 
 		if (this.props.onError) {
 			this.props.onError(createNonRecoverableError('Unable to load html5 video.'));
+		}
+	}
+
+
+	onVolumeChange = (e) => {
+		events.debug('volumechange %o', e);
+
+		this.onVideoStateUpdate();
+
+		if (this.props.onVolumeChange) {
+			this.props.onVolumeChange(e);
+		}
+	}
+
+
+	onRateChange = (e) => {
+		events.debug('ratechange %o', e);
+
+		this.onVideoStateUpdate();
+
+		if (this.props.onRateChange) {
+			this.props.onRateChange(e);
 		}
 	}
 
