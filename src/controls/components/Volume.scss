@@ -11,6 +11,7 @@
 
 	&:hover {
 		width: 20%;
+		min-width: 7rem;
 	}
 
 	.video-mute-unmute-control {
@@ -20,6 +21,6 @@
 
 	.video-volume-slider-control {
 		flex: 1 1 auto;
-		min-width: 130px;
+		min-width: 5rem;
 	}
 }
