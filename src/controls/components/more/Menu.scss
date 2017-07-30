@@ -48,9 +48,28 @@
 			max-height: 100px;
 			overflow-x: auto;
 		}
+
+		li {
+			padding: 0.5rem 1rem 0.5rem 2rem;
+			font-size: 0.875rem;
+			cursor: pointer;
+
+			i {
+				width: 1rem;
+				display: inline-block;
+			}
+
+			&.selected {
+				padding-left: 1rem;
+			}
+
+			&:last-of-type {
+				padding-bottom: 1rem;
+			}
+		}
 	}
 
-	&.speed {
+	&.speed, &.captions {
 		.top-level {
 			display: none;
 		}

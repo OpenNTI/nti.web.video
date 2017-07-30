@@ -120,14 +120,22 @@ export default class HTML5Video extends React.Component {
 
 
 	setupSource (props) {
-		let {source} = props;
+		let {source, tracks} = props;
 
 		if (source.source) {
 			source = source.source;
 		}
 
+		if (tracks) {
+			//filter out the tracks that are meant to be used
+			//for the transcript in the media viewer
+			tracks = tracks.filter(x => x.purpose !== 'normal');
+		} else {
+			tracks = [];
+		}
+
 		events.debug('Setting source: entryId: %s, partnerId: %s', source);
-		this.setState({src: source});
+		this.setState({src: source, tracks});
 
 		if (this.state.error) {
 			this.onError();
@@ -164,7 +172,7 @@ export default class HTML5Video extends React.Component {
 
 	render () {
 		const {deferred, poster, ...otherProps} = this.props;
-		const {error, src, interacted} = this.state;
+		const {error, interacted} = this.state;
 		const cls = cx('video-wrapper', 'html5-video-wrapper', {error, interacted});
 
 		const loadVideo = !error && (!deferred || interacted);//if we have an error or we are deferred and we haven't been interacted with
@@ -179,6 +187,7 @@ export default class HTML5Video extends React.Component {
 
 		delete videoProps.source;
 		delete videoProps.src;
+		delete videoProps.tracks;
 
 		return (
 			<div className={cls}>
@@ -195,7 +204,7 @@ export default class HTML5Video extends React.Component {
 					onVolumeChange={this.onVolumeChange}
 					onRateChange={this.onRateChange}
 				>
-					{loadVideo && this.renderSources(src)}
+					{loadVideo && this.renderSources()}
 					{loadVideo && this.renderTracks()}
 				</video>
 				<ControlsOverlay
@@ -209,21 +218,22 @@ export default class HTML5Video extends React.Component {
 					onUnmute={this.unmute}
 					setVolume={this.setVolume}
 					setPlaybackRate={this.setPlaybackRate}
+					selectTrack={this.selectTrack}
+					unselectAllTracks={this.unselectAllTracks}
 				/>
 			</div>
 		);
 	}
 
 
-	renderSources (sources) {
-		if (!Array.isArray(sources)) {
-			sources = [sources];
-		}
+	renderSources () {
+		const {src} = this.state;
+		const sources = Array.isArray(src) ? src : [src];
 
 		return sources
-			.map((src, index) => {
-				const srcURL = src.src ? src.src : src;
-				const type = src.type ? src.type : null;
+			.map((source, index) => {
+				const srcURL = source.src ? source.src : source;
+				const type = source.type ? source.type : null;
 
 				if (typeof srcURL !== 'string') {
 					events.debug('Invalid Source: %o', src);
@@ -239,7 +249,23 @@ export default class HTML5Video extends React.Component {
 
 
 	renderTracks () {
-		//TODO: fill this out
+		const {tracks} = this.state;
+
+		return tracks
+			.map((track, index) => {
+				const src = track.src ? track.src : track;
+				const lang = track.lang ? track.lang : 'en';
+				const purpose = track.purpose ? track.purpose : 'captions';
+
+				if (typeof src !== 'string') {
+					events.debug('Invalid Track: %o', src);
+					return null;
+				}
+
+				return (
+					<track key={index} src={src} srcLang={lang} kind={purpose} label={`${purpose}:${lang}`} />
+				);
+			});
 	}
 
 
@@ -483,5 +509,31 @@ export default class HTML5Video extends React.Component {
 		if (video) {
 			video.playbackRate = rate;
 		}
+	}
+
+
+	selectTrack = (track) => {
+		commands.debug('set track = %o', track);
+
+		if (track) {
+			track.mode = 'showing';
+		}
+
+		this.onVideoStateUpdate();
+	}
+
+
+	unselectAllTracks = () => {
+		commands.debug('unselect all tracks');
+
+		const {video} = this;
+		const {textTracks} = video || {};
+		const tracks = textTracks || [];
+
+		for (let track of tracks) {
+			track.mode = 'disabled';
+		}
+
+		this.onVideoStateUpdate();
 	}
 }

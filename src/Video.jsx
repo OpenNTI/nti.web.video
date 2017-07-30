@@ -139,12 +139,14 @@ export default class Video extends React.Component {
 		const {activeIndex} = this.state;
 		const Provider = getHandler(video, activeIndex) || Fallback;
 		const videoSource = video && (video.sources || {})[activeIndex];
+		const tracks = (video && video.transcripts) || [];
 
 		return (
 			<div className={'flex-video widescreen ' + Provider.displayName}>
 				<Provider {...this.props}
 					ref={this.attachRef}
 					source={videoSource || video}
+					tracks={tracks}
 					onTimeUpdate={this.onTimeUpdate}
 					onSeeked={this.onSeeked}
 					onPlaying={this.onPlaying}
