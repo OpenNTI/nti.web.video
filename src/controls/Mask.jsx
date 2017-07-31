@@ -9,6 +9,8 @@ export default function VideoControlsMask ({poster}) {
 	const style = poster ? {backgroundImage: `url(${poster})`} : {backgroundColor: 'transparent'};
 
 	return (
-		<div className="video-controls-mask" style={style} />
+		<div className="video-controls-mask" style={style}>
+			<span className="play-button" />
+		</div>
 	);
 }

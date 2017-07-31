@@ -1,0 +1,17 @@
+@import "~nti-style-common";
+
+.video-controls-mask {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+
+	.play-button {
+		width: 5rem;
+		height: 5rem;
+
+		background-size: contain;
+		background-image: url('../assets/play.svg');
+	}
+}
