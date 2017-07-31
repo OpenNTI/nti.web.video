@@ -11,6 +11,59 @@ const commands = Logger.get('video:html5:commands');
 const events = Logger.get('video:html5:events');
 
 
+/*
+https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/cross_browser_video_player#Fullscreen
+ */
+function isFullScreen (elem) {
+	const fullscreenElem = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+
+	return elem && elem === fullscreenElem;
+}
+
+
+function canGoFullScreen () {
+	return !!(
+		document.fullscreenEnabled ||
+		document.mozFullScreenEnabled ||
+		document.msFullscreenEnabled ||
+		document.webkitSupportsFullscreen ||
+		document.webkitFullscreenEnabled ||
+		document.createElement('video').webkitRequestFullScreen
+	);
+}
+
+function requestFullScreen (elem) {
+	if (elem.requestFullscreen) {
+		elem.requestFullscreen();
+	} else if (elem.mozRequestFullScreen) {
+		elem.mozRequestFullScreen();
+	} else if (elem.webkitRequestFullScreen) {
+		elem.webkitRequestFullScreen();
+	} else if (elem.msRequestFullscreen) {
+		elem.msRequestFullscreen();
+	}
+}
+
+
+function exitFullScreen () {
+	if (document.exitFullscreen) {
+		document.exitFullscreen();
+	} else if (document.mozCancelFullScreen) {
+		document.mozCancelFullScreen();
+	} else if (document.webkitCancelFullScreen) {
+		document.webkitCancelFullScreen();
+	} else if (document.msExitFullscreen) {
+		document.msExitFullscreen();
+	}
+}
+
+const fullscreenEvents = [
+	'fullscreenchange',
+	'webkitfullscreenchange',
+	'mozfullscreenchange',
+	'MSFullscreenChange'
+];
+
 
 export function getStateForVideo (video) {
 	return {
@@ -57,10 +110,15 @@ export default class HTML5Video extends React.Component {
 
 
 	attachRef = (x) => this.video = x
+	attachContainerRef = x => this.container = x
 
 
 	componentWillUnmount () {
 		this.isUnmounted = true;
+
+		for (let event of fullscreenEvents) {
+			document.removeEventListener(event, this.onFullScreenChange);
+		}
 	}
 
 
@@ -78,6 +136,7 @@ export default class HTML5Video extends React.Component {
 
 	componentDidMount () {
 		const {props: {autoPlay}, refs: {video}} = this;
+
 		if (video) {
 			//attempt to tell the WebView to play inline...
 			video.setAttribute('webkit-playsinline', true);
@@ -85,6 +144,10 @@ export default class HTML5Video extends React.Component {
 			if (autoPlay) {
 				this.play();
 			}
+		}
+
+		for (let event of fullscreenEvents) {
+			document.addEventListener(event, this.onFullScreenChange);
 		}
 	}
 
@@ -103,6 +166,11 @@ export default class HTML5Video extends React.Component {
 				video.load();
 			}
 		}
+	}
+
+
+	onFullScreenChange = () => {
+		this.onVideoStateUpdate();
 	}
 
 
@@ -144,7 +212,7 @@ export default class HTML5Video extends React.Component {
 
 
 	getVideoState () {
-		const {video} = this;
+		const {video, container} = this;
 		const {playerState, userSetTime, userSetVolume} = this.state;
 
 		const get = (name, defaultValue = null) => video ? video[name] : defaultValue;
@@ -160,7 +228,9 @@ export default class HTML5Video extends React.Component {
 			muted: get('muted', false),
 			volume: userSetVolume != null ? userSetVolume : get('volume', 1),
 			textTracks: get('textTracks'),
-			playbackRate: get('playbackRate', 1)
+			playbackRate: get('playbackRate', 1),
+			isFullScreen: isFullScreen(container),
+			canGoFullScreen: canGoFullScreen()
 		};
 	}
 
@@ -173,11 +243,11 @@ export default class HTML5Video extends React.Component {
 	render () {
 		const {deferred, poster, ...otherProps} = this.props;
 		const {error, interacted} = this.state;
-		const cls = cx('video-wrapper', 'html5-video-wrapper', {error, interacted});
+		const videoState = this.getVideoState();
+		const {isFullScreen:fullscreen} = videoState;
+		const cls = cx('video-wrapper', 'html5-video-wrapper', {error, interacted, fullscreen});
 
 		const loadVideo = !error && (!deferred || interacted);//if we have an error or we are deferred and we haven't been interacted with
-
-		const videoState = this.getVideoState();
 
 		const videoProps = {
 			...otherProps,
@@ -190,7 +260,7 @@ export default class HTML5Video extends React.Component {
 		delete videoProps.tracks;
 
 		return (
-			<div className={cls}>
+			<div className={cls} ref={this.attachContainerRef}>
 				<video
 					{...videoProps}
 					ref={this.attachRef}
@@ -220,6 +290,8 @@ export default class HTML5Video extends React.Component {
 					setPlaybackRate={this.setPlaybackRate}
 					selectTrack={this.selectTrack}
 					unselectAllTracks={this.unselectAllTracks}
+					goFullScreen={this.goFullScreen}
+					exitFullScreen={this.exitFullScreen}
 				/>
 			</div>
 		);
@@ -535,5 +607,35 @@ export default class HTML5Video extends React.Component {
 		}
 
 		this.onVideoStateUpdate();
+	}
+
+
+	goFullScreen = () => {
+		commands.debug('go full screen');
+
+		//If we are already full screen there's nothing to do
+		if (isFullScreen()) { return; }
+
+		const {container} = this;
+
+		if (container) {
+			requestFullScreen(container);
+			this.onVideoStateUpdate();
+		}
+	}
+
+
+	exitFullScreen = () => {
+		commands.debug('exit full screen');
+
+		//if we aren't full screen there's nothing to do
+		if (!isFullScreen()) { return; }
+
+		const {container} = this;
+
+		if (container) {
+			exitFullScreen(container);
+			this.onVideoStateUpdate();
+		}
 	}
 }
