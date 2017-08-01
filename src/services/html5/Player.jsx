@@ -246,7 +246,7 @@ export default class HTML5Video extends React.Component {
 		const videoState = this.getVideoState();
 		const {isFullScreen:fullscreen} = videoState;
 
-		const loadVideo = !error && (!deferred || interacted);//if we have an error or we are deferred and we haven't been interacted with
+		const loadVideo = !deferred || interacted;//if we have an error or we are deferred and we haven't been interacted with
 		const cls = cx('video-wrapper', 'html5-video-wrapper', {error, loaded: loadVideo, interacted, fullscreen});
 
 		const videoProps = {
