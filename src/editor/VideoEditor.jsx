@@ -73,20 +73,13 @@ export default class VideoEditor extends React.Component {
 	};
 
 	onSave = async () => {
-		const {title, hasSaved, video: savedVideo} = this.state;
+		const {title} = this.state;
 		const {onSave, video} = this.props;
 
 		try {
-			if (!video.update) {
-				video.update = (v, obj) => v.save(obj);
-			}
-
-			const newVideo = hasSaved
-				? await video.update(savedVideo, {title})
-				: await video.save({title});
+			await video.save({title});
 
 			this.setState({
-				video: newVideo,
 				hasSaved: true
 			});
 
@@ -94,7 +87,7 @@ export default class VideoEditor extends React.Component {
 				await wait(wait.SHORT);
 
 				if (onSave) {
-					onSave();
+					onSave(video);
 				}
 
 				this.setState({
@@ -110,6 +103,63 @@ export default class VideoEditor extends React.Component {
 		}
 	}
 
+	delete = () => {
+		const {video} = this.props;
+		const {onCancel} = this.props;
+
+		return video.delete()
+			.then(() => {
+				onCancel('delete-video');
+			});
+	}
+
+
+	transcriptAdded = (newTranscript) => {
+		let allTranscripts = [...this.state.transcripts];
+		allTranscripts.push(newTranscript);
+		this.setState({transcripts: allTranscripts});
+	}
+
+
+	transcriptUpdated = (updatedTranscript) => {
+		let allTranscripts = [...this.state.transcripts];
+		allTranscripts = allTranscripts.map((trn) => {
+			if(trn.NTIID === updatedTranscript.NTIID) {
+				return updatedTranscript;
+			}
+
+			return trn;
+		});
+
+		this.setState({transcripts: allTranscripts});
+	}
+
+
+	transcriptReplaced = (updatedTranscript, removedTranscript) => {
+		let allTranscripts = [...this.state.transcripts];
+		allTranscripts = allTranscripts.map((trn) => {
+			if(trn.NTIID === updatedTranscript.NTIID) {
+				return updatedTranscript;
+			}
+
+			return trn;
+		});
+
+		if(removedTranscript) {
+			allTranscripts = allTranscripts.filter((trn) => trn.NTIID !== removedTranscript.NTIID);
+		}
+
+		this.setState({transcripts: allTranscripts});
+	}
+
+
+	transcriptRemoved = (removedTranscript) => {
+		let allTranscripts = [...this.state.transcripts];
+		allTranscripts = allTranscripts.filter((trn) => trn.NTIID !== removedTranscript.NTIID);
+		this.setState({transcripts: allTranscripts});
+	}
+
+
 	render () {
 		const {video} = this.props;
 		const {title, error, errorMsg, saving} = this.state;
@@ -118,48 +168,6 @@ export default class VideoEditor extends React.Component {
 			{label: t('cancel'), onClick: () => this.onCancel()},
 			{label: t('save'), onClick: () => this.onSave()}
 		];
-
-		const transcriptAdded = (newTranscript) => {
-			let allTranscripts = [...this.state.transcripts];
-			allTranscripts.push(newTranscript);
-			this.setState({transcripts: allTranscripts});
-		};
-
-		const transcriptUpdated = (updatedTranscript) => {
-			let allTranscripts = [...this.state.transcripts];
-			allTranscripts = allTranscripts.map((trn) => {
-				if(trn.NTIID === updatedTranscript.NTIID) {
-					return updatedTranscript;
-				}
-
-				return trn;
-			});
-
-			this.setState({transcripts: allTranscripts});
-		};
-
-		const transcriptReplaced = (updatedTranscript, removedTranscript) => {
-			let allTranscripts = [...this.state.transcripts];
-			allTranscripts = allTranscripts.map((trn) => {
-				if(trn.NTIID === updatedTranscript.NTIID) {
-					return updatedTranscript;
-				}
-
-				return trn;
-			});
-
-			if(removedTranscript) {
-				allTranscripts = allTranscripts.filter((trn) => trn.NTIID !== removedTranscript.NTIID);
-			}
-
-			this.setState({transcripts: allTranscripts});
-		};
-
-		const transcriptRemoved = (removedTranscript) => {
-			let allTranscripts = [...this.state.transcripts];
-			allTranscripts = allTranscripts.filter((trn) => trn.NTIID !== removedTranscript.NTIID);
-			this.setState({transcripts: allTranscripts});
-		};
 
 		return (
 			<div className="video-editor">
@@ -170,10 +178,16 @@ export default class VideoEditor extends React.Component {
 						<Input.Label className="title-label" label={t('title.label')}>
 							<Input.Text className="title-input" value={title} onChange={this.onTitleChange} />
 						</Input.Label>
-						<Transcripts transcripts={this.state.transcripts} video={video}
-							transcriptAdded={transcriptAdded} transcriptUpdated={transcriptUpdated}
-							transcriptRemoved={transcriptRemoved} transcriptReplaced={transcriptReplaced}
-							onError={this.onError}/>
+						<Transcripts
+							video={video}
+							transcripts={this.state.transcripts}
+							transcriptAdded={this.transcriptAdded}
+							transcriptUpdated={this.transcriptUpdated}
+							transcriptRemoved={this.transcriptRemoved}
+							transcriptReplaced={this.transcriptReplaced}
+							onError={this.onError}
+						/>
+						{video.hasLink('delete') && <div className="delete nti-button" onClick={this.delete}><i className="icon-delete" /> Delete</div>}
 					</div>
 				</div>
 				<DialogButtons buttons={buttons} />

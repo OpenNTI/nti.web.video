@@ -166,9 +166,9 @@ export default class Transcripts extends React.Component {
 
 						// just take the first available purpose, the user can change to any others later
 						// (at this time, transcript and caption are the only two options anyway)
-						video.applyCaptions(video, files[0], [...availablePurposes][0]).then((newTranscript) => {
+						video.applyCaptions(files[0], [...availablePurposes][0]).then((newTranscript) => {
 							if(transcriptAdded) {
-								transcriptAdded(JSON.parse(newTranscript));
+								transcriptAdded(newTranscript);
 							}
 
 							this.clearError();
