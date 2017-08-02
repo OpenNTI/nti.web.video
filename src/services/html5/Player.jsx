@@ -654,10 +654,10 @@ export default class HTML5Video extends React.Component {
 	exitFullScreen = () => {
 		commands.debug('exit full screen');
 
-		//if we aren't full screen there's nothing to do
-		if (!isFullScreen()) { return; }
-
 		const {container} = this;
+
+		//if we aren't full screen there's nothing to do
+		if (!isFullScreen(container)) { return; }
 
 		if (container) {
 			exitFullScreen(container);
