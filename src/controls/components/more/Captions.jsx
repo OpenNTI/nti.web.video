@@ -66,7 +66,7 @@ export default class VideoMoreControlCaptions extends React.Component {
 		const {textTracks} = this;
 
 		for (let i = 0; i < textTracks.length; i++) {
-			let track = textTracks;
+			let track = textTracks[i];
 
 			if (track.mode !== DISABLED) {
 				return track;

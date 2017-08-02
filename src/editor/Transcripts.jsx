@@ -23,7 +23,7 @@ const DEFAULT_TEXT = {
 const t = scoped('nti-video.editor.Transcripts', DEFAULT_TEXT);
 
 const AVAILABLE_LANGS = ['en'];
-const AVAILABLE_PURPOSES = ['normal', 'caption'];
+const AVAILABLE_PURPOSES = ['normal', 'captions'];
 
 export default class Transcripts extends React.Component {
 	static propTypes = {
@@ -260,7 +260,7 @@ export default class Transcripts extends React.Component {
 						<option value="en" label="EN"/>
 					</select>
 					<select defaultValue={transcript.purpose} value={transcript.purpose} onChange={onPurposeChange} disabled={!isPurposeEditable}>
-						<option value="caption" label="Caption"/>
+						<option value="captions" label="Captions"/>
 						<option value="normal" label="Transcript"/>
 					</select>
 					<span className="transcript-file-name">
