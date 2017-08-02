@@ -22,7 +22,9 @@ export default class VideoMoreControlCaptions extends React.Component {
 	static getFormattedActiveTrack (videoState) {
 		const {textTracks} = videoState || {};
 
-		for (let track of textTracks) {
+		for (let i = 0; i < textTracks.length; i++ ) {
+			let track = textTracks[i];
+
 			if (track.kind === CAPTIONS && track.mode !== DISABLED) {
 				return formatLang(track.language);
 			}
@@ -34,7 +36,9 @@ export default class VideoMoreControlCaptions extends React.Component {
 	static hasPotentialTracks (videoState) {
 		const {textTracks} = videoState || {};
 
-		for (let track of textTracks) {
+		for (let i = 0; i < textTracks.length; i++) {
+			let track = textTracks;
+
 			if (track.kind === CAPTIONS) { return true; }
 		}
 
@@ -61,7 +65,9 @@ export default class VideoMoreControlCaptions extends React.Component {
 	get selectedTrack () {
 		const {textTracks} = this;
 
-		for (let track of textTracks) {
+		for (let i = 0; i < textTracks.length; i++) {
+			let track = textTracks;
+
 			if (track.mode !== DISABLED) {
 				return track;
 			}
