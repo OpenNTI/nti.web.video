@@ -31,6 +31,24 @@
 			line-height: 24px;
 			width: 650px;
 		}
+
+		.delete {
+		    display: inline-block;
+		    cursor: pointer;
+		    background-color: #F35252;
+		    color: white;
+		    border-radius: 3px;
+		    text-align: center;
+		    line-height: 40px;
+		    padding: 0 1em 0 1em;
+		    position: relative;
+
+			.icon-delete {
+			    font-size: 1.4em;
+			    position: relative;
+			    top: 4px;
+			}
+		}
 	}
 
 	.saving-mask {
