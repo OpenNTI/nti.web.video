@@ -14,6 +14,8 @@
 		video {
 			flex: 1;
 			position: static !important;
+			width: auto !important;//override any set height
+			height: auto !important;//override any set width
 		}
 	}
 
