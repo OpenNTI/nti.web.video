@@ -313,7 +313,7 @@ export default class HTML5Video extends React.Component {
 				}
 
 				return (
-					<source key={index} src={srcURL} type={type} />
+					<source key={index} src={srcURL} type={type} onError={this.onSourceError}/>
 				);
 			})
 			.filter(x => !!x);
@@ -432,6 +432,32 @@ export default class HTML5Video extends React.Component {
 
 		if (this.props.onError) {
 			this.props.onError(createNonRecoverableError('Unable to load html5 video.'));
+		}
+	}
+
+
+	onSourceError = (e) => {
+		e.stopPropagation();
+
+		this.sourceErrors = this.sourceErrors || {};
+
+		this.sourceErrors[e.target.src] = true;
+
+		const {src} = this.state;
+		const sources = Array.isArray(src) ? src : [src];
+
+		for (let source of sources) {
+			let srcUrl = source.src ? source.src : source;
+
+			if (!this.sourceErrors[srcUrl]) {
+				return;
+			}
+		}
+
+		const {onError} = this.props;
+
+		if (onError) {
+			onError(createNonRecoverableError('Unable to load html5 video.'));
 		}
 	}
 
