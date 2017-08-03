@@ -79,8 +79,8 @@ export default class VideoControlsOverlay extends React.Component {
 		return (
 			<div className={cls} onClick={this.onClick} onMouseOver={this.onMouseOver} onMouseOut={this.onMouseOut} onMouseMove={this.onMouseMove} >
 				{!interacted && (<Mask {...otherProps} />)}
-				<UpperControls className="overlay-upper-controls" videoState={videoState} {...otherProps} />
-				<LowerControls className="overlay-lower-controls" videoState={videoState} {...otherProps} />
+				<UpperControls className="overlay-upper-controls" videoState={videoState} {...otherProps} showing={showControls} />
+				<LowerControls className="overlay-lower-controls" videoState={videoState} {...otherProps} showing={showControls} />
 			</div>
 		);
 	}
