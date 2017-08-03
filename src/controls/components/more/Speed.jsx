@@ -81,7 +81,7 @@ export default class VideoMoreControlSpeed extends React.Component {
 							className={cx({selected})}
 						>
 							{selected && (<i className="icon-check" />)}
-							<span className="label">{speed.label}</span>
+							<span className="option-label">{speed.label}</span>
 						</li>
 					);
 				})}

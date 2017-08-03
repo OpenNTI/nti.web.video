@@ -99,8 +99,8 @@ export default class VideoMoreMenu extends React.Component {
 	renderTopLevelMenuItem = (label, value, enabled, onSelect) => {
 		return (
 			<div className={cx('more-control-menu-item', {enabled})} onClick={onSelect}>
-				<span className="label">{label}</span>
-				<span className="value">{value}</span>
+				<span className="option-label">{label}</span>
+				<span className="option-value">{value}</span>
 				<i className="icon-chevron-right" />
 			</div>
 		);
