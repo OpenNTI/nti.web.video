@@ -6,9 +6,11 @@
 	.flex-video {
 		position: relative;
 		width: 704px;
+		height: 390px;
 
 		iframe, object, embed, video {
 			height: 100%;
+			width: 100%;
 		}
 	}
 
