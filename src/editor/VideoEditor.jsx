@@ -28,7 +28,8 @@ export default class VideoEditor extends React.Component {
 		video: PropTypes.object.isRequired,
 		transcripts: PropTypes.arrayOf(PropTypes.object),
 		onSave: PropTypes.func,
-		onCancel: PropTypes.func
+		onCancel: PropTypes.func,
+		onVideoDelete: PropTypes.func
 	}
 
 	constructor (props) {
@@ -105,11 +106,12 @@ export default class VideoEditor extends React.Component {
 
 	delete = () => {
 		const {video} = this.props;
-		const {onCancel} = this.props;
+		const {onCancel, onVideoDelete} = this.props;
 
 		return video.delete()
 			.then(() => {
-				onCancel('delete-video');
+				onVideoDelete(video.getID());
+				onCancel();
 			});
 	}
 
