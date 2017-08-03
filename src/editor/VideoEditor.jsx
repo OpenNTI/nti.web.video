@@ -110,7 +110,9 @@ export default class VideoEditor extends React.Component {
 
 		return video.delete()
 			.then(() => {
-				onVideoDelete(video.getID());
+				if (onVideoDelete) {
+					onVideoDelete(video.getID());
+				}
 				onCancel();
 			});
 	}
