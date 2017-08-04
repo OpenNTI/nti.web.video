@@ -46,10 +46,11 @@ export default class Transcripts extends React.Component {
 
 	onError = (defaultMsg, response) => {
 		if(this.props.onError) {
-			if(response && response.responseText) {
+			if (response && response.responseText) {
 				this.props.onError(JSON.parse(response.responseText).message);
-			}
-			else {
+			} else if (response && response.message) {
+				this.props.onError(response.message);
+			} else {
 				this.props.onError(defaultMsg);
 			}
 		}
@@ -76,7 +77,7 @@ export default class Transcripts extends React.Component {
 					if(video) {
 						video.replaceTranscript(transcript, files[0]).then((newTranscript) => {
 							if(transcriptReplaced) {
-								transcriptReplaced(JSON.parse(newTranscript));
+								transcriptReplaced(newTranscript);
 							}
 
 							this.clearError();
@@ -221,7 +222,7 @@ export default class Transcripts extends React.Component {
 							video.removeTranscript(conflictingTranscript).then(() => {
 								video.updateTranscript(transcript, newValue).then((updatedTranscript) => {
 									if(transcriptReplaced) {
-										transcriptReplaced(JSON.parse(updatedTranscript), conflictingTranscript);
+										transcriptReplaced(updatedTranscript, conflictingTranscript);
 									}
 
 									this.clearError();
@@ -239,7 +240,7 @@ export default class Transcripts extends React.Component {
 				if(video) {
 					video.updateTranscript(transcript, newValue).then((updatedTranscript) => {
 						if(transcriptUpdated) {
-							transcriptUpdated(JSON.parse(updatedTranscript));
+							transcriptUpdated(updatedTranscript);
 						}
 
 						this.clearError();
