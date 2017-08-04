@@ -28,32 +28,61 @@ function canGoFullScreen () {
 		document.msFullscreenEnabled ||
 		document.webkitSupportsFullscreen ||
 		document.webkitFullscreenEnabled ||
-		document.createElement('video').webkitRequestFullScreen
+		document.createElement('video').webkitRequestFullScreen ||
+		document.createElement('video').webkitEnterFullscreen
 	);
 }
 
-function requestFullScreen (elem) {
-	if (elem.requestFullscreen) {
-		elem.requestFullscreen();
-	} else if (elem.mozRequestFullScreen) {
-		elem.mozRequestFullScreen();
-	} else if (elem.webkitRequestFullScreen) {
-		elem.webkitRequestFullScreen();
-	} else if (elem.msRequestFullscreen) {
-		elem.msRequestFullscreen();
+function requestFullScreen (container, video) {
+	const elems = [container, video];
+
+	for (let elem of elems) {
+		if (elem.requestFullscreen) {
+			return elem.requestFullscreen();
+		}
+
+		if (elem.mozRequestFullScreen) {
+			return elem.mozRequestFullScreen();
+		}
+
+		if (elem.webkitRequestFullScreen) {
+			return elem.webkitRequestFullScreen();
+		}
+
+		if (elem.msRequestFullscreen) {
+			return elem.msRequestFullscreen();
+		}
+
+		if (elem.webkitEnterFullscreen) {
+			return elem.webkitEnterFullscreen();
+		}
 	}
 }
 
 
-function exitFullScreen () {
+function exitFullScreen (container, video) {
 	if (document.exitFullscreen) {
-		document.exitFullscreen();
-	} else if (document.mozCancelFullScreen) {
-		document.mozCancelFullScreen();
-	} else if (document.webkitCancelFullScreen) {
-		document.webkitCancelFullScreen();
-	} else if (document.msExitFullscreen) {
-		document.msExitFullscreen();
+		return document.exitFullscreen();
+	}
+
+	if (document.mozCancelFullScreen) {
+		return document.mozCancelFullScreen();
+	}
+
+	if (document.webkitCancelFullScreen) {
+		return document.webkitCancelFullScreen();
+	}
+
+	if (document.msExitFullscreen) {
+		return document.msExitFullscreen();
+	}
+
+	const elems = [container, video];
+
+	for (let elem of elems) {
+		if (elem.webkitExitFullscreen) {
+			return elem.webkitExitFullscreen();
+		}
 	}
 }
 
@@ -642,10 +671,10 @@ export default class HTML5Video extends React.Component {
 		//If we are already full screen there's nothing to do
 		if (isFullScreen()) { return; }
 
-		const {container} = this;
+		const {container, video} = this;
 
 		if (container) {
-			requestFullScreen(container);
+			requestFullScreen(container, video);
 			this.onVideoStateUpdate();
 		}
 	}
@@ -654,13 +683,13 @@ export default class HTML5Video extends React.Component {
 	exitFullScreen = () => {
 		commands.debug('exit full screen');
 
-		const {container} = this;
+		const {container, video} = this;
 
 		//if we aren't full screen there's nothing to do
 		if (!isFullScreen(container)) { return; }
 
 		if (container) {
-			exitFullScreen(container);
+			exitFullScreen(container, video);
 			this.onVideoStateUpdate();
 		}
 	}
