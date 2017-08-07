@@ -15,73 +15,57 @@ const events = Logger.get('video:html5:events');
 https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/cross_browser_video_player#Fullscreen
  */
 function isFullScreen (elem) {
-	const fullscreenElem = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+	const fullscreenElem = document.fullscreenElement
+		|| document.mozFullScreenElement
+		|| document.webkitFullscreenElement
+		|| document.msFullscreenElement;
 
 	return elem && elem === fullscreenElem;
 }
 
 
 function canGoFullScreen () {
-	return !!(
-		document.fullscreenEnabled ||
-		document.mozFullScreenEnabled ||
-		document.msFullscreenEnabled ||
-		document.webkitSupportsFullscreen ||
-		document.webkitFullscreenEnabled ||
-		document.createElement('video').webkitRequestFullScreen ||
-		document.createElement('video').webkitEnterFullscreen
+	return !!(document.fullscreenEnabled
+		|| document.mozFullScreenEnabled
+		|| document.msFullscreenEnabled
+		|| document.webkitSupportsFullscreen
+		|| document.webkitFullscreenEnabled
+		|| document.createElement('video').webkitRequestFullScreen
+		|| document.createElement('video').webkitEnterFullscreen
 	);
 }
 
 function requestFullScreen (container, video) {
 	const elems = [container, video];
+	const fns = [
+		'requestFullscreen',
+		'mozRequestFullScreen',
+		'webkitRequestFullScreen',
+		'msRequestFullscreen',
+		'webkitEnterFullscreen',
+	];
 
 	for (let elem of elems) {
-		if (elem.requestFullscreen) {
-			return elem.requestFullscreen();
-		}
-
-		if (elem.mozRequestFullScreen) {
-			return elem.mozRequestFullScreen();
-		}
-
-		if (elem.webkitRequestFullScreen) {
-			return elem.webkitRequestFullScreen();
-		}
-
-		if (elem.msRequestFullscreen) {
-			return elem.msRequestFullscreen();
-		}
-
-		if (elem.webkitEnterFullscreen) {
-			return elem.webkitEnterFullscreen();
+		for (let fn of fns) {
+			return elem[fn] && elem[fn]();
 		}
 	}
 }
 
 
 function exitFullScreen (container, video) {
-	if (document.exitFullscreen) {
-		return document.exitFullscreen();
-	}
-
-	if (document.mozCancelFullScreen) {
-		return document.mozCancelFullScreen();
-	}
-
-	if (document.webkitCancelFullScreen) {
-		return document.webkitCancelFullScreen();
-	}
-
-	if (document.msExitFullscreen) {
-		return document.msExitFullscreen();
-	}
-
-	const elems = [container, video];
+	const elems = [document, container, video];
+	const fns = [
+		'exitFullscreen',
+		'mozCancelFullScreen',
+		'webkitCancelFullScreen',
+		'webkitExitFullscreen',
+		'msExitFullscreen',
+	];
 
 	for (let elem of elems) {
-		if (elem.webkitExitFullscreen) {
-			return elem.webkitExitFullscreen();
+		for (let fn of fns) {
+			return elem[fn] && elem[fn]();
 		}
 	}
 }
@@ -97,7 +81,7 @@ const fullscreenEvents = [
 export function getStateForVideo (video) {
 	return {
 		time: video ? video.currentTime : 0,
-		duration: video ? video.duration * 1000 : 0,
+		duration: video ? (video.duration * 1000) : 0,
 		speed: video ? video.playbackRate : 1
 	};
 }
