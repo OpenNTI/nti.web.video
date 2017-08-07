@@ -66,7 +66,9 @@ export default class YouTubeVideo extends React.Component {
 	static propTypes = {
 		source: PropTypes.any.isRequired,
 		deferred: PropTypes.bool,
-		onError: PropTypes.func
+		onError: PropTypes.func,
+		width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+		height: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
 	}
 
 	state = {id: uuid(), scope: YOU_TUBE, playerState: -1}
@@ -198,7 +200,7 @@ export default class YouTubeVideo extends React.Component {
 
 	render () {
 		const {autoPlay, id} = this.state;
-		const {source, deferred} = this.props;
+		const {source, deferred, width, height} = this.props;
 
 		if (!id) {
 			logger.error('No ID');
@@ -216,6 +218,8 @@ export default class YouTubeVideo extends React.Component {
 				name={id}
 				ref={this.attachRef}
 				src={this.state.playerURL}
+				width={width}
+				height={height}
 				frameBorder="0"
 				allowFullScreen
 				allowTransparency

@@ -65,7 +65,9 @@ export default class VimeoVideo extends React.Component {
 
 	static propTypes = {
 		source: PropTypes.any.isRequired,
-		autoPlay: PropTypes.bool
+		autoPlay: PropTypes.bool,
+		width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+		height: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
 	}
 
 	state = {}
@@ -251,6 +253,7 @@ export default class VimeoVideo extends React.Component {
 			return (<div>No source</div>);
 		}
 
+		const {width, height} = this.props;
 		const {id} = this.state;
 
 		return (
@@ -258,6 +261,8 @@ export default class VimeoVideo extends React.Component {
 				name={id}
 				ref={this.attachRef}
 				src={this.state.playerURL}
+				width={width}
+				height={height}
 				frameBorder="0"
 				allowFullScreen
 				allowTransparency
