@@ -33,8 +33,7 @@ const VIMEO_PROTOCOL_PARTS = /vimeo:\/\/(\d+\/)?(\d+)/i;
 //1) Vimeo is blocked
 //2) The video doesn't exist
 
-export default class Source extends React.Component {
-	static displayName = 'Vimeo-Video';
+export default class VimeoVideo extends React.Component {
 	static service = 'vimeo';
 
 	static getID (url) {

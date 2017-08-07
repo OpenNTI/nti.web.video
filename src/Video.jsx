@@ -144,7 +144,7 @@ export default class Video extends React.Component {
 		const tracks = (video && video.transcripts) || [];
 
 		return (
-			<div className={cx('flex-video', 'widescreen', Provider.displayName.toLowerCase(), className)}>
+			<div className={cx('flex-video', 'widescreen', Provider.service, className)}>
 				<Provider {...this.props}
 					ref={this.attachRef}
 					source={videoSource || video}

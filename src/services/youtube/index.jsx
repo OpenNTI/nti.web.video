@@ -46,8 +46,7 @@ const YT_STATE_TO_EVENTS = {
 };
 
 
-class Source extends React.Component {
-	static displayName = 'YouTube-Video'
+class YouTubeVideo extends React.Component {
 	static service = 'youtube'
 
 	static getID (url) {
