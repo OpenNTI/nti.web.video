@@ -11,65 +11,6 @@ const commands = Logger.get('video:html5:commands');
 const events = Logger.get('video:html5:events');
 
 
-/*
-https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/cross_browser_video_player#Fullscreen
- */
-function isFullScreen (elem) {
-	const fullscreenElem = document.fullscreenElement
-		|| document.mozFullScreenElement
-		|| document.webkitFullscreenElement
-		|| document.msFullscreenElement;
-
-	return elem && elem === fullscreenElem;
-}
-
-
-function canGoFullScreen () {
-	return !!(document.fullscreenEnabled
-		|| document.mozFullScreenEnabled
-		|| document.msFullscreenEnabled
-		|| document.webkitSupportsFullscreen
-		|| document.webkitFullscreenEnabled
-		|| document.createElement('video').webkitRequestFullScreen
-		|| document.createElement('video').webkitEnterFullscreen
-	);
-}
-
-function requestFullScreen (container, video) {
-	const elems = [container, video];
-	const fns = [
-		'requestFullscreen',
-		'mozRequestFullScreen',
-		'webkitRequestFullScreen',
-		'msRequestFullscreen',
-		'webkitEnterFullscreen',
-	];
-
-	for (let elem of elems) {
-		for (let fn of fns) {
-			return elem[fn] && elem[fn]();
-		}
-	}
-}
-
-
-function exitFullScreen (container, video) {
-	const elems = [document, container, video];
-	const fns = [
-		'exitFullscreen',
-		'mozCancelFullScreen',
-		'webkitCancelFullScreen',
-		'webkitExitFullscreen',
-		'msExitFullscreen',
-	];
-
-	for (let elem of elems) {
-		for (let fn of fns) {
-			return elem[fn] && elem[fn]();
-		}
-	}
-}
-
 const fullscreenEvents = [
 	'fullscreenchange',
 	'webkitfullscreenchange',
@@ -77,14 +18,6 @@ const fullscreenEvents = [
 	'MSFullscreenChange'
 ];
 
-
-export function getStateForVideo (video) {
-	return {
-		time: video ? video.currentTime : 0,
-		duration: video ? (video.duration * 1000) : 0,
-		speed: video ? video.playbackRate : 1
-	};
-}
 
 export default class HTML5Video extends React.Component {
 	static service = 'html5'
@@ -675,6 +608,77 @@ export default class HTML5Video extends React.Component {
 		if (container) {
 			exitFullScreen(container, video);
 			this.onVideoStateUpdate();
+		}
+	}
+}
+
+
+
+export function getStateForVideo (video) {
+	return {
+		time: video ? video.currentTime : 0,
+		duration: video ? (video.duration * 1000) : 0,
+		speed: video ? video.playbackRate : 1
+	};
+}
+
+
+
+/*
+https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/cross_browser_video_player#Fullscreen
+ */
+function isFullScreen (elem) {
+	const fullscreenElem = document.fullscreenElement
+		|| document.mozFullScreenElement
+		|| document.webkitFullscreenElement
+		|| document.msFullscreenElement;
+
+	return elem && elem === fullscreenElem;
+}
+
+
+function canGoFullScreen () {
+	return !!(document.fullscreenEnabled
+		|| document.mozFullScreenEnabled
+		|| document.msFullscreenEnabled
+		|| document.webkitSupportsFullscreen
+		|| document.webkitFullscreenEnabled
+		|| document.createElement('video').webkitRequestFullScreen
+		|| document.createElement('video').webkitEnterFullscreen
+	);
+}
+
+function requestFullScreen (container, video) {
+	const elems = [container, video];
+	const fns = [
+		'requestFullscreen',
+		'mozRequestFullScreen',
+		'webkitRequestFullScreen',
+		'msRequestFullscreen',
+		'webkitEnterFullscreen',
+	];
+
+	for (let elem of elems) {
+		for (let fn of fns) {
+			return elem[fn] && elem[fn]();
+		}
+	}
+}
+
+
+function exitFullScreen (container, video) {
+	const elems = [document, container, video];
+	const fns = [
+		'exitFullscreen',
+		'mozCancelFullScreen',
+		'webkitCancelFullScreen',
+		'webkitExitFullscreen',
+		'msExitFullscreen',
+	];
+
+	for (let elem of elems) {
+		for (let fn of fns) {
+			return elem[fn] && elem[fn]();
 		}
 	}
 }
