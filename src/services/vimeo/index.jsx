@@ -1,9 +1,8 @@
-import QueryString from 'query-string';
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import Logger from 'nti-util-logger';
 import uuid from 'uuid';
+import QueryString from 'query-string';
 
 import {
 	EventHandlers,
@@ -123,7 +122,7 @@ export default class VimeoVideo extends React.Component {
 	buildURL = (props, id = this.state.id) => {
 		const {source: mediaSource, autoPlay} = props;
 
-		let videoId = typeof mediaSource === 'string' ? Source.getID(mediaSource) : mediaSource.source;
+		let videoId = typeof mediaSource === 'string' ? VimeoVideo.getID(mediaSource) : mediaSource.source;
 
 		if (Array.isArray(videoId)) {
 			videoId = videoId[0];
@@ -162,7 +161,7 @@ export default class VimeoVideo extends React.Component {
 		const {duration, seconds} = videoData || {};
 
 		return {
-			service: Source.service,
+			service: VimeoVideo.service,
 			time: seconds * 1000,//convert to milliseconds
 			state: playerState || UNSTARTED,
 			duration: duration * 1000,//convert to milliseconds

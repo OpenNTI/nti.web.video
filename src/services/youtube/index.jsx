@@ -1,4 +1,3 @@
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import invariant from 'invariant';
@@ -47,7 +46,7 @@ const YT_STATE_TO_EVENTS = {
 };
 
 
-class YouTubeVideo extends React.Component {
+export default class YouTubeVideo extends React.Component {
 	static service = 'youtube'
 
 	static getID (url) {
@@ -151,7 +150,7 @@ class YouTubeVideo extends React.Component {
 		const {playerState, currentTime, duration, playbackRate} = this.state;
 
 		return {
-			service: Source.service,
+			service: YouTubeVideo.service,
 			time: currentTime,
 			state: playerState,
 			duration,
@@ -166,7 +165,7 @@ class YouTubeVideo extends React.Component {
 		const {location} = global;
 
 		const videoId = typeof mediaSource === 'string'
-			? Source.getID(mediaSource)
+			? YouTubeVideo.getID(mediaSource)
 			: unwrap(mediaSource.source);
 
 		const args = {
@@ -401,5 +400,3 @@ class YouTubeVideo extends React.Component {
 		this.postMessage('seekTo', time);
 	}
 }
-
-export default Source;
