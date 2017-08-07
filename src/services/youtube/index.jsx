@@ -210,18 +210,14 @@ class Source extends React.Component {
 			return (<div>No source</div>);
 		}
 
-		const props = Object.assign({}, this.props, {
-			name: id,
-			deferred: null,
-			frameBorder: 0
-		});
-
 		const render = !deferred || autoPlay;
 
 		return !render ? null : (
-			<iframe {...props}
+			<iframe
+				name={id}
 				ref={this.attachRef}
 				src={this.state.playerURL}
+				frameBorder="0"
 				allowFullScreen
 				allowTransparency
 			/>

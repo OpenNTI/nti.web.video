@@ -254,18 +254,12 @@ export default class Source extends React.Component {
 
 		const {id} = this.state;
 
-		const props = {
-			...this.props,
-			deferred: null,
-			name: id
-		};
-
 		return (
-			<iframe {...props}
+			<iframe
+				name={id}
 				ref={this.attachRef}
 				src={this.state.playerURL}
 				frameBorder="0"
-				seemless
 				allowFullScreen
 				allowTransparency
 			/>

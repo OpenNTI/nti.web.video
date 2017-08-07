@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import cx from 'classnames';
 import Logger from 'nti-util-logger';
 
 import {getHandler} from './services';
@@ -11,6 +12,7 @@ const events = Logger.get('video:events');
 
 export default class Video extends React.Component {
 	static propTypes = {
+		className: PropTypes.string,
 		src: PropTypes.oneOfType([
 			PropTypes.string,
 			PropTypes.object
@@ -135,14 +137,14 @@ export default class Video extends React.Component {
 
 
 	render () {
-		const {src:video} = this.props;
+		const {src:video, className} = this.props;
 		const {activeIndex} = this.state;
 		const Provider = getHandler(video, activeIndex) || Fallback;
 		const videoSource = video && (video.sources || {})[activeIndex];
 		const tracks = (video && video.transcripts) || [];
 
 		return (
-			<div className={'flex-video widescreen ' + Provider.displayName}>
+			<div className={cx('flex-video', 'widescreen', Provider.displayName.toLowerCase(), className)}>
 				<Provider {...this.props}
 					ref={this.attachRef}
 					source={videoSource || video}
