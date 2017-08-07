@@ -3,7 +3,7 @@
  * grabbed from http://player.kaltura.com/kWidget/kWidget.getSources.js
  */
 
-import QueryString from 'querystring';
+import QueryString from 'query-string';
 
 const test = RegExp.prototype.test;
 const isHLS = test.bind(/ip(hone|ad)new/i);

@@ -1,4 +1,4 @@
-import QueryString from 'querystring';
+import QueryString from 'query-string';
 
 import React from 'react';
 import PropTypes from 'prop-types';

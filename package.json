@@ -39,7 +39,8 @@
     "nti-web-client": "^1.1.1",
     "nti-web-commons": "0.x.x",
     "prop-types": "^15.5.10",
-    "uuid": "^3.0.1"
+    "uuid": "^3.0.1",
+    "query-string": "^5.0.0"
   },
   "devDependencies": {
     "nti-cmp-scripts": "^1.0.1",
