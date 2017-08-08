@@ -660,7 +660,9 @@ function requestFullScreen (container, video) {
 
 	for (let elem of elems) {
 		for (let fn of fns) {
-			return elem[fn] && elem[fn]();
+			if (elem[fn]) {
+				return elem[fn]();
+			}
 		}
 	}
 }
@@ -678,7 +680,9 @@ function exitFullScreen (container, video) {
 
 	for (let elem of elems) {
 		for (let fn of fns) {
-			return elem[fn] && elem[fn]();
+			if (elem[fn]) {
+				return elem[fn]();
+			}
 		}
 	}
 }
