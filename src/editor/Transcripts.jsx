@@ -17,7 +17,10 @@ const DEFAULT_TEXT = {
 		conflict: 'Cannot save transcript change.  This conflicts with an existing legacy transcript',
 		fileType: 'Selected file must be a .vtt file',
 		general: 'Unable to edit transcripts'
-	}
+	},
+	captionsLabel: 'Captions',
+	transcriptLabel: 'Transcript',
+	enLabel: 'EN'
 };
 
 const t = scoped('nti-video.editor.Transcripts', DEFAULT_TEXT);
@@ -258,11 +261,11 @@ export default class Transcripts extends React.Component {
 			<div className="transcript-item">
 				<div>
 					<select defaultValue="en" onChange={onLangChange} disabled={!isLangEditable}>
-						<option value="en" label="EN">EN</option>
+						<option value="en" label={t('enLabel')}>{t('enLabel')}</option>
 					</select>
 					<select defaultValue={transcript.purpose} value={transcript.purpose} onChange={onPurposeChange} disabled={!isPurposeEditable}>
-						<option value="captions" label="Captions">Captions</option>
-						<option value="normal" label="Transcript">Transcript</option>
+						<option value="captions" label={t('captionsLabel')}>{t('captionsLabel')}</option>
+						<option value="normal" label={t('transcriptLabel')}>{t('transcriptLabel')}</option>
 					</select>
 					<span className="transcript-file-name">
 						{getTranscriptName(transcript)}
