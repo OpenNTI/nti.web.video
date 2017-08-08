@@ -258,11 +258,11 @@ export default class Transcripts extends React.Component {
 			<div className="transcript-item">
 				<div>
 					<select defaultValue="en" onChange={onLangChange} disabled={!isLangEditable}>
-						<option value="en" label="EN"/>
+						<option value="en" label="EN">EN</option>
 					</select>
 					<select defaultValue={transcript.purpose} value={transcript.purpose} onChange={onPurposeChange} disabled={!isPurposeEditable}>
-						<option value="captions" label="Captions"/>
-						<option value="normal" label="Transcript"/>
+						<option value="captions" label="Captions">Captions</option>
+						<option value="normal" label="Transcript">Transcript</option>
 					</select>
 					<span className="transcript-file-name">
 						{getTranscriptName(transcript)}
