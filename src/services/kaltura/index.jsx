@@ -182,7 +182,7 @@ export default class KalturaVideo extends React.Component {
 		if (src) {
 			const parsed = src && url.parse(src);
 			partnerId = parsed.host;
-			entryId = /\/(.*)\/?$/.exec(parsed.path)[1];
+			entryId = /\/([^/]*)\/?$/.exec(parsed.path)[1];
 		} else if (data) {
 			let {source = ''} = data;
 			if (Array.isArray(source)) {
