@@ -1,0 +1,31 @@
+@import "~nti-style-common";
+
+.video-placeholder:not(.nti-video) {
+	background-image: url(./assets/filetype-video.png);
+	background-repeat: no-repeat;
+	display: block;
+	height: 3rem;
+}
+
+
+.video-placeholder.nti-video {
+	.video-tap-area {
+		@include hardware-render;
+		position: absolute;
+		top: 0; left: 0; bottom: 0; right: 0;
+		background-color: $panel-background;
+		background-size: cover;
+		background-position: center center;
+
+		&.play:after {
+			background-image: url(./assets/play.png);
+			content: '';
+			position: absolute;
+			background: {position: center center; repeat: no-repeat;}
+			top:0;
+			left:0;
+			bottom:0;
+			right:0;
+		}
+	}
+}

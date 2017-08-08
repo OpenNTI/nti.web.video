@@ -1,0 +1,20 @@
+.nti-video {
+	position: relative;
+	overflow: hidden;
+	background: #000;
+	margin: 0;
+	padding: 0;
+	padding-top: 56.25%;
+
+	// .video-wrapper {
+	// 	display: block;
+	// }
+
+	iframe { height: 100%; }
+	video, iframe {
+		position: absolute;
+		top: 0; left: 0;
+		max-width: 100%;
+		width: 100%;
+	}
+}

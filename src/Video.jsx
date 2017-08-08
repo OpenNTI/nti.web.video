@@ -144,7 +144,11 @@ export default class Video extends React.Component {
 		const tracks = (video && video.transcripts) || [];
 
 		return (
-			<div className={cx('flex-video', 'widescreen', Provider.service, className)}>
+			<div className={cx(
+				'nti-video', Provider.service, className,
+				//legacy "foundation" classnames...do not use them in your selectors.
+				'flex-video', 'widescreen'
+			)}>
 				<Provider {...this.props}
 					ref={this.attachRef}
 					source={videoSource || video}
