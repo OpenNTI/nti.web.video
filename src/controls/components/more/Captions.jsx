@@ -106,7 +106,7 @@ export default class VideoMoreControlCaptions extends React.Component {
 			<ul className="video-more-control-captions">
 				<li onClick={this.unselectAll} className={cx({selected: !selectedTrack})}>
 					{!selectedTrack && (<i className="icon-check" />)}
-					<span className="label">{t('none')}</span>
+					<span className="caption-label">{t('none')}</span>
 				</li>
 				{textTracks.map((track, index) => {
 					const selected = track === selectedTrack;
@@ -123,7 +123,7 @@ export default class VideoMoreControlCaptions extends React.Component {
 							onClick={handler}
 						>
 							{selected && (<i className="icon-check"/>)}
-							<span className="label">{formatLang(track.language)}</span>
+							<span className="caption-label">{formatLang(track.language)}</span>
 						</li>
 					);
 				})}
