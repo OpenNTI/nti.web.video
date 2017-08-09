@@ -43,7 +43,9 @@ export default class Transcripts extends React.Component {
 		super(props);
 	}
 
-	attachFlyoutRef = x => this.flyout = x
+	flyouts = []
+
+	attachFlyoutRef = x => this.flyouts.push(x)
 
 	attachAddLinkRef = x => this.addLink = x
 
@@ -72,8 +74,20 @@ export default class Transcripts extends React.Component {
 
 		const { video, transcriptReplaced } = this.props;
 
+		const dismissFlyouts = () => {
+			if(this.flyouts) {
+				this.flyouts.forEach((f) => {
+					if(f) {
+						f.dismiss();
+					}
+				});
+			}
+		};
+
 		const onFileSelected = (e) => {
 			const {target: {files}} = e;
+
+			dismissFlyouts();
 
 			if(files && files.length === 1) {
 				if(files[0].name.toLowerCase().endsWith('.vtt')) {
@@ -85,22 +99,20 @@ export default class Transcripts extends React.Component {
 
 							this.clearError();
 						}).catch((resp) => {
-							this.flyout.dismiss();
-
-							this.onError(t('errors.update'), resp);
+							this.onError((resp && resp.message) || t('errors.update'), resp);
 						});
 					}
 				}
 				else {
 					this.onError(t('errors.fileType'));
 				}
-
-				this.flyout.dismiss();
 			}
 		};
 
 		const removeHandler = () => {
 			const { transcriptRemoved } = this.props;
+
+			dismissFlyouts();
 
 			if(video) {
 				video.removeTranscript(transcript).then(() => {
@@ -108,15 +120,12 @@ export default class Transcripts extends React.Component {
 						transcriptRemoved(transcript);
 					}
 
+					this.flyouts = this.flyouts.filter(x => x);
 					this.clearError();
 				}).catch((resp) => {
-					this.flyout.dismiss();
-
 					this.onError(t('errors.remove'), resp);
 				});
 			}
-
-			this.flyout.dismiss();
 		};
 
 		return (<Flyout.Triggered
@@ -127,7 +136,7 @@ export default class Transcripts extends React.Component {
 			ref={this.attachFlyoutRef}
 		>
 			<div>
-				<div className="change-transcript"><input type="file" accept=".vtt" onChange={onFileSelected}/><span>{t('changeFile')}</span></div>
+				<div className="change-transcript" onClick={dismissFlyouts}><input type="file" accept=".vtt" onChange={onFileSelected}/><span>{t('changeFile')}</span></div>
 				<div className="remove-transcript" onClick={removeHandler}><i className="icon-delete" />{t('remove')}</div>
 			</div>
 		</Flyout.Triggered>);
@@ -176,6 +185,8 @@ export default class Transcripts extends React.Component {
 							}
 
 							this.clearError();
+						}).catch((resp) => {
+							this.onError((resp && resp.message) || t('errors.update'));
 						});
 					}
 				}
