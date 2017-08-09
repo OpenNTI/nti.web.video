@@ -19,7 +19,8 @@ const DEFAULT_TEXT = {
 
 const t = scoped('nti-video.editor.EmbedInput', DEFAULT_TEXT);
 
-async function getMediaSource (input) {
+async function getMediaSource (rawInput) {
+	const input = rawInput.trim();
 	const url = parseEmbedCode(input) || input;
 	const {service, source} = await createMediaSourceFromUrl(url);
 	const normalizedSource = normalizeSource(service, source);
