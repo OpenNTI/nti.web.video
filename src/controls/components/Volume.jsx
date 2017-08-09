@@ -1,14 +1,19 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import cx from 'classnames';
 
 import MuteUnmute from './MuteUnmute';
 import VolumeSlider from './VolumeSlider';
 
 
-export default function VideoVolumeControl (props) {
+VideoVolumeControl.propTypes = {
+	isTouch: PropTypes.bool
+};
+export default function VideoVolumeControl ({isTouch, ...otherProps}) {
 	return (
-		<div className="video-volume-control">
-			<MuteUnmute {...props} />
-			<VolumeSlider {...props} />
+		<div className={cx('video-volume-control', {'is-touch': isTouch})}>
+			<MuteUnmute {...otherProps} />
+			<VolumeSlider {...otherProps} />
 		</div>
 	);
 }

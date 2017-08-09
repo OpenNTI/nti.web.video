@@ -17,7 +17,8 @@ export default class VideoScrubber extends React.Component {
 			duration: PropTypes.number,
 			currentTime: PropTypes.number
 		}),
-		setCurrentTime: PropTypes.func
+		setCurrentTime: PropTypes.func,
+		isTouch: PropTypes.bool
 	}
 
 	attachWrapperRef = x => this.wrapper = x
@@ -91,14 +92,14 @@ export default class VideoScrubber extends React.Component {
 
 	render () {
 		const {duration, currentTime} = this;
-		const {videoState} = this.props;
+		const {videoState, isTouch} = this.props;
 		const {percentage, label} = this.state;
 
 		return (
 			<div ref={this.attachWrapperRef} className="video-control-scrubber" onMouseMove={this.onMouseMove} onMouseOut={this.onMouseOut} onClick={stop}>
 				<LoadingProgress videoState={videoState} />
 				<Slider min={0} max={duration} value={currentTime} onChange={this.onScrub} />
-				{label && this.renderTooltip(label, percentage)}
+				{label && !isTouch && this.renderTooltip(label, percentage)}
 			</div>
 		);
 	}

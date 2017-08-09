@@ -35,12 +35,13 @@
     "nti-commons": "^2.5.5",
     "nti-lib-interfaces": "^1.42.0",
     "nti-lib-locale": "^1.0.9",
+    "nti-util-detection-touch": "^1.1.0",
     "nti-util-logger": "^1.0.0",
     "nti-web-client": "^1.1.1",
     "nti-web-commons": "0.x.x",
     "prop-types": "^15.5.10",
-    "uuid": "^3.0.1",
-    "query-string": "^5.0.0"
+    "query-string": "^5.0.0",
+    "uuid": "^3.0.1"
   },
   "devDependencies": {
     "nti-cmp-scripts": "^1.0.1",

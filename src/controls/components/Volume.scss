@@ -9,7 +9,7 @@
 	overflow: hidden;
 	transition: width 0.2s;
 
-	&:hover {
+	&:hover, &.is-touch {
 		width: 20%;
 		min-width: 7rem;
 	}

@@ -14,11 +14,41 @@ export default class Slider extends React.Component {
 	}
 
 
+	attachRef = x => this.container = x
+
+
 	onChange = (e) => {
 		const {onChange} = this.props;
 
 		if (onChange) {
 			onChange(normalize(e.target.value));
+		}
+
+		this.fromChange = true;
+	}
+
+
+	onClick = (e) => {
+		if (this.fromChange) {
+			this.fromChange = false;
+			return;
+		}
+
+		const {container} = this;
+
+		if (!container || !container.getBoundingClientRect) { return; }
+
+		const containerRect = container.getBoundingClientRect();
+		const {min, max, onChange} = this.props;
+		const {clientX} = e;
+
+		const x = clientX - containerRect.left;
+		const per = Math.max(Math.min(x / containerRect.width, 1), 0);//ensure its between 0 and 1
+
+		const newValue = ((max - min) * per) + min;
+
+		if (onChange) {
+			onChange(newValue);
 		}
 	}
 
@@ -33,7 +63,7 @@ export default class Slider extends React.Component {
 		delete otherProps.onChange;
 
 		return (
-			<div className={cls}>
+			<div className={cls} onClick={this.onClick} ref={this.attachRef} >
 				<div className="track">
 					<div className="lower" style={{width: `${lowerPercentage}%`}} />
 					<div className="upper" style={{width: `${upperPercentage}%`}} />

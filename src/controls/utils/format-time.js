@@ -15,6 +15,8 @@ function format (hours, minutes, seconds) {
 }
 
 export default function formatTime (time) {
+	time = isFinite(time) ? (time || 0) : 0;
+
 	const hours = Math.floor(time / SECONDS_IN_HOUR);
 	const minutes = Math.floor((time / SECONDS_IN_MINUTE) % MINUTES_IN_HOUR);
 	const seconds = Math.floor(time % SECONDS_IN_MINUTE);
