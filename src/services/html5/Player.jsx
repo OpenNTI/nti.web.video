@@ -348,9 +348,9 @@ export default class HTML5Video extends React.Component {
 		events.debug('timeUpdate %o', e);
 
 		const {target: video} = e;
-		const {props: {onTimeUpdate}, state: {interacted, playerState}} = this;
+		const {props: {onTimeUpdate}, state: {interacted, playerState, userSetTime}} = this;
 
-		if (playerState === PLAYING) {
+		if (playerState === PLAYING && userSetTime != null) {
 			this.setState({
 				userSetTime: null
 			});
@@ -474,6 +474,9 @@ export default class HTML5Video extends React.Component {
 
 	setCurrentTime = (time) => {
 		const {video} = this;
+		const {playerState} = this.state;
+
+		this.pause();
 
 		//Keep track of the userSetTime to get rid of some lag
 		this.setState({
@@ -484,6 +487,10 @@ export default class HTML5Video extends React.Component {
 
 		if (video) {
 			video.currentTime = time;
+		}
+
+		if (playerState === PLAYING) {
+			this.play();
 		}
 	}
 

@@ -6,6 +6,11 @@ import {formatTime} from '../utils';
 
 import LoadingProgress from './LoadingProgress';
 
+const stop = (e) => {
+	e.stopPropagation();
+	e.preventDefault();
+};
+
 export default class VideoScrubber extends React.Component {
 	static propTypes = {
 		videoState: PropTypes.shape({
@@ -90,7 +95,7 @@ export default class VideoScrubber extends React.Component {
 		const {percentage, label} = this.state;
 
 		return (
-			<div ref={this.attachWrapperRef} className="video-control-scrubber" onMouseMove={this.onMouseMove} onMouseOut={this.onMouseOut}>
+			<div ref={this.attachWrapperRef} className="video-control-scrubber" onMouseMove={this.onMouseMove} onMouseOut={this.onMouseOut} onClick={stop}>
 				<LoadingProgress videoState={videoState} />
 				<Slider min={0} max={duration} value={currentTime} onChange={this.onScrub} />
 				{label && this.renderTooltip(label, percentage)}
