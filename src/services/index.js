@@ -69,8 +69,7 @@ export function getHandler (src, srcIndex = 0) {
 }
 
 
-export async function createMediaSourceFromUrl (rawUrl) {
-	const url = rawUrl.trim();
+export async function createMediaSourceFromUrl (url) {
 	const handler = getHandler(url);
 	if (!handler) {
 		return;
