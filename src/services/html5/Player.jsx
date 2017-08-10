@@ -579,7 +579,9 @@ export default class HTML5Video extends React.Component {
 		const {textTracks} = video || {};
 		const tracks = textTracks || [];
 
-		for (let track of tracks) {
+		for (let i = 0; i < tracks.length; i++) {
+			let track = tracks[i];
+
 			track.mode = 'disabled';
 		}
 
