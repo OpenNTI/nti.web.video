@@ -39,8 +39,9 @@ export default class VideoPlaceholder extends React.Component {
 		const {service: videoService} = handler || {};
 		const videoId = handler && handler.getID && handler.getID(src);
 
-		this.state = {};
-		this.setState({handler, videoId, loading: true});
+		const reset = {};
+		Object.keys(this.state).forEach(k => reset[k] = void k);
+		this.setState({...reset, handler, videoId, loading: true});
 
 		getService()
 			.then(service => new Source(service, null, {service: videoService, source: videoId}))
