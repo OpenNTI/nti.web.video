@@ -37,6 +37,7 @@ export default class HTML5Video extends React.Component {
 		autoPlay: PropTypes.bool,
 		deferred: PropTypes.bool,
 
+		onReady: PropTypes.func,
 		onPlaying: PropTypes.func,
 		onPause: PropTypes.func,
 		onEnded: PropTypes.func,
@@ -211,6 +212,7 @@ export default class HTML5Video extends React.Component {
 					{...videoProps}
 					ref={this.attachRef}
 					onError={this.onError}
+					onCanPlay={this.onCanPlay}
 					onPlaying={this.onPlaying}
 					onPause={this.onPause}
 					onEnded={this.onEnded}
@@ -284,6 +286,15 @@ export default class HTML5Video extends React.Component {
 					<track key={index} src={src} srcLang={lang} kind={purpose} label={`${purpose}:${lang}`} />
 				);
 			});
+	}
+
+
+	onCanPlay = () => {
+		const {onReady} = this.props;
+
+		if (onReady) {
+			onReady();
+		}
 	}
 
 

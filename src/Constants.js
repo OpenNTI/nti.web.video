@@ -3,7 +3,8 @@ export const EventHandlers = {
 	pause: 'onPause',
 	ended: 'onEnded',
 	seeked: 'onSeeked',
-	timeupdate: 'onTimeUpdate'
+	timeupdate: 'onTimeUpdate',
+	ready: 'onReady'
 };
 
 export const UNSTARTED = -1;

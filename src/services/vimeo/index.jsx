@@ -22,6 +22,7 @@ const VIMEO_EVENTS_TO_HTML5 = {
 	pause: 'pause',
 	finish: 'ended',
 	seek: 'seeked',
+	ready: 'ready',
 	playProgress: 'timeupdate'
 };
 
@@ -215,14 +216,16 @@ export default class VimeoVideo extends React.Component {
 		});
 
 		if(mappedEvent && handlerName) {
-			this.props[handlerName]({
-				timeStamp: Date.now(),
-				target: {
-					currentTime: data && data.seconds,
-					duration: data && data.duration
-				},
-				type: mappedEvent
-			});
+			if (this.props[handlerName]) {
+				this.props[handlerName]({
+					timeStamp: Date.now(),
+					target: {
+						currentTime: data && data.seconds,
+						duration: data && data.duration
+					},
+					type: mappedEvent
+				});
+			}
 
 			if (this[handlerName]) {
 				this[handlerName]();
