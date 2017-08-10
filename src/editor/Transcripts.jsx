@@ -41,11 +41,16 @@ export default class Transcripts extends React.Component {
 
 	constructor (props) {
 		super(props);
+
+		this.flyouts = [];
 	}
 
-	flyouts = []
 
-	attachFlyoutRef = x => this.flyouts.push(x)
+	componentWillUnmount () {
+		delete this.flyouts;
+	}
+
+	attachFlyoutRef = x => this.flyouts && this.flyouts.push(x)
 
 	attachAddLinkRef = x => this.addLink = x
 
