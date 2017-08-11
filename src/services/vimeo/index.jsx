@@ -165,9 +165,9 @@ export default class VimeoVideo extends React.Component {
 
 		return {
 			service: VimeoVideo.service,
-			time: seconds * 1000,//convert to milliseconds
+			time: seconds,
 			state: playerState || UNSTARTED,
-			duration: duration * 1000,//convert to milliseconds
+			duration: duration,
 			speed: 1
 		};
 	}
