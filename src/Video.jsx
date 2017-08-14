@@ -24,6 +24,7 @@ export default class Video extends React.Component {
 		onPause: PropTypes.func,
 		onEnded: PropTypes.func,
 		onError: PropTypes.func,
+		onReady: PropTypes.func,
 
 		deferred: PropTypes.bool
 	}
@@ -38,15 +39,27 @@ export default class Video extends React.Component {
 	}
 
 	state = {
-		activeIndex: 0
+		activeIndex: 0,
+		ready: false
 	}
 
 
 	attachRef = (x) => this.activeVideo = x
 
+	constructor (props) {
+		super(props);
+
+		this.commandQueue = [];
+	}
+
 
 	getPlayerState () {
 		return this.activeVideo && this.activeVideo.getPlayerState();
+	}
+
+
+	get isReady () {
+		return this.state.ready;
 	}
 
 
@@ -112,27 +125,71 @@ export default class Video extends React.Component {
 	}
 
 
+	onReady = (event) => {
+		events.debug('ready %o', event);
+
+		const {onReady} = this.props;
+		const {ready} = this.state;
+
+		//Don't call on ready more than once
+		if (ready) { return; }
+
+		if (onReady) {
+			onReady();
+		}
+
+		this.setState({ready: true}, () => {
+			for (let command of this.commandQueue) {
+				command();
+			}
+
+			this.commandQueue = [];
+		});
+
+	}
+
+
 	play = () => {
 		commands.debug('Play');
-		this.activeVideo.play();
+
+		if (this.isReady) {
+			this.activeVideo.play();
+		} else {
+			this.commandQueue.push(() => this.play());
+		}
 	}
 
 
 	pause = () => {
 		commands.debug('Pause');
-		this.activeVideo.pause();
+
+		if (this.isReady) {
+			this.activeVideo.pause();
+		} else {
+			this.commandQueue.push(() => this.pause());
+		}
 	}
 
 
 	stop = () => {
 		commands.debug('Stop');
-		this.activeVideo.stop();
+
+		if (this.isReady) {
+			this.activeVideo.stop();
+		} else {
+			this.commandQueue.push(() => this.stop());
+		}
 	}
 
 
 	setCurrentTime = (time) => {
 		commands.debug('Set CurrentTime %s', time);
-		this.activeVideo.setCurrentTime(time);
+
+		if (this.isReady) {
+			this.activeVideo.setCurrentTime(time);
+		} else {
+			this.commandQueue.push(() => this.setCurrentTime(time));
+		}
 	}
 
 
@@ -159,6 +216,7 @@ export default class Video extends React.Component {
 					onPause={this.onPause}
 					onEnded={this.onEnded}
 					onError={this.onError}
+					onReady={this.onReady}
 				/>
 			</div>
 		);

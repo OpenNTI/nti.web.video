@@ -68,7 +68,8 @@ export default class YouTubeVideo extends React.Component {
 		deferred: PropTypes.bool,
 		onError: PropTypes.func,
 		width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-		height: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+		height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+		onReady: PropTypes.func
 	}
 
 	state = {id: uuid(), scope: YOU_TUBE, playerState: -1}
@@ -340,7 +341,13 @@ export default class YouTubeVideo extends React.Component {
 
 	handleApiInfoDelivery = () => {}
 
-	handleOnReady = () => {}//nothing to do
+	handleOnReady = () => {
+		const {onReady} = this.props;
+
+		if (onReady) {
+			onReady();
+		}
+	}//nothing to do
 
 
 	handleOnStateChange = (state) => {

@@ -108,7 +108,7 @@ export default class VideoMoreControlCaptions extends React.Component {
 					{!selectedTrack && (<i className="icon-check" />)}
 					<span className="caption-label">{t('none')}</span>
 				</li>
-				{textTracks.map((track, index) => {
+				{textTracks.filter(x => x.kind === CAPTIONS).map((track, index) => {
 					const selected = track === selectedTrack;
 
 					//TODO: Figure out if this is a memory leak
