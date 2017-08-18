@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "enzyme": "^2.8.2",
-    "nti-cmp-scripts": "^1.0.29",
+    "nti-cmp-scripts": "^1.0.33",
     "nti-style-common": "^1.1.11",
     "react": "^15.5.4",
     "react-dom": "^15.5.4",
