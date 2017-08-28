@@ -34,8 +34,8 @@ class Test extends React.Component {
 				new MediaSource(service, null, {
 					service: 'html5',
 					source: [
-						'https://s3.amazonaws.com/media-out.nextthought.com/PRMIA/Associate+PRM+Lesson+B/video_720p.mp4',
-						'https://s3.amazonaws.com/media-out.nextthought.com/PRMIA/Associate+PRM+Lesson+B/video_720p.webm'
+						'http://media.w3.org/2010/05/bunny/movie.mp4',
+						'https://media.w3.org/2010/05/sintel/trailer.ogv'
 					]
 				}),
 			],

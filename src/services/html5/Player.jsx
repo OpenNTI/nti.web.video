@@ -160,7 +160,7 @@ export default class HTML5Video extends React.Component {
 
 	getVideoState () {
 		const {video, container} = this;
-		const {playerState, userSetTime, userSetVolume} = this.state;
+		const {playerState, userSetTime, userSetVolume, canPlay} = this.state;
 
 		const get = (name, defaultValue = null) => video ? video[name] : defaultValue;
 
@@ -177,7 +177,8 @@ export default class HTML5Video extends React.Component {
 			textTracks: get('textTracks'),
 			playbackRate: get('playbackRate', 1),
 			isFullScreen: isFullScreen(container),
-			canGoFullScreen: canGoFullScreen()
+			canGoFullScreen: canGoFullScreen(),
+			canPlay
 		};
 	}
 
@@ -205,6 +206,7 @@ export default class HTML5Video extends React.Component {
 		delete videoProps.source;
 		delete videoProps.src;
 		delete videoProps.tracks;
+		delete videoProps.onReady;
 
 		return (
 			<div className={cls} ref={this.attachContainerRef}>
@@ -221,6 +223,7 @@ export default class HTML5Video extends React.Component {
 					onProgress={this.onProgress}
 					onVolumeChange={this.onVolumeChange}
 					onRateChange={this.onRateChange}
+					onWaiting={this.onWaiting}
 				>
 					{loadVideo && this.renderSources()}
 					{loadVideo && this.renderTracks()}
@@ -295,8 +298,18 @@ export default class HTML5Video extends React.Component {
 		if (onReady) {
 			onReady();
 		}
+
+		this.setState({
+			canPlay: true
+		});
 	}
 
+
+	onWaiting = () => {
+		this.setState({
+			canPlay: false
+		});
+	}
 
 
 	onPlaying = (e) => {
