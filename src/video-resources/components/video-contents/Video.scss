@@ -1,0 +1,52 @@
+.video-resource-container {
+	margin: 10px;
+    width: 175px;
+    height: 200px;
+    background: white;
+    border-radius: 3px;
+    -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+
+	&.selection {
+	    -webkit-box-shadow: 0 0 0 3px #3fb3f6;
+	    box-shadow: 0 0 0 3px #3fb3f6;
+	}
+
+	.providers {
+	    padding: 0 8px;
+	    font-size: 0.625em;
+	    font-weight: 700;
+	    text-transform: uppercase;
+	    color: #b8b8b8;
+	}
+
+	.thumbnail {
+	    width: 100%;
+	    height: 100px;
+	    background-size: contain;
+	}
+
+	.title {
+	    font-size: 0.75em;
+	    margin: 8px 8px 15px;
+	    height: 3rem;
+	    max-height: 3em;
+	    overflow: hidden;
+	    text-overflow: ellipsis;
+	    display: -webkit-box;
+	    -webkit-box-orient: vertical;
+	    -webkit-line-clamp: 3;
+	    max-height: 3rem;
+	}
+
+	label.checkbox-component {
+	    position: absolute;
+	    top: 8px;
+	    left: 8px;
+	    cursor: pointer;
+	    pointer-events: none;
+	}
+}
