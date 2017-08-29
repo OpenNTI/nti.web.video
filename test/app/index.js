@@ -1,16 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {getService} from 'nti-web-client';
-import {getModel} from 'nti-lib-interfaces';
+import {decodeFromURI} from 'nti-lib-ntiids';
 
-import Video from '../../src/index';
-
+import Video, { selectFrom } from '../../src/index';
 import 'nti-style-common/all.scss';
 import 'nti-web-commons/lib/index.css';
 
 window.$AppConfig = window.$AppConfig || {server: '/dataserver2/'};
 
-const MediaSource = getModel('mediasource');
+
 
 // const FAKE_VIDEO = {
 // 	sources: [
@@ -20,51 +19,44 @@ const MediaSource = getModel('mediasource');
 // 	]
 // };
 
+let courseID = localStorage.getItem('course-ntiid');
+
+if (!courseID) {
+	courseID = decodeFromURI(window.prompt('Enter Course NTIID'));
+	localStorage.setItem('course-ntiid', courseID);
+}
+
+
 class Test extends React.Component {
 	constructor (props) {
 		super(props);
 
-		this.state = {};
-	}
-
-	async componentDidMount () {
-		const service = await getService();
-		const video = {
-			sources: [
-				new MediaSource(service, null, {
-					service: 'html5',
-					source: [
-						'http://media.w3.org/2010/05/bunny/movie.mp4',
-						'https://media.w3.org/2010/05/sintel/trailer.ogv'
-					]
-				}),
-			],
-			transcripts: [
-				{
-					lang: 'en',
-					purpose: 'normal',
-					src: '/content/sites/platform.ou.edu/PRMIA_APRM_Series_F_2016_Associate_PRM_Webinar_Series/resources/PRMIA_APRM_Series_F_2016_Associate_PRM_Webinar_Series/4fa71922243430d7708f1782d5bcd1a25ce9d1d9/90784fa2c5c148922446e05d45ff35f0aee3e69b.vtt'
-				},
-				{
-					lang: 'en',
-					purpose: 'captions',
-					src: '/content/sites/platform.ou.edu/PRMIA_APRM_Series_F_2016_Associate_PRM_Webinar_Series/resources/PRMIA_APRM_Series_F_2016_Associate_PRM_Webinar_Series/fcf153f1ef68555e43c6dbedf22b221ef34bbd77/90784fa2c5c148922446e05d45ff35f0aee3e69b.vtt'
-				}
-			]
+		this.state = {
+			course: null
 		};
-
-		this.setState({
-			video
-		});
 	}
 
+	async resolveObjects () {
+		const service = await getService();
+		const courseId = decodeFromURI('tag:nextthought.com,2011-10:system-OID-0x09c5:5573657273:su4GzR70EGf');
+		const course = await service.getObject(courseId);
+		this.setState({ course });
+	}
+
+	componentDidMount () {
+		this.resolveObjects();
+	}
+
+	onVideoListSelectionChange () {}
+
+	editVideo () {}
 
 	render () {
-		const {video} = this.state;
-
-		if (!video) { return null; }
-
-		return (<Video src={video} />);
+		const { course } = this.state;
+		if (course) {
+			selectFrom(course);
+		}
+		return (<div className="test">Here</div>);
 	}
 }
 

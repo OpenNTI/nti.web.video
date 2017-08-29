@@ -1,0 +1,25 @@
+.video-resource-chooser {
+	max-width: 1024px;
+	width: 100vw;
+	margin: 0 auto;
+
+	background: #fff;
+	border: 1px solid #e2e2e2;
+}
+
+.modal-mask.video-resource-chooser-dialog {
+	background: rgba(255, 255, 255, 0.7);
+
+	& > .icon-close {display: none;}
+
+	.video-resource-chooser {
+		box-shadow: 0 0 40px -16px black;
+		height: 60vh;
+		min-height: 340px;
+		.video-resource-browser {
+			height: 55vh;
+			height: calc(60vh - 40px);
+			min-height: 300px;
+		}
+	}
+}
