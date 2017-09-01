@@ -52,7 +52,8 @@ export default class HTML5Video extends React.Component {
 	state = {
 		error: false,
 		interacted: false,
-		videoState: {}
+		videoState: {},
+		canPlay: true
 	}
 
 
