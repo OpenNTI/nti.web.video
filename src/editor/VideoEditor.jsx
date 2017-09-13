@@ -4,6 +4,7 @@ import cx from 'classnames';
 import {scoped} from 'nti-lib-locale';
 import {Input, DialogButtons, Loading} from 'nti-web-commons';
 import {wait} from 'nti-commons';
+import {getService} from 'nti-web-client';
 
 import Video from '../Video';
 
@@ -25,23 +26,50 @@ const t = scoped('nti-video.editor.Editor', DEFAULT_TEXT);
 
 export default class VideoEditor extends React.Component {
 	static propTypes = {
-		video: PropTypes.object.isRequired,
+		video: PropTypes.object,
+		ntiid: PropTypes.string,
 		transcripts: PropTypes.arrayOf(PropTypes.object),
 		onSave: PropTypes.func,
 		onCancel: PropTypes.func,
-		onVideoDelete: PropTypes.func
+		onVideoDelete: PropTypes.func,
+	}
+
+	static defaultProps = {
+		ntiid: ''
 	}
 
 	constructor (props) {
 		super(props);
 
-		const {video: {title}} = this.props;
+		const {video} = this.props;
 
 		this.state = {
-			title,
+			title: (video && video.title) || '',
+			video,
 			hasSaved: false,
 			transcripts: this.props.transcripts || []
 		};
+	}
+
+	componentWillMount () {
+		const { ntiid, video } = this.props;
+
+		if (!video && ntiid !== '') {
+			this.resolveVideo(ntiid);
+		}
+	}
+
+	async resolveVideo (ntiid) {
+		const service = await getService();
+		const video = await service.getObject(ntiid);
+		const transcripts = await Promise.all(video.transcripts ?
+			video.transcripts.map((transcript) => service.getObjectRaw(transcript.NTIID))
+			: []);
+		this.setState({
+			video,
+			title: video.title,
+			transcripts
+		});
 	}
 
 	onTitleChange = (title) => {
@@ -165,8 +193,7 @@ export default class VideoEditor extends React.Component {
 
 
 	render () {
-		const {video} = this.props;
-		const {title, error, errorMsg, saving} = this.state;
+		const {title, error, errorMsg, saving, video} = this.state;
 
 		const buttons = [
 			{label: t('cancel'), onClick: () => this.onCancel()},
@@ -175,25 +202,27 @@ export default class VideoEditor extends React.Component {
 
 		return (
 			<div className="video-editor">
-				<div className="editor-container">
-					<Video src={video} />
-					<div className="meta">
-						{error && (<div className="error">{errorMsg}</div>)}
-						<Input.Label className="title-label" label={t('title.label')}>
-							<Input.Text className="title-input" value={title} onChange={this.onTitleChange} />
-						</Input.Label>
-						<Transcripts
-							video={video}
-							transcripts={this.state.transcripts}
-							transcriptAdded={this.transcriptAdded}
-							transcriptUpdated={this.transcriptUpdated}
-							transcriptRemoved={this.transcriptRemoved}
-							transcriptReplaced={this.transcriptReplaced}
-							onError={this.onError}
-						/>
-						{video.hasLink('delete') && <div className="delete nti-button" onClick={this.delete}><i className="icon-delete" /> Delete</div>}
+				{video && (
+					<div className="editor-container">
+						<Video src={video} />
+						<div className="meta">
+							{error && (<div className="error">{errorMsg}</div>)}
+							<Input.Label className="title-label" label={t('title.label')}>
+								<Input.Text className="title-input" value={title} onChange={this.onTitleChange} />
+							</Input.Label>
+							<Transcripts
+								video={video}
+								transcripts={this.state.transcripts}
+								transcriptAdded={this.transcriptAdded}
+								transcriptUpdated={this.transcriptUpdated}
+								transcriptRemoved={this.transcriptRemoved}
+								transcriptReplaced={this.transcriptReplaced}
+								onError={this.onError}
+							/>
+							{video.hasLink('delete') && <div className="delete nti-button" onClick={this.delete}><i className="icon-delete" /> Delete</div>}
+						</div>
 					</div>
-				</div>
+				)}
 				<DialogButtons buttons={buttons} />
 				<div className={cx('saving-mask', {saving})}>
 					{saving && (<Loading.Spinner />)}
