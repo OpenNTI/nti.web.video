@@ -40,6 +40,10 @@ describe('Create MediaSource From URL tests', () => {
 	};
 
 	beforeEach(() => {
+		// jest.restoreAllMocks();
+
+		global.fetch = () => {};
+
 		global.$AppConfig = {
 			nodeService: mockService
 		};
@@ -55,7 +59,13 @@ describe('Create MediaSource From URL tests', () => {
 		}
 	});
 
-	test('should get meta data from Vimeo', () => metaDataTest(vimeoUrl, vimeoMetaData));
-	test('should get meta data from YouTube', () => metaDataTest(youtubeUrl, youtubeMetaData));
+	test('should get meta data from Vimeo', () => {
+		jest.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve({ok: true, json: () => Promise.resolve(vimeoMetaData)}));
+		metaDataTest(vimeoUrl, vimeoMetaData);
+	});
+	test('should get meta data from YouTube', () => {
+		jest.spyOn(global, 'fetch').mockImplementation(() => Promise.resolve({ok: true, json: () => Promise.resolve(youtubeMetaData)}));
+		metaDataTest(youtubeUrl, youtubeMetaData);
+	});
 
 });

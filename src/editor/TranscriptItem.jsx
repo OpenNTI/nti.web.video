@@ -27,7 +27,6 @@ const t = scoped('nti-video.editor.Transcripts', DEFAULT_TEXT);
 export default class TranscriptItem extends React.Component {
 	static propTypes = {
 		video: PropTypes.object.isRequired,
-		key: PropTypes.number,
 		transcript: PropTypes.object,
 		transcripts: PropTypes.arrayOf(PropTypes.object),
 		transcriptAdded: PropTypes.func,
@@ -143,7 +142,7 @@ export default class TranscriptItem extends React.Component {
 
 
 	render () {
-		const { transcript, key, video, transcriptUpdated, transcriptReplaced } = this.props;
+		const { transcript, video, transcriptUpdated, transcriptReplaced } = this.props;
 
 		const onLangChange = (e) => {
 			// TODO: implement more languages in the future
@@ -205,12 +204,12 @@ export default class TranscriptItem extends React.Component {
 		const isPurposeEditable = isTranscriptEditable(transcript);
 
 		return (
-			<div className="transcript-item" key={key}>
+			<div className="transcript-item">
 				<div>
 					<select defaultValue="en" onChange={onLangChange} disabled={!isLangEditable}>
 						<option value="en" label={t('enLabel')}>{t('enLabel')}</option>
 					</select>
-					<select defaultValue={transcript.purpose} value={transcript.purpose} onChange={onPurposeChange} disabled={!isPurposeEditable}>
+					<select defaultValue={transcript.purpose} onChange={onPurposeChange} disabled={!isPurposeEditable}>
 						<option value="captions" label={t('captionsLabel')}>{t('captionsLabel')}</option>
 						<option value="normal" label={t('transcriptLabel')}>{t('transcriptLabel')}</option>
 					</select>
