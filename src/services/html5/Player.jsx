@@ -294,13 +294,15 @@ export default class HTML5Video extends React.Component {
 
 	onCanPlay = () => {
 		const {onReady} = this.props;
+		const {playbackRate} = this.getVideoState();
 
 		if (onReady) {
 			onReady();
 		}
 
 		this.setState({
-			canPlay: true
+			canPlay: true,
+			playbackRate
 		});
 	}
 
@@ -452,10 +454,17 @@ export default class HTML5Video extends React.Component {
 	onRateChange = (e) => {
 		events.debug('ratechange %o', e);
 
+		const {playbackRate:oldRate} = this.state;
+		const {playbackRate:newRate} = this.getVideoState();
+
 		this.onVideoStateUpdate();
 
+		this.setState({
+			playbackRate:newRate
+		});
+
 		if (this.props.onRateChange) {
-			this.props.onRateChange(e);
+			this.props.onRateChange(oldRate, newRate, e);
 		}
 	}
 

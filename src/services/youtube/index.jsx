@@ -69,7 +69,8 @@ export default class YouTubeVideo extends React.Component {
 		onError: PropTypes.func,
 		width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 		height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-		onReady: PropTypes.func
+		onReady: PropTypes.func,
+		onRateChange: PropTypes.func
 	}
 
 	state = {id: uuid(), scope: YOU_TUBE, playerState: -1}
@@ -313,7 +314,16 @@ export default class YouTubeVideo extends React.Component {
 	}
 
 	handleInfoDelivery = (info) => {
-		this.setState(info);
+		const {onRateChange} = this.props;
+		const {playbackRate:oldRate} = this.state;
+
+		this.setState(info, () => {
+			const {playbackRate:newRate} = this.state;
+
+			if (onRateChange && oldRate !== newRate) {
+				onRateChange(oldRate, newRate);
+			}
+		});
 		if (info.hasOwnProperty('currentTime')) {
 			this.fireEvent('timeupdate');
 		}
