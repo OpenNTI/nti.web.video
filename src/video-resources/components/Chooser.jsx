@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {Prompt, DialogButtons} from 'nti-web-commons';
-import {Models} from 'nti-lib-interfaces';
+// import {Models} from 'nti-lib-interfaces';
 import cx from 'classnames';
 
 import Browser from './Browser';
@@ -22,7 +22,7 @@ class Chooser extends Component {
 		videos: []
 	};
 
-	static show (course) {
+	static show (course, config) {
 		return new Promise((select, reject) => {
 			modal(
 				<Chooser
@@ -30,14 +30,14 @@ class Chooser extends Component {
 					onSelect={select}
 					onCancel={reject}
 				/>,
-				'video-resource-chooser-dialog'
+				{...config, className: 'video-resource-chooser-dialog'}
 			);
 		});
 	}
 
 	componentWillMount () {
 		const { course } = this.props;
-		course.getAssets(Models.media.Video.MimeType[1])
+		course.getAssets('application/vnd.nextthought.ntivideo')
 			.then(videos => {
 				this.setState({
 					videos
@@ -95,12 +95,11 @@ class Chooser extends Component {
 		return true;
 	}
 
-	getSelectLabel () {
-		// TODO: Update the text to the amount of videos selected
-		return 'Select';
+	selectVideo = (selected) => {
+		this.setState({
+			selected
+		});
 	}
-
-	onSelectionChanged () {}
 
 	setEditing = (isEditing) => {
 		this.setState({
@@ -110,15 +109,42 @@ class Chooser extends Component {
 
 	onEdit = (video) => {
 		const { videos } = this.state;
+		const newVideos = videos.slice();
+		const found = videos.findIndex(v => v.getID() === video.getID());
+
+		if (found > -1) {
+			newVideos[found] = video;
+		} else {
+			newVideos.unshift(video);
+		}
+
 		this.setState({
-			videos: videos.map(v => v.getID() === video.getID() ? video : v),
-			isEditing: true
+			videos: newVideos,
+			isEditing: false
 		});
+	}
+
+	onDelete = (video) => {
+		video.delete()
+			.then(() => {
+				const { videos } = this.state;
+				const newVideos = videos.slice();
+				const videoIndex = videos.findIndex(v => v.getID() === video.getID());
+				newVideos.splice(videoIndex, 1);
+				this.setState({
+					videos: newVideos,
+					selected: false
+				});
+			})
+			.catch(error => {
+				console.error(error); //eslint-disable-line
+			});
 	}
 
 	render () {
 		const { course } = this.props;
 		const { isEditing, videos } = this.state;
+
 		const buttons = [
 			{
 				label: 'Cancel',
@@ -127,7 +153,7 @@ class Chooser extends Component {
 			},
 			{
 				className: cx({disabled: false}),
-				label: this.getSelectLabel() || 'Select',
+				label: 'Select',
 				onClick: this.onSelect
 			}
 		];
@@ -137,8 +163,9 @@ class Chooser extends Component {
 					videos={videos}
 					course={course}
 					onEdit={this.onEdit}
-					onSelectionChanged={this.onSelectionChanged}
+					onDelete={this.onDelete}
 					onClose={this.onCancel}
+					onSelect={this.selectVideo}
 					setEditing={this.setEditing}
 				/>
 				{!isEditing && <DialogButtons buttons={buttons} />}
