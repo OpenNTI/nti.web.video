@@ -10,45 +10,53 @@ class Video extends Component {
 			NTIID: PropTypes.string,
 		}).isRequired,
 		onSelectChange: PropTypes.func.isRequired,
-		onSelectionChange: PropTypes.func.isRequired,
 		isSelected: PropTypes.bool.isRequired,
-		isSelection: PropTypes.bool.isRequired
 	}
 
 	state = {
 		thumbnail: ''
 	}
 
-	async componentWillMount () {
+	componentWillMount () {
 		const { video } = this.props;
-		const thumbnail = await video.getThumbnail();
-		this.setState({
-			thumbnail
-		});
+		video.getThumbnail()
+			.then(thumbnail => {
+				this.setState({
+					thumbnail
+				});
+			});
+	}
+
+	componentWillReceiveProps (nextProps) {
+		const { thumbnail: existingThumbnail } = this.state;
+		const { video } = nextProps;
+		if (existingThumbnail  === '') {
+			video.getThumbnail()
+				.then(thumbnail => {
+					this.setState({
+						thumbnail
+					});
+				});
+		}
 	}
 
 	onSelectChange = () => {
 		const { onSelectChange, video } = this.props;
-		onSelectChange(video.NTIID);
-	}
-
-	onSelectionChange = () => {
-		const { onSelectionChange, video } = this.props;
-		onSelectionChange(video.NTIID);
+		onSelectChange(video);
 	}
 
 	render () {
-		const { isSelected, isSelection, video } = this.props;
+		const { isSelected, video } = this.props;
 		const { title, sources } = video;
 		const { thumbnail } = this.state;
 		const sourceLabels = sources.map(source => (source.server || '').toUpperCase());
 		return (
-			<div className={cx('video-resource-container', {'selection': isSelection})} onClick={this.onSelectionChange} >
+			<div className={cx('video-resource-container', {'selection': isSelected})} onClick={this.onSelectChange}>
 				<Checkbox checked={isSelected} name="video-item-checkbox" onChange={this.onSelectChange} />
 				<div className="thumbnail" style={{backgroundImage: `url(${thumbnail})`}} />
 				<div className="title">{title}</div>
 				<div className="providers">
-					{sourceLabels.map(label => (<span key={label} className="provider">{label}</span>))}
+					{sourceLabels.map(label => <span key={label} className="provider">{label}</span>)}
 				</div>
 			</div>
 		);

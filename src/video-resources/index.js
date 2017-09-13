@@ -1,5 +1,7 @@
 import Chooser from './components/Chooser';
 
-export function selectFrom (course) {
-	return Chooser.show(course);
+export function selectFrom (course, onSelect) {
+	return Chooser.show(course, onSelect);
 }
+
+export default Chooser;

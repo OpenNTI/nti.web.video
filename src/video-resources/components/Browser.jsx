@@ -11,8 +11,13 @@ class Browser extends Component {
 	static propTypes = {
 		onClose: PropTypes.func,
 		onEdit: PropTypes.func.isRequired,
+		course: PropTypes.shape({
+			getLink: PropTypes.func.isRequired,
+		}).isRequired,
 		videos: PropTypes.array,
 		setEditing: PropTypes.func,
+		onDelete: PropTypes.func.isRequired,
+		onSelect: PropTypes.func.isRequired,
 	}
 
 	constructor (props) {
@@ -21,7 +26,6 @@ class Browser extends Component {
 			search: '',
 			videoContents: [...props.videos],
 			videos: [...props.videos],
-			selection: null,
 			selected: null,
 			video: null,
 			isEditing: false
@@ -45,22 +49,23 @@ class Browser extends Component {
 		});
 	}
 
-	onDelete () {}
-
-	onSelectChange = (selected) => {
-		const { selected: oldSelected } = this.state;
+	onDelete = () => {
+		const { selected } = this.state;
+		const { onDelete } = this.props;
+		onDelete(selected);
 		this.setState({
-			selected: oldSelected === selected ? null : selected,
-			selection: oldSelected === selected ? null : selected
+			selected: false
 		});
 	}
 
-	// There will be multiple selection eventually for video-rolls. Right now it's dumb and thinks there can only be one.
-	onSelectionChange = (selection) => {
-		const { selection: oldSelection } = this.state;
+	onSelectChange = (selected) => {
+		const { selected: oldSelected } = this.state;
+		const { onSelect } = this.props;
 		this.setState({
-			selection: oldSelection === selection ? null : selection,
-			selected: oldSelection === selection ? null : selection
+			selected: oldSelected && oldSelected.getID() === selected.getID() ? false : selected,
+		}, () => {
+			const { selected } = this.state;
+			onSelect(selected);
 		});
 	}
 
@@ -91,32 +96,42 @@ class Browser extends Component {
 		const { videos, setEditing } = this.props;
 		setEditing(true);
 		this.setState({
-			video: name === 'create' ? null : videos.find(v => v.getID() === selected),
+			video: name === 'create' ? null : videos.find(v => v.getID() === selected.getID()),
 			isEditing: true
 		});
 	}
 
 	onEditCancel = () => {
 		const { setEditing } = this.props;
-		setEditing(false);
 		this.setState({
 			video: null,
 			isEditing: false
+		}, () => {
+			setEditing(false);
 		});
 	}
 
 	onEditSave = (video) => {
 		const { onEdit } = this.props;
-		onEdit(video);
+
 		this.setState({
 			video: null,
 			isEditing: false
+		}, () => {
+			onEdit(video);
+		});
+	}
+
+	onCreate = (video) => {
+		this.setState({
+			video,
+			selected: video
 		});
 	}
 
 	render () {
-		const { onClose } = this.props;
-		const { search, selection, selected, videoContents, isEditing, video } = this.state;
+		const { onClose, course } = this.props;
+		const { search, selected, videoContents, isEditing, video } = this.state;
 
 		return (
 			<div className="video-resource-browser">
@@ -134,13 +149,13 @@ class Browser extends Component {
 							label="Edit"
 							name="edit"
 							onClick={this.onEditClick}
-							available={!!selection && !isEditing}
+							available={selected && selected.hasLink('edit') && !isEditing}
 						/>
 						<ToolbarButton
 							icon="delete"
 							label="Delete"
 							onClick={this.onDelete}
-							available={(!!selection && !isEditing) || (isEditing && video === null)}
+							available={selected && selected.hasLink('delete') && !isEditing}
 						/>
 						<ToolbarSpacer />
 						<Search
@@ -153,13 +168,19 @@ class Browser extends Component {
 				{!isEditing && (
 					<VideoContents
 						videos={videoContents}
-						selection={selection}
 						selected={selected}
-						onSelectionChange={this.onSelectionChange}
 						onSelectChange={this.onSelectChange}
 					/>
 				)}
-				{isEditing && <EditVideo video={video} onSave={this.onEditSave} onCancel={this.onEditCancel} />}
+				{isEditing && (
+					<EditVideo
+						video={video}
+						course={course}
+						onCreate={this.onCreate}
+						onSave={this.onEditSave}
+						onCancel={this.onEditCancel}
+					/>
+				)}
 			</div>
 		);
 	}

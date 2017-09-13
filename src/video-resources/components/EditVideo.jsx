@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {getService} from 'nti-web-client';
-import {getModel} from 'nti-lib-interfaces';
+import {Models} from 'nti-lib-interfaces';
 
 import {createMediaSourceFromUrl, getCanonicalUrlFrom} from '../../services';
 import Editor, { EmbedInput } from '../../editor';
@@ -12,7 +12,6 @@ const Types = {
 	'youtube': 'video/youtube',
 	'vimeo': 'video/vimeo'
 };
-const VideoModel = getModel('video');
 
 function createSources ({service, source}) {
 	return [{
@@ -29,34 +28,40 @@ function createVideoJSON (media) {
 		media.getTitle()
 	]).then(([sources, title]) => {
 		return {
-			MimeType: VideoModel.getMimeType(),
+			MimeType: Models.media.Video.MimeType[0],
 			title,
 			sources
 		};
 	});
 }
 
-function onNewVideoSave (source) {
-	const { bundle } = this.props;
-	const link = bundle.getLink('assets');
+const EditVideo = ({ onSave, onCancel, video, course, onCreate }) => {
 
-	createMediaSourceFromUrl(getCanonicalUrlFrom(source))
-		.then(media => createVideoJSON(media))
-		.then((video) => getService().then((service) => service.postParseResponse(link, video)))
-		.then((video) => this.setState({ video }));
-}
+	const onNewVideoSave = async function (source) {
+		const link = course.getLink('assets');
+		const media = await createMediaSourceFromUrl(getCanonicalUrlFrom(source));
+		const videoJSON = await createVideoJSON(media);
+		const service = await getService();
+		const createdVideo = await service.postParseResponse(link, videoJSON);
+		onCreate(createdVideo);
+	};
 
-const EditVideo = ({ onSave, onCancel, video }) => (
-	<div className="edit-video">
-		{!video && <EmbedInput onSave={onNewVideoSave} onCancel={onCancel} />}
-		{video && <Editor video={video} onSave={onSave} onCancel={onCancel} />}
-	</div>
-);
+	return (
+		<div className="edit-video">
+			{!video && <EmbedInput onSelect={onNewVideoSave} onCancel={onCancel} />}
+			{video && <Editor video={video} onSave={onSave} onCancel={onCancel} />}
+		</div>
+	);
+};
 
 EditVideo.propTypes = {
 	video: PropTypes.object,
 	onCancel: PropTypes.func,
 	onSave: PropTypes.func.isRequired,
+	course: PropTypes.shape({
+		hasLink: PropTypes.func.isRequired,
+	}).isRequired,
+	onCreate: PropTypes.func.isRequired,
 };
 
 export default EditVideo;

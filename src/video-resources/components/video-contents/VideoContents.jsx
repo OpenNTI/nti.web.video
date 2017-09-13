@@ -4,29 +4,30 @@ import PropTypes from 'prop-types';
 import Video from './Video.jsx';
 
 
-const VideoContents = ({ videos, selection = '', selected = '', onSelectChange, onSelectionChange }) => {
-	return (
-		<div className="video-contents">
-			{videos.map(video => (
-				<Video
-					key={video.getID()}
-					isSelected={selected === video.getID()}
-					isSelection={selection === video.getID()}
-					onSelectChange={onSelectChange}
-					onSelectionChange={onSelectionChange}
-					video={video}
-				/>
-			))}
-		</div>
-	);
-};
+const VideoContents = ({ videos, selected = false, onSelectChange }) => (
+	<div className="video-contents">
+		{videos.length > 0 && videos.map(video => (
+			<Video
+				key={video.getID()}
+				isSelected={selected && selected.getID() === video.getID()}
+				onSelectChange={onSelectChange}
+				video={video}
+			/>
+		))}
+		{videos.length === 0 && (
+			<div className="empty-contents">
+				There are no videos to show.
+			</div>
+		)}
+	</div>
+);
 
 VideoContents.propTypes = {
-	selection: PropTypes.string,
-	selected: PropTypes.string,
+	selected: PropTypes.shape({
+		getID: PropTypes.func.isRequired,
+	}),
 	videos: PropTypes.array.isRequired,
 	onSelectChange: PropTypes.func.isRequired,
-	onSelectionChange: PropTypes.func.isRequired,
 };
 
 export default VideoContents;
