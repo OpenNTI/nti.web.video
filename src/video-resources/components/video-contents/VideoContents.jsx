@@ -16,7 +16,7 @@ const VideoContents = ({ videos, selected = false, onSelectChange }) => (
 		))}
 		{videos.length === 0 && (
 			<div className="empty-contents">
-				There are no videos to show.
+				There are no videos to show currently.
 			</div>
 		)}
 	</div>
