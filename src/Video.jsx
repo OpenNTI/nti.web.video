@@ -194,7 +194,7 @@ export default class Video extends React.Component {
 
 
 	render () {
-		const {src:video, className} = this.props;
+		const {src: video, className} = this.props;
 		const {activeIndex} = this.state;
 		const Provider = getHandler(video, activeIndex) || Fallback;
 		const videoSource = video && (video.sources || {})[activeIndex];
