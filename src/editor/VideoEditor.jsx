@@ -2,9 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import {scoped} from 'nti-lib-locale';
-import {Input, DialogButtons, Loading} from 'nti-web-commons';
+import {Input, DialogButtons, Loading, Panels} from 'nti-web-commons';
 import {wait} from 'nti-commons';
 import {getService} from 'nti-web-client';
+import { Prompt } from 'nti-web-commons';
 
 import Video from '../Video';
 
@@ -31,11 +32,28 @@ export default class VideoEditor extends React.Component {
 		transcripts: PropTypes.arrayOf(PropTypes.object),
 		onSave: PropTypes.func,
 		onCancel: PropTypes.func,
+		onDismiss: PropTypes.func,
 		onVideoDelete: PropTypes.func,
+		isModal: PropTypes.bool
 	}
 
 	static defaultProps = {
-		ntiid: ''
+		ntiid: '',
+		isModal: false
+	}
+
+	static show (video, config) {
+		return new Promise((select, reject) => {
+			Prompt.modal(
+				<VideoEditor
+					video={video}
+					onSave={select}
+					onCancel={reject}
+					isModal
+				/>,
+				{...config, className: 'video-editor-prompt'}
+			);
+		});
 	}
 
 	constructor (props) {
@@ -59,6 +77,12 @@ export default class VideoEditor extends React.Component {
 		}
 	}
 
+	componentWillUnmount () {
+		if (this.unmountCallback) {
+			this.unmountCallback();
+		}
+	}
+
 	async resolveVideo (ntiid) {
 		const service = await getService();
 		const video = await service.getObject(ntiid);
@@ -76,11 +100,32 @@ export default class VideoEditor extends React.Component {
 		this.setState({title, error: false});
 	}
 
-	onCancel = () => {
-		const {onCancel} = this.props;
+	onCancel = (e) => {
+		const {onCancel, isModal} = this.props;
 
-		if (onCancel) {
+		if (isModal) {
+			if (e) {
+				e.preventDefault();
+				e.stopPropagation();
+			}
+
+			//Use this call back to wait until the Chooser has been closed
+			this.unmountCallback = () => {
+				if (onCancel) {
+					onCancel();
+				}
+			};
+
+			this.dismiss();
+		} else if (onCancel) {
 			onCancel();
+		}
+	}
+
+	dismiss () {
+		const {onDismiss} = this.props;
+		if (onDismiss) {
+			onDismiss();
 		}
 	}
 
@@ -103,7 +148,7 @@ export default class VideoEditor extends React.Component {
 
 	onSave = async () => {
 		const {title} = this.state;
-		const {onSave, video} = this.props;
+		const {onSave, video, isModal} = this.props;
 
 		try {
 			await video.save({title});
@@ -115,7 +160,14 @@ export default class VideoEditor extends React.Component {
 			try {
 				await wait(wait.SHORT);
 
-				if (onSave) {
+				if (onSave && isModal) {
+					this.unmountCallback = () => {
+						onSave(video);
+					};
+
+					this.dismiss();
+				}
+				else if (onSave) {
 					onSave(video);
 				}
 
@@ -134,14 +186,14 @@ export default class VideoEditor extends React.Component {
 
 	delete = () => {
 		const {video} = this.props;
-		const {onCancel, onVideoDelete} = this.props;
+		const {onVideoDelete} = this.props;
 
 		return video.delete()
 			.then(() => {
 				if (onVideoDelete) {
 					onVideoDelete(video.getID());
 				}
-				onCancel();
+				this.onCancel();
 			});
 	}
 
@@ -194,6 +246,7 @@ export default class VideoEditor extends React.Component {
 
 	render () {
 		const {title, error, errorMsg, saving, video} = this.state;
+		const { isModal } = this.props;
 
 		const buttons = [
 			{label: t('cancel'), onClick: () => this.onCancel()},
@@ -202,24 +255,27 @@ export default class VideoEditor extends React.Component {
 
 		return (
 			<div className="video-editor">
+				{isModal && <Panels.TitleBar className="video-prompt-header" title="Video Editor" iconAction={this.onCancel} />}
 				{video && (
 					<div className="editor-container">
-						<Video src={video} />
-						<div className="meta">
-							{error && (<div className="error">{errorMsg}</div>)}
-							<Input.Label className="title-label" label={t('title.label')}>
-								<Input.Text className="title-input" value={title} onChange={this.onTitleChange} />
-							</Input.Label>
-							<Transcripts
-								video={video}
-								transcripts={this.state.transcripts}
-								transcriptAdded={this.transcriptAdded}
-								transcriptUpdated={this.transcriptUpdated}
-								transcriptRemoved={this.transcriptRemoved}
-								transcriptReplaced={this.transcriptReplaced}
-								onError={this.onError}
-							/>
-							{video.hasLink('delete') && <div className="delete nti-button" onClick={this.delete}><i className="icon-delete" /> Delete</div>}
+						<div className="editor-wrapper">
+							<Video src={video} />
+							<div className="meta">
+								{error && (<div className="error">{errorMsg}</div>)}
+								<Input.Label className="title-label" label={t('title.label')}>
+									<Input.Text className="title-input" value={title} onChange={this.onTitleChange} />
+								</Input.Label>
+								<Transcripts
+									video={video}
+									transcripts={this.state.transcripts}
+									transcriptAdded={this.transcriptAdded}
+									transcriptUpdated={this.transcriptUpdated}
+									transcriptRemoved={this.transcriptRemoved}
+									transcriptReplaced={this.transcriptReplaced}
+									onError={this.onError}
+								/>
+								{video.hasLink('delete') && <div className="delete nti-button" onClick={this.delete}><i className="icon-delete" /> Delete</div>}
+							</div>
 						</div>
 					</div>
 				)}
