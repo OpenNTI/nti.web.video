@@ -2,10 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import {scoped} from 'nti-lib-locale';
-import {Input, DialogButtons, Loading, Panels} from 'nti-web-commons';
+import {Input, DialogButtons, Loading, Panels, Prompt} from 'nti-web-commons';
 import {wait} from 'nti-commons';
 import {getService} from 'nti-web-client';
-import { Prompt } from 'nti-web-commons';
 
 import Video from '../Video';
 
