@@ -53,9 +53,13 @@ class Browser extends Component {
 		const { selected } = this.state;
 		const { onDelete } = this.props;
 		onDelete(selected);
-		this.setState({
-			selected: false
-		});
+		this.setState({ selected: false });
+	}
+
+	onVideoDelete = (videoId) => {
+		const { onDelete } = this.props;
+		onDelete(videoId);
+		this.setState({ selected: false });
 	}
 
 	onSelectChange = (selected) => {
@@ -64,8 +68,8 @@ class Browser extends Component {
 		this.setState({
 			selected: oldSelected && oldSelected.getID() === selected.getID() ? false : selected,
 		}, () => {
-			const { selected } = this.state;
-			onSelect(selected);
+			const { selected: currerntSelected } = this.state;
+			onSelect(currerntSelected);
 		});
 	}
 
@@ -132,7 +136,6 @@ class Browser extends Component {
 	render () {
 		const { onClose, course } = this.props;
 		const { search, selected, videoContents, isEditing, video } = this.state;
-
 		return (
 			<div className="video-resource-browser">
 				<Header onClose={onClose}>
@@ -142,8 +145,10 @@ class Browser extends Component {
 						<HeaderSpacer />
 					</div>
 					<Toolbar>
-						{!isEditing && <Button className="create-video-button" rounded name="create" onClick={this.onEditClick}>Create Video</Button>}
-						{isEditing && <Button className="back-button" rounded name="back" onClick={this.onEditCancel}>Back to Videos</Button>}
+						{	!isEditing
+							? <Button className="create-video-button" rounded name="create" onClick={this.onEditClick}>Create Video</Button>
+							:	<Button className="back-button" rounded name="back" onClick={this.onEditCancel}>Back to Videos</Button>
+						}
 						<ToolbarButton
 							icon="edit"
 							label="Edit"
@@ -165,20 +170,20 @@ class Browser extends Component {
 						/>
 					</Toolbar>
 				</Header>
-				{!isEditing && (
+				{!isEditing ? (
 					<VideoContents
 						videos={videoContents}
 						selected={selected}
 						onSelectChange={this.onSelectChange}
 					/>
-				)}
-				{isEditing && (
+				) : (
 					<EditVideo
 						video={video}
 						course={course}
 						onCreate={this.onCreate}
 						onSave={this.onEditSave}
 						onCancel={this.onEditCancel}
+						onVideoDelete={this.onVideoDelete}
 					/>
 				)}
 			</div>

@@ -3,8 +3,6 @@
 .video-resource-browser {
 	position: relative;
 	max-width: 1024px;
-	// min-height: 720px;
-	// max-height: 720px;
 	background-color: #f2f2f2;
 	flex: 1 1 auto;
 	display: flex;
@@ -87,20 +85,5 @@
 
 	@media (max-width: 830px) {
 		.toolbar-component .toolbar-button > span { display: none; }
-	}
-
-	.edit-video {
-		display: flex;
-		flex-grow: 1;
-	    margin-bottom: -40px;
-		.video-embed-input {
-		    width: 100%;
-		    display: flex;
-		    flex-direction: column;
-
-			.picker {
-			    flex: 1;
-			}
-		}
 	}
 }

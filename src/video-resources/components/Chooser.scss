@@ -5,6 +5,10 @@
 
 	background: #fff;
 	border: 1px solid #e2e2e2;
+
+	.dialog-buttons {
+		background-color: white;
+	}
 }
 
 .modal-mask.video-resource-chooser-dialog {
@@ -17,8 +21,7 @@
 		height: 60vh;
 		min-height: 340px;
 		.video-resource-browser {
-			height: 55vh;
-			height: calc(60vh - 40px);
+			height: 60vh;
 			min-height: 300px;
 		}
 	}
