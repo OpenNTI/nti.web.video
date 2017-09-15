@@ -30,7 +30,7 @@ class Video extends Component {
 	componentWillReceiveProps (nextProps) {
 		const { thumbnail: existingThumbnail } = this.state;
 		const { video } = nextProps;
-		if (existingThumbnail  === '') {
+		if (existingThumbnail === '') {
 			video.getThumbnail()
 				.then(thumbnail => {
 					this.setState({
