@@ -35,7 +35,7 @@ function createVideoJSON (media) {
 	});
 }
 
-const EditVideo = ({ onSave, onCancel, video, course, onCreate }) => {
+const EditVideo = ({ onSave, onCancel, video, course, onCreate, onVideoDelete }) => {
 
 	const onNewVideoSave = async function (source) {
 		const link = course.getLink('assets');
@@ -46,10 +46,13 @@ const EditVideo = ({ onSave, onCancel, video, course, onCreate }) => {
 		onCreate(createdVideo);
 	};
 
+	const editClass = !video ? 'embed' : 'editor';
 	return (
-		<div className="edit-video">
-			{!video && <EmbedInput onSelect={onNewVideoSave} onCancel={onCancel} />}
-			{video && <Editor video={video} onSave={onSave} onCancel={onCancel} />}
+		<div className={`edit-video ${editClass}`}>
+			{ !video
+				? <EmbedInput onSelect={onNewVideoSave} onCancel={onCancel} />
+				: <Editor video={video} onSave={onSave} onCancel={onCancel} onVideoDelete={onVideoDelete} />
+			}
 		</div>
 	);
 };
@@ -62,6 +65,7 @@ EditVideo.propTypes = {
 		hasLink: PropTypes.func.isRequired,
 	}).isRequired,
 	onCreate: PropTypes.func.isRequired,
+	onVideoDelete: PropTypes.func.isRequired,
 };
 
 export default EditVideo;
