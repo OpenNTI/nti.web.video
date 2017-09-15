@@ -30,9 +30,11 @@
   }
 }
 
-.embed {
+// Change the hight for each editor used
+.video-resources-edit-embed {
 	height: 100%;
 }
-.editor {
+
+.video-resources-edit-editor {
 	height: calc(100% - 112px);
 }

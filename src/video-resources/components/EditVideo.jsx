@@ -48,7 +48,7 @@ const EditVideo = ({ onSave, onCancel, video, course, onCreate, onVideoDelete })
 
 	const editClass = !video ? 'embed' : 'editor';
 	return (
-		<div className={`edit-video ${editClass}`}>
+		<div className={`edit-video video-resources-edit-${editClass}`}>
 			{ !video
 				? <EmbedInput onSelect={onNewVideoSave} onCancel={onCancel} />
 				: <Editor video={video} onSave={onSave} onCancel={onCancel} onVideoDelete={onVideoDelete} />
