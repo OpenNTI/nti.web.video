@@ -125,6 +125,12 @@ class Chooser extends Component {
 	}
 
 	onDelete = (video) => {
+		Prompt.areYouSure('').then(() => {
+			this.doDelete(video);
+		});
+	}
+
+	doDelete = (video) => {
 		video.delete()
 			.then(() => {
 				const { videos } = this.state;
