@@ -22,10 +22,13 @@ class Browser extends Component {
 
 	constructor (props) {
 		super(props);
+
+		const {videos} = props;
+
 		this.state = {
 			search: '',
-			videoContents: [...props.videos],
-			videos: [...props.videos],
+			videoContents: videos ? [...props.videos] : null,
+			videos: videos ? [...props.videos] : null,
 			selected: null,
 			video: null,
 			isEditing: false

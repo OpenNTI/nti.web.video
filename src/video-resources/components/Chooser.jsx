@@ -19,7 +19,7 @@ class Chooser extends Component {
 
 	state = {
 		isEditing: false,
-		videos: []
+		videos: null
 	};
 
 	static show (course, config) {

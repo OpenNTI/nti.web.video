@@ -10,7 +10,7 @@ class Video extends Component {
 			NTIID: PropTypes.string,
 		}).isRequired,
 		onSelectChange: PropTypes.func.isRequired,
-		isSelected: PropTypes.bool.isRequired,
+		isSelected: PropTypes.bool,
 	}
 
 	state = {
