@@ -193,6 +193,8 @@ export default class TranscriptItem extends React.Component {
 		const isLangEditable = false; //For now, EN is the only option so always disable
 		const isPurposeEditable = transcript && canEdit(transcript);
 
+		const modified = transcript['Last Modified'];
+
 		return (
 			<div className="transcript-item">
 				<div>
@@ -208,9 +210,11 @@ export default class TranscriptItem extends React.Component {
 					</span>
 					{this.renderEdit()}
 				</div>
-				<div className="modified-date">
-					{t('modifiedOn', {time: getTime(transcript['Last Modified'])})}
-				</div>
+				{modified && (
+					<div className="modified-date">
+						{t('modifiedOn', {time: getTime(transcript['Last Modified'])})}
+					</div>
+				)}
 			</div>
 		);
 	}
