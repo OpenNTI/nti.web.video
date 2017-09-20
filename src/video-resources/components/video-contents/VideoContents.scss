@@ -1,8 +1,17 @@
+@import "~nti-style-common";
+
 .video-resources-video-contents {
+	$gap: ((20 / 974) / 2) * 100%;
+
 	display: flex;
 	flex-wrap: wrap;
-	overflow: hidden;
 	overflow-y: scroll;
-	align-items: center;
-	justify-content: center;
+	padding: rem-calc(0 0 10px);
+
+	& > .video-resource-container {
+		$percent: (25% - ($gap * 2));
+		margin: rem-calc(15px) round($gap) 0;
+		flex: 0 1 $percent;
+		max-width: $percent;//FireFox can't even.
+	}
 }

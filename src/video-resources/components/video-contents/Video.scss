@@ -1,5 +1,4 @@
 .video-resource-container {
-	margin: 10px;
     width: 175px;
     height: 200px;
     background: white;
@@ -26,7 +25,7 @@
 	.thumbnail {
 	    width: 100%;
 	    height: 100px;
-	    background-size: contain;
+	    background-size: cover;
 	}
 
 	.title {
