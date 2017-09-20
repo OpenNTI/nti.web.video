@@ -30,10 +30,10 @@ const DEFAULT_TEXT = {
 const t = scoped('nti-video.editor.Editor', DEFAULT_TEXT);
 
 export default class VideoEditor extends React.Component {
-	static show (video, config) {
+	static show (video, config, props) {
 		return new Promise((select, reject) => {
 			Prompt.modal(
-				(<VideoEditor video={video} onSave={select} onCancel={reject} _isModal />),
+				(<VideoEditor video={video} onSave={select} onCancel={reject} _isModal {...props}/>),
 				{...config, className: 'video-editor-prompt'}
 			);
 		});
@@ -62,6 +62,13 @@ export default class VideoEditor extends React.Component {
 
 	componentWillMount () {
 		this.resolveState(this.props);
+	}
+
+
+	componentWillUnmount () {
+		if (this.unmountCallback) {
+			this.unmountCallback();
+		}
 	}
 
 
@@ -149,8 +156,13 @@ export default class VideoEditor extends React.Component {
 		}
 	}
 
+	onDelete = () => {
+		Prompt.areYouSure('').then(() => {
+			this.doDelete();
+		});
+	}
 
-	onDelete = async () => {
+	doDelete = async () => {
 		const {video} = this.state;
 		const {onVideoDelete, onCancel, _isModal} = this.props;
 
