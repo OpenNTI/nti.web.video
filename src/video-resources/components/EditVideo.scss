@@ -1,5 +1,5 @@
 .edit-video {
-	margin-bottom: -40px;
+	height: calc(100% - 110px);
 
 	.video-editor {
 		display: flex;
@@ -28,11 +28,6 @@
 		  flex: 1;
 	  }
   }
-}
-
-// Change the hight for each editor used
-.video-resources-edit-embed {
-	height: 100%;
 }
 
 .video-resources-edit-editor {

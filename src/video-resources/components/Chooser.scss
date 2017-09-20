@@ -4,7 +4,6 @@
 	margin: 0 auto;
 
 	background: #fff;
-	border: 1px solid #e2e2e2;
 
 	.dialog-buttons {
 		background-color: white;
@@ -16,10 +15,12 @@
 
 	& > .icon-close {display: none;}
 
-	.video-resource-chooser {
+	.modal-content {
+		border: 1px solid #e2e2e2;
 		box-shadow: 0 0 40px -16px black;
-		height: 60vh;
-		min-height: 340px;
+	}
+
+	.video-resource-chooser {
 		.video-resource-browser {
 			height: 60vh;
 			min-height: 300px;
