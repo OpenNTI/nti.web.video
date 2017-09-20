@@ -4,7 +4,7 @@ import {scoped} from 'nti-lib-locale';
 import {Flyout, Prompt} from 'nti-web-commons';
 
 // import { isTranscriptEditable, getTime, getTranscriptName } from './utils/TranscriptUtils';
-import {getName, canEdit} from './utils';
+import {getName, canEdit, getTime} from './utils';
 
 const DEFAULT_TEXT = {
 	edit: 'Edit',
@@ -21,7 +21,8 @@ const DEFAULT_TEXT = {
 	captionsLabel: 'Captions',
 	transcriptLabel: 'Transcript',
 	enLabel: 'EN',
-	confirmReplace: 'Changing this will replace %(name)s'
+	confirmReplace: 'Changing this will replace %(name)s',
+	modifiedOn: 'Modified on %(time)s'
 };
 
 const t = scoped('nti-video.editor.Transcripts', DEFAULT_TEXT);
@@ -206,6 +207,9 @@ export default class TranscriptItem extends React.Component {
 						{getName(transcript)}
 					</span>
 					{this.renderEdit()}
+				</div>
+				<div className="modified-date">
+					{t('modifiedOn', {time: getTime(transcript['Last Modified'])})}
 				</div>
 			</div>
 		);
