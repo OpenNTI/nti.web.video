@@ -1,15 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {getService} from 'nti-web-client';
-import {decodeFromURI} from 'nti-lib-ntiids';
+// import {getService} from 'nti-web-client';
+// import {decodeFromURI} from 'nti-lib-ntiids';
 
-import Video, { selectFrom } from '../../src/index';
+import {Editor} from '../../src';
 import 'nti-style-common/all.scss';
 import 'nti-web-commons/lib/index.css';
 
 window.$AppConfig = window.$AppConfig || {server: '/dataserver2/'};
-
-
 
 // const FAKE_VIDEO = {
 // 	sources: [
@@ -19,49 +17,10 @@ window.$AppConfig = window.$AppConfig || {server: '/dataserver2/'};
 // 	]
 // };
 
-let courseID = localStorage.getItem('course-ntiid');
-
-if (!courseID) {
-	courseID = decodeFromURI(window.prompt('Enter Course NTIID'));
-	localStorage.setItem('course-ntiid', courseID);
-}
-
-
-class Test extends React.Component {
-	constructor (props) {
-		super(props);
-
-		this.state = {
-			course: null
-		};
-	}
-
-	async resolveObjects () {
-		const service = await getService();
-		const courseId = decodeFromURI('tag:nextthought.com,2011-10:system-OID-0x09c5:5573657273:su4GzR70EGf');
-		const course = await service.getObject(courseId);
-		this.setState({ course });
-	}
-
-	componentDidMount () {
-		this.resolveObjects();
-	}
-
-	onVideoListSelectionChange () {}
-
-	editVideo () {}
-
-	render () {
-		const { course } = this.state;
-		if (course) {
-			selectFrom(course);
-		}
-		return (<div className="test">Here</div>);
-	}
-}
+const videoId = 'tag:nextthought.com,2011-10:NTI-NTIVideo-system_20170627161300_697345_4A4DA731';
 
 ReactDOM.render(
-	React.createElement(Test, {}),
+	React.createElement(Editor, {video: videoId}),
 	document.getElementById('youtube')
 );
 

@@ -58,6 +58,12 @@
 .manage-video-transcripts {
 	position: relative;
 
+	.label {
+		font: normal bold 0.625rem/1rem $body-font-family;
+		text-transform: uppercase;
+		color: $secondary-grey;
+	}
+
 	div.add-transcript {
 		cursor: pointer;
 		position: relative;
