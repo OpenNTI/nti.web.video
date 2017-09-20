@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import Video from './Video.jsx';
+import Video from './Video';
 
 
 const VideoContents = ({ videos, selected = false, onSelectChange }) => (
-	<div className="video-contents">
+	<div className="video-resources-video-contents">
 		{videos.length > 0 && videos.map(video => (
 			<Video
 				key={video.getID()}
