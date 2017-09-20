@@ -83,6 +83,15 @@ export default class VideoEditor extends React.Component {
 	}
 
 
+	dismiss () {
+		const {onDismiss} = this.props;
+
+		if (onDismiss) {
+			onDismiss();
+		}
+	}
+
+
 	onTitleChange = (title) => {
 		this.setState({title, error: false});
 	}
