@@ -14,4 +14,11 @@
 		flex: 0 1 $percent;
 		max-width: $percent;//FireFox can't even.
 	}
+
+	.empty-contents {
+		flex: 1 1 auto;
+		padding: 1rem 0;
+		color: $secondary-grey;
+		text-align: center;
+	}
 }

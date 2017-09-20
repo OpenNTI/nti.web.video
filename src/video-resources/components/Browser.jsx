@@ -77,9 +77,9 @@ class Browser extends Component {
 	}
 
 	itemMatchesSearch (video, searchTerm) {
-		const title = video.title || video.get('title');
-		const ntiid = video.NTIID || video.getId();
-		const sources = video.sources || video.get('sources');
+		const title = video.title || '';
+		const ntiid = video.NTIID || '';
+		const sources = video.sources || [];
 		let matches = false;
 
 		searchTerm = searchTerm.toLowerCase();
