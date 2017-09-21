@@ -40,7 +40,7 @@ class Chooser extends Component {
 		course.getAssets('application/vnd.nextthought.ntivideo')
 			.then(videos => {
 				this.setState({
-					videos
+					videos: videos.sort((a, b) => (a.title || '').localeCompare((b.title || '')))
 				});
 			});
 	}
