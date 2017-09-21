@@ -17,6 +17,7 @@ class Browser extends Component {
 		videos: PropTypes.array,
 		setEditing: PropTypes.func,
 		onDelete: PropTypes.func.isRequired,
+		onVideoDeleted: PropTypes.func.isRequired,
 		onSelect: PropTypes.func.isRequired,
 	}
 
@@ -59,9 +60,11 @@ class Browser extends Component {
 		this.setState({ selected: false });
 	}
 
-	onVideoDelete = (videoId) => {
-		const { onDelete } = this.props;
-		onDelete(videoId);
+	onVideoDelete = (video) => {
+		const { onVideoDeleted } = this.props;
+
+		onVideoDeleted(video);
+
 		this.setState({ selected: false });
 	}
 

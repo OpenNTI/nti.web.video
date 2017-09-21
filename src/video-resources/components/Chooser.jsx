@@ -134,18 +134,22 @@ class Chooser extends Component {
 	doDelete = (video) => {
 		video.delete()
 			.then(() => {
-				const { videos } = this.state;
-				const newVideos = videos.slice();
-				const videoIndex = videos.findIndex(v => v.getID() === video.getID());
-				newVideos.splice(videoIndex, 1);
-				this.setState({
-					videos: newVideos,
-					selected: false
-				});
+				this.onVideoDeleted(video);
 			})
 			.catch(error => {
 				console.error(error); //eslint-disable-line
 			});
+	}
+
+	onVideoDeleted = (video) => {
+		const { videos } = this.state;
+		const newVideos = videos.slice();
+		const videoIndex = videos.findIndex(v => v.getID() === video.getID());
+		newVideos.splice(videoIndex, 1);
+		this.setState({
+			videos: newVideos,
+			selected: false
+		});
 	}
 
 	render () {
@@ -171,6 +175,7 @@ class Chooser extends Component {
 					course={course}
 					onEdit={this.onEdit}
 					onDelete={this.onDelete}
+					onVideoDeleted={this.onVideoDeleted}
 					onClose={this.onCancel}
 					onSelect={this.selectVideo}
 					setEditing={this.setEditing}

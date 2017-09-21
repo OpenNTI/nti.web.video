@@ -179,7 +179,7 @@ export default class VideoEditor extends React.Component {
 
 		if (onVideoDelete && _isModal) {
 			this.unmountCallback = () => {
-				onVideoDelete();
+				onVideoDelete(video);
 
 				if (onCancel) {
 					onCancel();
@@ -188,7 +188,7 @@ export default class VideoEditor extends React.Component {
 
 			this.dismiss();
 		} else if (onVideoDelete) {
-			onVideoDelete();
+			onVideoDelete(video);
 
 			if (onCancel) {
 				onCancel();
