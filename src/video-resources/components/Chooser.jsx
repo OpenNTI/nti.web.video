@@ -120,7 +120,8 @@ class Chooser extends Component {
 
 		this.setState({
 			videos: newVideos,
-			isEditing: false
+			isEditing: false,
+			selected: video
 		});
 	}
 
