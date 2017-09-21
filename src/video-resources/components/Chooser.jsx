@@ -15,6 +15,7 @@ class Chooser extends Component {
 		onCancel: PropTypes.func,
 		onDismiss: PropTypes.func,
 		onSelect: PropTypes.func,
+		onVideoDelete: PropTypes.func
 	}
 
 	state = {
@@ -22,13 +23,14 @@ class Chooser extends Component {
 		videos: null
 	};
 
-	static show (course, config) {
+	static show (course, config, props) {
 		return new Promise((select, reject) => {
 			modal(
 				<Chooser
 					course={course}
 					onSelect={select}
 					onCancel={reject}
+					{...props}
 				/>,
 				{...config, className: 'video-resource-chooser-dialog'}
 			);
@@ -143,6 +145,7 @@ class Chooser extends Component {
 
 	onVideoDeleted = (video) => {
 		const { videos } = this.state;
+		const { onVideoDelete } = this.props;
 		const newVideos = videos.slice();
 		const videoIndex = videos.findIndex(v => v.getID() === video.getID());
 		newVideos.splice(videoIndex, 1);
@@ -150,6 +153,8 @@ class Chooser extends Component {
 			videos: newVideos,
 			selected: false
 		});
+
+		onVideoDelete && onVideoDelete(video.getID());
 	}
 
 	render () {
