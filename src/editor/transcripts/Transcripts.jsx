@@ -195,7 +195,7 @@ export default class TranscriptEditor extends React.Component {
 
 		return (
 			<div className="add-transcript">
-				<input type="file" accept=".vtt" onChange={this.onFileSelected} rel={this.attachAddLinkRef} />
+				<input type="file" accept=".vtt" onChange={this.onFileSelected} ref={this.attachAddLinkRef} />
 				<i className="icon-add" />
 				<span>{t('add')}</span>
 			</div>
