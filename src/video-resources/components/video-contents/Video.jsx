@@ -2,6 +2,15 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Checkbox } from 'nti-web-commons';
 import cx from 'classnames';
+import { scoped } from 'nti-lib-locale';
+
+const DEFAULT_TEXT = {
+	youtube: 'YouTube',
+	vimeo: 'Vimeo',
+	kaltura: 'Kaltura'
+};
+
+const t = scoped('VIDEO_ITEM', DEFAULT_TEXT);
 
 class Video extends Component {
 	static propTypes = {
@@ -49,7 +58,7 @@ class Video extends Component {
 		const { isSelected, video } = this.props;
 		const { title, sources } = video;
 		const { thumbnail } = this.state;
-		const sourceLabels = sources.map(source => (source.service || '').toUpperCase());
+		const sourceLabels = sources.map(source => (t(source.service) || '').toUpperCase());
 		return (
 			<div className={cx('video-resource-container', {'selection': isSelected})} onClick={this.onSelectChange}>
 				<Checkbox checked={isSelected} name="video-item-checkbox" onChange={this.onSelectChange} />
