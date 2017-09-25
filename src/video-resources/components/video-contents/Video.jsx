@@ -49,7 +49,7 @@ class Video extends Component {
 		const { isSelected, video } = this.props;
 		const { title, sources } = video;
 		const { thumbnail } = this.state;
-		const sourceLabels = sources.map(source => (source.server || '').toUpperCase());
+		const sourceLabels = sources.map(source => (source.service || '').toUpperCase());
 		return (
 			<div className={cx('video-resource-container', {'selection': isSelected})} onClick={this.onSelectChange}>
 				<Checkbox checked={isSelected} name="video-item-checkbox" onChange={this.onSelectChange} />
