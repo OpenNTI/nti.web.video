@@ -28,7 +28,7 @@ function createVideoJSON (media) {
 		media.getTitle()
 	]).then(([sources, title]) => {
 		return {
-			MimeType: Models.media.Video.MimeType[0],
+			MimeType: Models.media.Video.MimeType,
 			title,
 			sources
 		};
