@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {scoped} from 'nti-lib-locale';
-import {Flyout, Prompt} from 'nti-web-commons';
+import {Flyout, Prompt, HOC} from 'nti-web-commons';
 
 // import { isTranscriptEditable, getTime, getTranscriptName } from './utils/TranscriptUtils';
 import {getName, canEdit, getTime} from './utils';
@@ -105,7 +105,7 @@ export default class TranscriptItem extends React.Component {
 
 			try {
 				await video.removeTranscript(existing);
-				await video.updateTranscript(transcript, purpose);
+				await transcript.setPrupose(purpose);
 
 				this.clearError();
 			} catch (e) {
@@ -120,6 +120,7 @@ export default class TranscriptItem extends React.Component {
 
 
 	onPurposeChange = async (e) => {
+		debugger;
 		const {transcript, video} = this.props;
 		const purpose = e.target.value;
 		const existing = video.getTranscriptFor(purpose, transcript.lang);
@@ -132,7 +133,7 @@ export default class TranscriptItem extends React.Component {
 		this.beforeSave();
 
 		try {
-			await video.updateTranscript(transcript, purpose);
+			await transcript.setPurpose(purpose);
 
 			this.clearError();
 		} catch (err) {
@@ -145,7 +146,7 @@ export default class TranscriptItem extends React.Component {
 
 	onFileSelected = async (e) => {
 		const {target: {files}} = e;
-		const {video, transcript} = this.props;
+		const {transcript} = this.props;
 
 		this.dismissFlyout();
 
@@ -159,7 +160,7 @@ export default class TranscriptItem extends React.Component {
 		this.beforeSave();
 
 		try {
-			await video.updateTranscript(transcript, void 0, void 0, files[0]);
+			await transcript.setFile(files[0]);
 			this.clearError();
 		} catch (err) {
 			this.onError((err && err.message) || t('errors.update'));
@@ -187,6 +188,11 @@ export default class TranscriptItem extends React.Component {
 	}
 
 
+	onTranscriptUpdate = () => {
+		this.forceUpdate();
+	}
+
+
 	render () {
 		const {transcript} = this.props;
 
@@ -196,26 +202,28 @@ export default class TranscriptItem extends React.Component {
 		const modified = transcript['Last Modified'];
 
 		return (
-			<div className="transcript-item">
-				<div>
-					<select defaultValue="en" onChange={this.onLangChange} disabled={!isLangEditable}>
-						<option value="en" label={t('enLabel')}>{t('enLabel')}</option>
-					</select>
-					<select defaultValue={transcript.purpose} onChange={this.onPurposeChange} disabled={!isPurposeEditable}>
-						<option value="captions" label={t('captionsLabel')}>{t('captionsLabel')}</option>
-						<option value="normal" label={t('transcriptLabel')}>{t('transcriptLabel')}</option>
-					</select>
-					<span className="transcript-file-name">
-						{getName(transcript)}
-					</span>
-					{this.renderEdit()}
-				</div>
-				{modified && (
-					<div className="modified-date">
-						{t('modifiedOn', {time: getTime(transcript['Last Modified'])})}
+			<HOC.ItemChanges item={transcript} onItemChange={this.onTranscriptUpdate}>
+				<div className="transcript-item">
+					<div>
+						<select defaultValue="en" onChange={this.onLangChange} disabled={!isLangEditable}>
+							<option value="en" label={t('enLabel')}>{t('enLabel')}</option>
+						</select>
+						<select defaultValue={transcript.purpose} onChange={this.onPurposeChange} disabled={!isPurposeEditable}>
+							<option value="captions" label={t('captionsLabel')}>{t('captionsLabel')}</option>
+							<option value="normal" label={t('transcriptLabel')}>{t('transcriptLabel')}</option>
+						</select>
+						<span className="transcript-file-name">
+							{getName(transcript)}
+						</span>
+						{this.renderEdit()}
 					</div>
-				)}
-			</div>
+					{modified && (
+						<div className="modified-date">
+							{t('modifiedOn', {time: getTime(transcript['Last Modified'])})}
+						</div>
+					)}
+				</div>
+			</HOC.ItemChanges>
 		);
 	}
 
