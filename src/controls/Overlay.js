@@ -117,7 +117,7 @@ export default class VideoControlsOverlay extends React.Component {
 
 		return (
 			<div className={cls} {...listeners} >
-				{(!interacted || !canPlay) && (<Mask {...otherProps} buffering={!canPlay} />)}
+				{(!interacted || !canPlay) && (<Mask {...otherProps} />)}
 				<UpperControls className="overlay-upper-controls" videoState={videoState} {...otherProps} showing={showControls} isTouch={isTouch} />
 				<LowerControls className="overlay-lower-controls" videoState={videoState} {...otherProps} showing={showControls} isTouch={isTouch} />
 			</div>
