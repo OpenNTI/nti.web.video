@@ -120,7 +120,6 @@ export default class TranscriptItem extends React.Component {
 
 
 	onPurposeChange = async (e) => {
-		debugger;
 		const {transcript, video} = this.props;
 		const purpose = e.target.value;
 		const existing = video.getTranscriptFor(purpose, transcript.lang);
