@@ -103,11 +103,3 @@ export function getCanonicalUrlFrom (args) {
 
 	return handler && handler.getCanonicalURL(undefined, src);
 }
-
-
-export async function doesSourceExist (source) {
-	const url = getCanonicalUrlFrom(source);
-	const media = await createMediaSourceFromUrl(url);
-
-	return media.getResolver();
-}

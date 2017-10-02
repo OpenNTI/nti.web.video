@@ -5,9 +5,9 @@ import {scoped} from 'nti-lib-locale';
 import {Prompt, DialogButtons, Loading} from 'nti-web-commons';
 import {wait} from 'nti-commons';
 
-import {createMediaSourceFromUrl, doesSourceExist} from '../services';
+import {createMediaSourceFromUrl} from '../services';
 
-import {normalizeSource, parseEmbedCode} from './utils';
+import {parseEmbedCode} from './utils';
 
 const DEFAULT_TEXT = {
 	header: 'Enter a link to a YouTube, Vimeo, or Kaltura video.',
@@ -22,10 +22,7 @@ const t = scoped('nti-video.editor.EmbedInput', DEFAULT_TEXT);
 async function getMediaSource (rawInput) {
 	const input = rawInput.trim();
 	const url = parseEmbedCode(input) || input;
-	const {service, source} = await createMediaSourceFromUrl(url);
-	const normalizedSource = normalizeSource(service, source);
-
-	return {service, source: normalizedSource};
+	return await createMediaSourceFromUrl(url);
 }
 
 export default class EmbedInput extends React.Component {
@@ -88,19 +85,20 @@ export default class EmbedInput extends React.Component {
 		const {value} = this.state;
 		const {onSelect, onDismiss} = this.props;
 
+		const doesSourceExist = (source) => source.getResolver();
+
 		this.setState({
 			saving: true
 		}, () => {
 			getMediaSource(value)
 				.then(wait.min(500))
-				.then((source) => {
-					return doesSourceExist(source)
-						.then(() => {
-							if (onSelect) { onSelect(source); }
+				.then((source) => doesSourceExist(source)
+					.then(() => {
+						if (onSelect) { onSelect(source); }
 
-							if (onDismiss) { onDismiss(); }
-						});
-				})
+						if (onDismiss) { onDismiss(); }
+					})
+				)
 				.catch(() => {
 					this.setState({
 						invalid: true,
