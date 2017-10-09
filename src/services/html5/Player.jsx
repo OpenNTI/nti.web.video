@@ -18,6 +18,13 @@ const fullscreenEvents = [
 	'MSFullscreenChange'
 ];
 
+const MediaSourcePropType = PropTypes.shape({
+	source: PropType.string.isRequired,
+	width: PropType.number,
+	height: PropType.number,
+	type: PropType.string
+});
+
 
 export default class HTML5Video extends React.Component {
 	static service = 'html5'
@@ -28,9 +35,18 @@ export default class HTML5Video extends React.Component {
 		 *
 		 * @type {String/MediaSource}
 		 */
-		source: PropTypes.any.isRequired,
-		tracks: PropTypes.any,
+		source: PropTypes.oneOfType([
+			PropTypes.string,
+			MediaSourcePropType
+		]),
+		sources: PropTypes.arrayOf(
+			PropTypes.oneOfType([
+				PropTypes.string,
+				MediaSourcePropType
+			])
+		),
 
+		tracks: PropTypes.any,
 		allowNormalTranscripts: PropTypes.bool,
 
 		poster: PropTypes.bool,
