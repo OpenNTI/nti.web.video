@@ -272,7 +272,7 @@ export default class KalturaVideo extends React.Component {
 		return (
 			<div className="kaltura-wrapper">
 				{!sourcesLoaded && (<Loading />)}
-				{sourcesLoaded && (<Video {...videoProps} ref={this.attachRef} />)}
+				{sourcesLoaded && (<Video {...videoProps} ref={this.attachRef} allowNormalTranscripts />)}
 			</div>
 		);
 	}

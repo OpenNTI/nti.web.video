@@ -31,6 +31,7 @@ export default class HTML5Video extends React.Component {
 		source: PropTypes.any.isRequired,
 		tracks: PropTypes.any,
 
+		allowNormalTranscripts: PropTypes.bool,
 
 		poster: PropTypes.bool,
 
@@ -135,7 +136,7 @@ export default class HTML5Video extends React.Component {
 
 
 	setupSource (props) {
-		let {source, tracks} = props;
+		let {source, tracks, allowNormalTranscripts} = props;
 
 		if (source.source) {
 			source = source.source;
@@ -143,8 +144,11 @@ export default class HTML5Video extends React.Component {
 
 		if (tracks) {
 			//filter out the tracks that are meant to be used
-			//for the transcript in the media viewer
-			tracks = tracks.filter(x => x.purpose !== 'normal');
+			//for the transcript in the media viewer if they aren't
+			//allowed
+			tracks = allowNormalTranscripts ?
+				tracks :
+				tracks.filter(x => x.purpose !== 'normal');
 		} else {
 			tracks = [];
 		}
@@ -278,7 +282,7 @@ export default class HTML5Video extends React.Component {
 			.map((track, index) => {
 				const src = track.src ? track.src : track;
 				const lang = track.lang ? track.lang : 'en';
-				const purpose = track.purpose ? track.purpose : 'captions';
+				const purpose = track.purpose && track.purpose !== 'normal' ? track.purpose : 'captions';
 
 				if (typeof src !== 'string') {
 					events.debug('Invalid Track: %o', src);
