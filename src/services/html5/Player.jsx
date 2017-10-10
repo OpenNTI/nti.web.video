@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import cx from 'classnames';
 import Logger from 'nti-util-logger';
 
-import {createNonRecoverableError} from '../utils';
+import {createNonRecoverableError, getSourceGroups} from '../utils';
 import {Overlay as ControlsOverlay} from '../../controls';
 import {UNSTARTED, PLAYING, PAUSED, ENDED} from '../../Constants';
 
@@ -19,10 +19,10 @@ const fullscreenEvents = [
 ];
 
 const MediaSourcePropType = PropTypes.shape({
-	source: PropType.string.isRequired,
-	width: PropType.number,
-	height: PropType.number,
-	type: PropType.string
+	source: PropTypes.string.isRequired,
+	width: PropTypes.number,
+	height: PropTypes.number,
+	type: PropTypes.string
 });
 
 
@@ -152,11 +152,9 @@ export default class HTML5Video extends React.Component {
 
 
 	setupSource (props) {
-		let {source, tracks, allowNormalTranscripts} = props;
-
-		if (source.source) {
-			source = source.source;
-		}
+		let {source, sources, tracks, allowNormalTranscripts} = props;
+		const sourceGroups = getSourceGroups(sources, source);
+		const preferredGroup = sourceGroups.find(group => group.preferred);
 
 		if (tracks) {
 			const noCaptions = tracks.every(x => x.purpose !== 'captions');
@@ -172,7 +170,11 @@ export default class HTML5Video extends React.Component {
 		}
 
 		events.debug('Setting source: entryId: %s, partnerId: %s', source);
-		this.setState({src: source, tracks});
+		this.setState({
+			sourceGroups,
+			activeGroup: preferredGroup.name,
+			tracks
+		});
 
 		if (this.state.error) {
 			this.onError();
@@ -182,7 +184,12 @@ export default class HTML5Video extends React.Component {
 
 	getVideoState () {
 		const {video, container} = this;
-		const {playerState, userSetTime, userSetVolume, canPlay} = this.state;
+		const {
+			playerState,
+			userSetTime,
+			userSetVolume,
+			canPlay
+		} = this.state;
 
 		const get = (name, defaultValue = null) => video ? video[name] : defaultValue;
 
@@ -190,6 +197,7 @@ export default class HTML5Video extends React.Component {
 			state: playerState != null ? playerState : UNSTARTED,
 			duration: get('duration', 0),
 			currentTime: userSetTime != null ? userSetTime : get('currentTime', 0),
+			currentSrc:
 			buffered: get('buffered'),
 			controls: get('controls', true),
 			loop: get('loop', true),
@@ -272,24 +280,22 @@ export default class HTML5Video extends React.Component {
 
 
 	renderSources () {
-		const {src} = this.state;
-		const sources = Array.isArray(src) ? src : [src];
+		const {sourceGroups, activeGroup} = this.state;
+		const {sources} = sourceGroups.find(x => x.name === activeGroup) || {};
 
-		return sources
+		return (sources || [])
 			.map((source, index) => {
-				const srcURL = source.src ? source.src : source;
-				const type = source.type ? source.type : null;
+				const {src, type} = source;
 
-				if (typeof srcURL !== 'string') {
+				if (typeof src !== 'string') {
 					events.debug('Invalid Source: %o', src);
 					return null;
 				}
 
 				return (
-					<source key={index} src={srcURL} type={type} onError={this.onSourceError}/>
+					<source key={index} src={src} type={type} onError={this.onSourceError} />
 				);
-			})
-			.filter(x => !!x);
+			});
 	}
 
 
@@ -439,26 +445,27 @@ export default class HTML5Video extends React.Component {
 	onSourceError = (e) => {
 		e.stopPropagation();
 
-		this.sourceErrors = this.sourceErrors || {};
+		//TODO: figure out what to do here
+		// this.sourceErrors = this.sourceErrors || {};
 
-		this.sourceErrors[e.target.src] = true;
+		// this.sourceErrors[e.target.src] = true;
 
-		const {src} = this.state;
-		const sources = Array.isArray(src) ? src : [src];
+		// const {src} = this.state;
+		// const sources = Array.isArray(src) ? src : [src];
 
-		for (let source of sources) {
-			let srcUrl = source.src ? source.src : source;
+		// for (let source of sources) {
+		// 	let srcUrl = source.src ? source.src : source;
 
-			if (!this.sourceErrors[srcUrl]) {
-				return;
-			}
-		}
+		// 	if (!this.sourceErrors[srcUrl]) {
+		// 		return;
+		// 	}
+		// }
 
-		const {onError} = this.props;
+		// const {onError} = this.props;
 
-		if (onError) {
-			onError(createNonRecoverableError('Unable to load html5 video.'));
-		}
+		// if (onError) {
+		// 	onError(createNonRecoverableError('Unable to load html5 video.'));
+		// }
 	}
 
 
