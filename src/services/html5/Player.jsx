@@ -172,7 +172,7 @@ export default class HTML5Video extends React.Component {
 		events.debug('Setting source: entryId: %s, partnerId: %s', source);
 		this.setState({
 			sourceGroups,
-			activeGroup: preferredGroup.name,
+			activeSourceGroup: preferredGroup.name,
 			tracks
 		});
 
@@ -188,7 +188,9 @@ export default class HTML5Video extends React.Component {
 			playerState,
 			userSetTime,
 			userSetVolume,
-			canPlay
+			canPlay,
+			sourceGroups,
+			activeSourceGroup,
 		} = this.state;
 
 		const get = (name, defaultValue = null) => video ? video[name] : defaultValue;
@@ -197,7 +199,7 @@ export default class HTML5Video extends React.Component {
 			state: playerState != null ? playerState : UNSTARTED,
 			duration: get('duration', 0),
 			currentTime: userSetTime != null ? userSetTime : get('currentTime', 0),
-			currentSrc:
+			currentSrc: get('currentSrc'),
 			buffered: get('buffered'),
 			controls: get('controls', true),
 			loop: get('loop', true),
@@ -208,7 +210,9 @@ export default class HTML5Video extends React.Component {
 			playbackRate: get('playbackRate', 1),
 			isFullScreen: isFullScreen(container),
 			canGoFullScreen: canGoFullScreen(),
-			canPlay
+			canPlay,
+			sourceGroups,
+			activeSourceGroup
 		};
 	}
 
@@ -269,6 +273,7 @@ export default class HTML5Video extends React.Component {
 					onUnmute={this.unmute}
 					setVolume={this.setVolume}
 					setPlaybackRate={this.setPlaybackRate}
+					selectSourceGroup={this.selectSourceGroup}
 					selectTrack={this.selectTrack}
 					unselectAllTracks={this.unselectAllTracks}
 					goFullScreen={this.goFullScreen}
@@ -280,8 +285,8 @@ export default class HTML5Video extends React.Component {
 
 
 	renderSources () {
-		const {sourceGroups, activeGroup} = this.state;
-		const {sources} = sourceGroups.find(x => x.name === activeGroup) || {};
+		const {sourceGroups, activeSourceGroup} = this.state;
+		const {sources} = sourceGroups.find(x => x.name === activeSourceGroup) || {};
 
 		return (sources || [])
 			.map((source, index) => {
@@ -620,6 +625,30 @@ export default class HTML5Video extends React.Component {
 		if (video) {
 			video.playbackRate = rate;
 		}
+	}
+
+
+	selectSourceGroup = (group) => {
+		const {activeSourceGroup} = this.state;
+
+		if (!group || !group.name || activeSourceGroup === group.name) { return; }
+
+		const {video} = this;
+		const {currentTime, state} = this.getVideoState();
+
+		this.setState({
+			activeSourceGroup: group.name
+		}, () => {
+			if (video) {
+				video.load();
+				video.currentTime = currentTime;
+
+				if (state === PLAYING) {
+					this.play();
+				}
+			}
+
+		});
 	}
 
 

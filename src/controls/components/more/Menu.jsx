@@ -5,6 +5,7 @@ import {scoped} from 'nti-lib-locale';
 
 import Speed from './Speed';
 import Captions from './Captions';
+import Quality from './Quality';
 
 const stop = (e) => {
 	e.stopPropagation();
@@ -14,6 +15,7 @@ const stop = (e) => {
 const DEFAULT_TEXT = {
 	speed: 'Speed',
 	captions: 'Captions',
+	quality: 'Quality',
 	back: 'Back'
 };
 
@@ -25,13 +27,14 @@ export default class VideoMoreMenu extends React.Component {
 		videoState: PropTypes.object
 	}
 
-	state = {speedActive: false, captionsActive: false}
+	state = {qualityActive: false, speedActive: false, captionsActive: false}
 
 
 	setSpeedActive = (e) => {
 		stop(e);
 
 		this.setState({
+			qualityActive: false,
 			speedActive: true,
 			captionsActive: false
 		});
@@ -42,16 +45,27 @@ export default class VideoMoreMenu extends React.Component {
 		stop(e);
 
 		this.setState({
+			qualityActive: false,
 			speedActive: false,
 			captionsActive: true
 		});
 	}
 
+	setQualitiesActive = (e) => {
+		stop(e);
+
+		this.setState({
+			qualityActive: true,
+			speedActive: false,
+			captionsActive: false
+		});
+	}
 
 	setTopLevelActive = (e) => {
 		stop(e);
 
 		this.setState({
+			qualityActive: false,
 			speedActive: false,
 			captionsActive: false
 		});
@@ -60,8 +74,8 @@ export default class VideoMoreMenu extends React.Component {
 
 	render () {
 		const {videoState, ...otherProps} = this.props;
-		const {speedActive, captionsActive} = this.state;
-		const cls = cx('video-more-controls-menu', {speed: speedActive, captions: captionsActive});
+		const {speedActive, captionsActive, qualityActive} = this.state;
+		const cls = cx('video-more-controls-menu', {speed: speedActive, captions: captionsActive, quality: qualityActive});
 
 		return (
 			<div className={cls}>
@@ -76,6 +90,7 @@ export default class VideoMoreMenu extends React.Component {
 					<div className="sub-level-container">
 						{speedActive && (<Speed videoState={videoState} {...otherProps} />)}
 						{captionsActive && (<Captions videoState={videoState} {...otherProps} />)}
+						{qualityActive && (<Quality videoState={videoState} {...otherProps} />)}
 					</div>
 				</div>
 			</div>
@@ -91,6 +106,7 @@ export default class VideoMoreMenu extends React.Component {
 				<li>
 					{this.renderTopLevelMenuItem(t('speed'), Speed.getFormattedPlaybackRate(videoState), true, this.setSpeedActive)}
 					{this.renderTopLevelMenuItem(t('captions'), Captions.getFormattedActiveTrack(videoState), Captions.hasPotentialTracks(videoState), this.setCaptionsActive)}
+					{this.renderTopLevelMenuItem(t('quality'), Quality.getFormattedActiveQuality(videoState), Quality.hasPotentialQualities(videoState), this.setQualitiesActive)}
 				</li>
 			</ul>
 		);
