@@ -105,7 +105,7 @@ export default class TranscriptItem extends React.Component {
 
 			try {
 				await video.removeTranscript(existing);
-				await transcript.setPrupose(purpose);
+				await transcript.setPurpose(purpose);
 
 				this.clearError();
 			} catch (e) {
