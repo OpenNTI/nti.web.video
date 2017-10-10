@@ -9,7 +9,7 @@ import Video from '../html5/';
 import {createNonRecoverableError} from '../utils';
 
 import getSources from './SourceGrabber';
-import selectSources from './SelectSources';
+// import selectSources from './SelectSources';
 
 
 const commands = Logger.get('video:kaltura:commands');
@@ -218,20 +218,12 @@ export default class KalturaVideo extends React.Component {
 
 
 	setSources (data) {
-		const {state: {quality}} = this;
-
-		const qualityPreference = quality;//TODO: allow selection...
-		const sources = selectSources(data.sources || [], qualityPreference);
-		const availableQualities = sources.qualities;
-
-		events.debug('Selected sources: %o', sources);
+		events.debug('Selected sources: %o', data.sources);
 
 		this.setState({
 			duration: data.duration,
 			poster: data.poster,
-			sources: sources,
-			allSources: data.sources,
-			qualities: availableQualities,
+			sources: data.sources,
 			sourcesLoaded: true,
 			isError: (data.objectType === 'KalturaAPIException')
 		});
@@ -266,7 +258,7 @@ export default class KalturaVideo extends React.Component {
 		const videoProps = {
 			...this.props,
 			poster,
-			source: sources
+			sources
 		};
 
 		return (
