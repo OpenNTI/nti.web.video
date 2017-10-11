@@ -61,12 +61,10 @@ export default function (sources) {
 
 
 function normalizeSource (src) {
-	return {...src, src: `asdf?src=${src.src}`};
+	if (typeof src === 'string') { return {src}; }
+	if (typeof src.src === 'string') { return src; }
 
-	// if (typeof src === 'string') { return {src}; }
-	// if (typeof src.src === 'string') { return src; }
-
-	// return null;}
+	return null;
 }
 
 function getResolutionForSource (src) {

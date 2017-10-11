@@ -1,5 +1,4 @@
 export default function removeSourceFromGroups (groups, erroredSources) {
-	debugger;
 	const newGroups = groups.map(group => {
 		return {
 			...group,

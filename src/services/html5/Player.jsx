@@ -224,11 +224,13 @@ export default class HTML5Video extends React.Component {
 		return () => {
 			if (video) {
 				video.load();
-				video.currentTime = currentTime;
 
 				if (state === PLAYING) {
 					this.play();
 				}
+
+				this.timeToSetOnLoad = currentTime;
+				video.currentTime = currentTime;
 			}
 
 		};
@@ -345,11 +347,17 @@ export default class HTML5Video extends React.Component {
 
 
 	onCanPlay = () => {
+		const {video} = this;
 		const {onReady} = this.props;
 		const {playbackRate} = this.getVideoState();
 
 		if (onReady) {
 			onReady();
+		}
+
+		if (video && this.timeToSetOnLoad) {
+			video.currentTime = this.timeToSetOnLoad;
+			delete this.timeToSetOnLoad;
 		}
 
 		this.setState({
