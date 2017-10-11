@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import cx from 'classnames';
 import Logger from 'nti-util-logger';
 
-import {createNonRecoverableError, getSourceGroups} from '../utils';
+import {createNonRecoverableError, getSourceGroups, removeSourcesFromGroups} from '../utils';
 import {Overlay as ControlsOverlay} from '../../controls';
 import {UNSTARTED, PLAYING, PAUSED, ENDED} from '../../Constants';
 
@@ -153,7 +153,7 @@ export default class HTML5Video extends React.Component {
 
 	setupSource (props) {
 		let {source, sources, tracks, allowNormalTranscripts} = props;
-		const sourceGroups = getSourceGroups(sources, source);
+		const sourceGroups = getSourceGroups(sources || source);
 		const preferredGroup = sourceGroups.find(group => group.preferred);
 
 		if (tracks) {
@@ -172,7 +172,7 @@ export default class HTML5Video extends React.Component {
 		events.debug('Setting source: entryId: %s, partnerId: %s', source);
 		this.setState({
 			sourceGroups,
-			activeSourceGroup: preferredGroup.name,
+			activeSourceGroup: preferredGroup && preferredGroup.name,
 			tracks
 		});
 
@@ -217,6 +217,24 @@ export default class HTML5Video extends React.Component {
 	}
 
 
+	getReloadFn () {
+		const {video} = this;
+		const {currentTime, state} = this.getVideoState();
+
+		return () => {
+			if (video) {
+				video.load();
+				video.currentTime = currentTime;
+
+				if (state === PLAYING) {
+					this.play();
+				}
+			}
+
+		};
+	}
+
+
 	onVideoStateUpdate = () => {
 		this.forceUpdate();
 	}
@@ -241,6 +259,7 @@ export default class HTML5Video extends React.Component {
 		delete videoProps.src;
 		delete videoProps.tracks;
 		delete videoProps.onReady;
+		delete videoProps.allowNormalTranscripts;
 
 		return (
 			<div className={cls} ref={this.attachContainerRef}>
@@ -298,7 +317,7 @@ export default class HTML5Video extends React.Component {
 				}
 
 				return (
-					<source key={index} src={src} type={type} onError={this.onSourceError} />
+					<source key={index} src={src} type={type} onError={this.onSourceError} data-raw-src={src} />
 				);
 			});
 	}
@@ -450,27 +469,25 @@ export default class HTML5Video extends React.Component {
 	onSourceError = (e) => {
 		e.stopPropagation();
 
-		//TODO: figure out what to do here
-		// this.sourceErrors = this.sourceErrors || {};
+		this.sourceErrors = this.sourceErrors || {};
+		this.sourceErrors[e.target.getAttribute('data-raw-src')] = true;
 
-		// this.sourceErrors[e.target.src] = true;
+		const reload = this.getReloadFn();
+		const {onError} = this.props;
+		const {sourceGroups} = this.state;
+		const updatedSourceGroups = removeSourcesFromGroups(sourceGroups, this.sourceErrors);
+		const preferredGroup = updatedSourceGroups.find(group => group.preferred);
 
-		// const {src} = this.state;
-		// const sources = Array.isArray(src) ? src : [src];
+		if (!updatedSourceGroups.length && onError) {
+			onError(createNonRecoverableError('Unable to load html5 video.'));
+		}
 
-		// for (let source of sources) {
-		// 	let srcUrl = source.src ? source.src : source;
-
-		// 	if (!this.sourceErrors[srcUrl]) {
-		// 		return;
-		// 	}
-		// }
-
-		// const {onError} = this.props;
-
-		// if (onError) {
-		// 	onError(createNonRecoverableError('Unable to load html5 video.'));
-		// }
+		this.setState({
+			sourceGroups: updatedSourceGroups,
+			activeSourceGroup: preferredGroup && preferredGroup.name
+		}, () => {
+			reload();
+		});
 	}
 
 
@@ -633,21 +650,12 @@ export default class HTML5Video extends React.Component {
 
 		if (!group || !group.name || activeSourceGroup === group.name) { return; }
 
-		const {video} = this;
-		const {currentTime, state} = this.getVideoState();
+		const reload = this.getReloadFn();
 
 		this.setState({
 			activeSourceGroup: group.name
 		}, () => {
-			if (video) {
-				video.load();
-				video.currentTime = currentTime;
-
-				if (state === PLAYING) {
-					this.play();
-				}
-			}
-
+			reload();
 		});
 	}
 
