@@ -37,6 +37,14 @@ export default class VideoControlsOverlay extends React.Component {
 	}
 
 
+	get hasSources () {
+		const {videoState} = this.props;
+		const {sourceGroups} = videoState || {};
+
+		return sourceGroups && sourceGroups.length > 0;
+	}
+
+
 	startHideTimer (timeout) {
 		this.stopHideTimer();
 
@@ -106,7 +114,7 @@ export default class VideoControlsOverlay extends React.Component {
 	}
 
 	render () {
-		const {interacted, canPlay} = this;
+		const {interacted, canPlay, hasSources} = this;
 		const {videoState, className, ...otherProps} = this.props;
 		const {showControls} = this.state;
 		const cls = cx('video-controls-overlay', className, {'show-controls': showControls && interacted, 'is-touch': isTouch, 'can-play': canPlay});
@@ -117,7 +125,7 @@ export default class VideoControlsOverlay extends React.Component {
 
 		return (
 			<div className={cls} {...listeners} >
-				{(!interacted || !canPlay) && (<Mask buffering={!canPlay} interacted={interacted} {...otherProps} />)}
+				{(!interacted || !canPlay || !hasSources) && (<Mask buffering={!canPlay} interacted={interacted} hasSources={hasSources} {...otherProps} />)}
 				<UpperControls className="overlay-upper-controls" videoState={videoState} {...otherProps} showing={showControls} isTouch={isTouch} />
 				<LowerControls className="overlay-lower-controls" videoState={videoState} {...otherProps} showing={showControls} isTouch={isTouch} />
 			</div>
