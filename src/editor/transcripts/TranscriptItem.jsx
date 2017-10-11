@@ -104,8 +104,7 @@ export default class TranscriptItem extends React.Component {
 			await Prompt.areYouSure(t('confirmReplace', {name: getName(existing)}));
 
 			try {
-				await video.removeTranscript(existing);
-				await transcript.setPurpose(purpose);
+				await video.replaceTranscript(transcript, existing);
 
 				this.clearError();
 			} catch (e) {
