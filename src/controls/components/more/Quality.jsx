@@ -5,14 +5,14 @@ import cx from 'classnames';
 const DEFAULT = 'default';
 
 export default class VideoMoreControlQuality extends React.Component {
-	static getFormattedActiveQuality (videoState) {
-		return (videoState || {}).activeSourceGroup || 'auto';
-	}
-
-	static hasPotentialQualities (videoState) {
+	static shouldShow (videoState) {
 		const {sourceGroups} = videoState || {};
 
-		return sourceGroups && sourceGroups.length > 0;
+		return sourceGroups && sourceGroups.length > 1;
+	}
+
+	static getFormattedActiveQuality (videoState) {
+		return (videoState || {}).activeSourceGroup || 'auto';
 	}
 
 	static propTypes = {

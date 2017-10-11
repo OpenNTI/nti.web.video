@@ -106,7 +106,7 @@ export default class VideoMoreMenu extends React.Component {
 				<li>
 					{this.renderTopLevelMenuItem(t('speed'), Speed.getFormattedPlaybackRate(videoState), true, this.setSpeedActive)}
 					{this.renderTopLevelMenuItem(t('captions'), Captions.getFormattedActiveTrack(videoState), Captions.hasPotentialTracks(videoState), this.setCaptionsActive)}
-					{this.renderTopLevelMenuItem(t('quality'), Quality.getFormattedActiveQuality(videoState), Quality.hasPotentialQualities(videoState), this.setQualitiesActive)}
+					{Quality.shouldShow(videoState) && this.renderTopLevelMenuItem(t('quality'), Quality.getFormattedActiveQuality(videoState), true, this.setQualitiesActive)}
 				</li>
 			</ul>
 		);
