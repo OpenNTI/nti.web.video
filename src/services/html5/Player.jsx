@@ -143,10 +143,12 @@ export default class HTML5Video extends React.Component {
 		}
 
 		if (tracks) {
+			const noCaptions = tracks.every(x => x.purpose !== 'captions');
+
 			//filter out the tracks that are meant to be used
 			//for the transcript in the media viewer if they aren't
 			//allowed
-			tracks = allowNormalTranscripts ?
+			tracks = allowNormalTranscripts && noCaptions ?
 				tracks :
 				tracks.filter(x => x.purpose !== 'normal');
 		} else {
