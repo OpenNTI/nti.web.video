@@ -6,41 +6,6 @@ const AUTO_TYPES = {
 	'application/vnd.apple.mpegurl': true
 };
 
-function normalizeSource (src) {
-	if (typeof src === 'string') { return {src}; }
-	if (typeof src.src === 'string') { return src; }
-
-	return null;}
-
-function getResolutionForSource (src) {
-	if (src.type && AUTO_TYPES[src.type]) { return 'auto'; }
-
-	return src.height != null && src.width != null ? `${src.height}p` : 'default';
-}
-
-function getWidthOfGroup (group) {
-	return group.reduce((m, s) => Math.max(m, s.width || 0), -1);
-}
-
-function getResolutionGroups (sources) {
-	return sources.reduce((groups, source) => {
-		const normSrc = normalizeSource(source);
-
-		//If we can't normalize the source
-		//don't add it to the groups
-		if (!normSrc) { return groups; }
-
-		const resolution = getResolutionForSource(normSrc);
-
-		if (!groups[resolution]) {
-			groups[resolution] = [normSrc];
-		} else {
-			groups[resolution].push(normSrc);
-		}
-
-		return groups;
-	}, {});
-}
 
 export default function (sources) {
 	if (!Array.isArray(sources)) { sources = [sources]; }
@@ -92,4 +57,44 @@ export default function (sources) {
 				sources: groups[resolution]
 			};
 		});
+}
+
+
+function normalizeSource (src) {
+	return {...src, src: `asdf?src=${src.src}`};
+
+	// if (typeof src === 'string') { return {src}; }
+	// if (typeof src.src === 'string') { return src; }
+
+	// return null;}
+}
+
+function getResolutionForSource (src) {
+	if (src.type && AUTO_TYPES[src.type]) { return 'auto'; }
+
+	return src.height != null && src.width != null ? `${src.height}p` : 'default';
+}
+
+function getWidthOfGroup (group) {
+	return group.reduce((m, s) => Math.max(m, s.width || 0), -1);
+}
+
+function getResolutionGroups (sources) {
+	return sources.reduce((groups, source) => {
+		const normSrc = normalizeSource(source);
+
+		//If we can't normalize the source
+		//don't add it to the groups
+		if (!normSrc) { return groups; }
+
+		const resolution = getResolutionForSource(normSrc);
+
+		if (!groups[resolution]) {
+			groups[resolution] = [normSrc];
+		} else {
+			groups[resolution].push(normSrc);
+		}
+
+		return groups;
+	}, {});
 }
