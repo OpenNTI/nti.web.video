@@ -25,6 +25,12 @@ const MediaSourcePropType = PropTypes.shape({
 	type: PropTypes.string
 });
 
+const initialState = {
+	error: false,
+	interacted: false,
+	videoState: {},
+	sourceGroups: []
+};
 
 export default class HTML5Video extends React.Component {
 	static service = 'html5'
@@ -66,11 +72,7 @@ export default class HTML5Video extends React.Component {
 	}
 
 
-	state = {
-		error: false,
-		interacted: false,
-		videoState: {}
-	}
+	state = {...initialState}
 
 
 	attachRef = (x) => this.video = x
@@ -118,7 +120,7 @@ export default class HTML5Video extends React.Component {
 
 	componentWillUpdate (nextProps) {
 		if (nextProps.source !== this.props.source) {
-			this.setState(this.getInitialState());
+			this.setState({...initialState});
 		}
 	}
 
