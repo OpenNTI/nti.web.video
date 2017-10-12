@@ -4,11 +4,15 @@ import cx from 'classnames';
 
 const DEFAULT = 'default';
 
+const isIE = /(Trident|Edge)\//.test((global.navigator || {}).userAgent);
+
 export default class VideoMoreControlQuality extends React.Component {
 	static shouldShow (videoState) {
 		const {sourceGroups} = videoState || {};
 
-		return sourceGroups && sourceGroups.length > 1;
+		// for now, we will disable this on IE because there is an issue trying
+		// to dynamically change sources specifically on IE videos
+		return !isIE && sourceGroups && sourceGroups.length > 1;
 	}
 
 	static getFormattedActiveQuality (videoState) {
