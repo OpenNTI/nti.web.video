@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import Logger from 'nti-util-logger';
+import isTouch from 'nti-util-detection-touch';
 
 import {createNonRecoverableError, getSourceGroups, removeSourcesFromGroups} from '../utils';
 import {Overlay as ControlsOverlay} from '../../controls';
@@ -9,7 +10,7 @@ import {UNSTARTED, PLAYING, PAUSED, ENDED} from '../../Constants';
 
 const commands = Logger.get('video:html5:commands');
 const events = Logger.get('video:html5:events');
-
+const isIE = /(Trident|Edge)\//.test((global.navigator || {}).userAgent);
 
 const fullscreenEvents = [
 	'fullscreenchange',
@@ -59,6 +60,7 @@ export default class HTML5Video extends React.Component {
 
 		autoPlay: PropTypes.bool,
 		deferred: PropTypes.bool,
+		shouldUseNativeControls: PropTypes.bool,
 
 		onReady: PropTypes.func,
 		onPlaying: PropTypes.func,
@@ -184,6 +186,11 @@ export default class HTML5Video extends React.Component {
 	}
 
 
+	shouldUseNativeControls () {
+		const maybe = isTouch && !isIE;
+		return this.props.shouldUseNativeControls || maybe;
+	}
+
 	getVideoState () {
 		const {video, container} = this;
 		const {
@@ -249,13 +256,13 @@ export default class HTML5Video extends React.Component {
 		const {error, interacted} = this.state;
 		const videoState = this.getVideoState();
 		const {isFullScreen:fullscreen} = videoState;
-
+		const shouldUseNativeControls = this.shouldUseNativeControls();
 		const loadVideo = !deferred || interacted;//if we have an error or we are deferred and we haven't been interacted with
 		const cls = cx('video-wrapper', 'html5-video-wrapper', {error, loaded: loadVideo, interacted, fullscreen});
 
 		const videoProps = {
 			...otherProps,
-			controls: false,
+			controls: shouldUseNativeControls,
 			onClick: this.onClick
 		};
 
@@ -285,23 +292,25 @@ export default class HTML5Video extends React.Component {
 					{loadVideo && this.renderSources()}
 					{loadVideo && this.renderTracks()}
 				</video>
-				<ControlsOverlay
-					className="controls"
-					poster={poster}
-					videoState={videoState}
-					onPlay={this.play}
-					onPause={this.pause}
-					setCurrentTime={this.setCurrentTime}
-					onMute={this.mute}
-					onUnmute={this.unmute}
-					setVolume={this.setVolume}
-					setPlaybackRate={this.setPlaybackRate}
-					selectSourceGroup={this.selectSourceGroup}
-					selectTrack={this.selectTrack}
-					unselectAllTracks={this.unselectAllTracks}
-					goFullScreen={this.goFullScreen}
-					exitFullScreen={this.exitFullScreen}
-				/>
+				{!shouldUseNativeControls && (
+					<ControlsOverlay
+						className="controls"
+						poster={poster}
+						videoState={videoState}
+						onPlay={this.play}
+						onPause={this.pause}
+						setCurrentTime={this.setCurrentTime}
+						onMute={this.mute}
+						onUnmute={this.unmute}
+						setVolume={this.setVolume}
+						setPlaybackRate={this.setPlaybackRate}
+						selectSourceGroup={this.selectSourceGroup}
+						selectTrack={this.selectTrack}
+						unselectAllTracks={this.unselectAllTracks}
+						goFullScreen={this.goFullScreen}
+						exitFullScreen={this.exitFullScreen}
+					/>
+				)}
 			</div>
 		);
 	}
