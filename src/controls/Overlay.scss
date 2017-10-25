@@ -36,4 +36,12 @@
 			transform: translateY(0);
 		}
 	}
+
+	&.native-controls {
+		display: none;
+
+		&.masked {
+			display: initial;
+		}
+	}
 }

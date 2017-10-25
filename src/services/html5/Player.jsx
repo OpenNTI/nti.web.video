@@ -267,6 +267,7 @@ export default class HTML5Video extends React.Component {
 		};
 
 		delete videoProps.source;
+		delete videoProps.sources;
 		delete videoProps.src;
 		delete videoProps.tracks;
 		delete videoProps.onReady;
@@ -292,25 +293,24 @@ export default class HTML5Video extends React.Component {
 					{loadVideo && this.renderSources()}
 					{loadVideo && this.renderTracks()}
 				</video>
-				{!shouldUseNativeControls && (
-					<ControlsOverlay
-						className="controls"
-						poster={poster}
-						videoState={videoState}
-						onPlay={this.play}
-						onPause={this.pause}
-						setCurrentTime={this.setCurrentTime}
-						onMute={this.mute}
-						onUnmute={this.unmute}
-						setVolume={this.setVolume}
-						setPlaybackRate={this.setPlaybackRate}
-						selectSourceGroup={this.selectSourceGroup}
-						selectTrack={this.selectTrack}
-						unselectAllTracks={this.unselectAllTracks}
-						goFullScreen={this.goFullScreen}
-						exitFullScreen={this.exitFullScreen}
-					/>
-				)}
+				<ControlsOverlay
+					className="controls"
+					shouldUseNativeControls={shouldUseNativeControls}
+					poster={poster}
+					videoState={videoState}
+					onPlay={this.play}
+					onPause={this.pause}
+					setCurrentTime={this.setCurrentTime}
+					onMute={this.mute}
+					onUnmute={this.unmute}
+					setVolume={this.setVolume}
+					setPlaybackRate={this.setPlaybackRate}
+					selectSourceGroup={this.selectSourceGroup}
+					selectTrack={this.selectTrack}
+					unselectAllTracks={this.unselectAllTracks}
+					goFullScreen={this.goFullScreen}
+					exitFullScreen={this.exitFullScreen}
+				/>
 			</div>
 		);
 	}

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import cx from 'classnames';
 import isTouch from 'nti-util-detection-touch';
 
-import {hasInteractedWithVideo, isPlaying} from './utils';
+import {hasInteractedWithVideo, isPlaying, isEnded} from './utils';
 import LowerControls from './LowerControls';
 import Mask from './Mask';
 import UpperControls from './UpperControls';
@@ -16,7 +16,8 @@ export default class VideoControlsOverlay extends React.Component {
 		className: PropTypes.string,
 		videoState: PropTypes.object,
 		onPlay: PropTypes.func,
-		onPause: PropTypes.func
+		onPause: PropTypes.func,
+		shouldUseNativeControls: PropTypes.bool
 	}
 
 	state = {
@@ -31,9 +32,16 @@ export default class VideoControlsOverlay extends React.Component {
 	}
 
 	get canPlay () {
+		const {videoState, shouldUseNativeControls} = this.props;
+
+		return videoState.canPlay || shouldUseNativeControls;
+	}
+
+
+	get ended () {
 		const {videoState} = this.props;
 
-		return videoState.canPlay;
+		return isEnded(videoState);
 	}
 
 
@@ -114,10 +122,18 @@ export default class VideoControlsOverlay extends React.Component {
 	}
 
 	render () {
-		const {interacted, canPlay, hasSources} = this;
-		const {videoState, className, ...otherProps} = this.props;
+		const {interacted, canPlay, hasSources, ended} = this;
+		const {videoState, className, shouldUseNativeControls, ...otherProps} = this.props;
 		const {showControls} = this.state;
-		const cls = cx('video-controls-overlay', className, {'show-controls': showControls && interacted, 'is-touch': isTouch, 'can-play': canPlay});
+		const showMask = !interacted || !canPlay || !hasSources || ended;
+
+		const cls = cx('video-controls-overlay', className, {
+			'show-controls': showControls && !showMask,
+			'is-touch': isTouch,
+			'can-play': canPlay,
+			'native-controls': shouldUseNativeControls,
+			'masked': showMask
+		});
 
 		const listeners = isTouch ?
 			{onClick: this.onTouch} :
@@ -125,9 +141,9 @@ export default class VideoControlsOverlay extends React.Component {
 
 		return (
 			<div className={cls} {...listeners} >
-				{(!interacted || !canPlay || !hasSources) && (<Mask buffering={!canPlay} interacted={interacted} hasSources={hasSources} {...otherProps} />)}
-				<UpperControls className="overlay-upper-controls" videoState={videoState} {...otherProps} showing={showControls} isTouch={isTouch} />
-				<LowerControls className="overlay-lower-controls" videoState={videoState} {...otherProps} showing={showControls} isTouch={isTouch} />
+				{showMask && (<Mask buffering={!canPlay} interacted={interacted} ended={ended} hasSources={hasSources} {...otherProps} />)}
+				{!shouldUseNativeControls && (<UpperControls className="overlay-upper-controls" videoState={videoState} {...otherProps} showing={showControls} isTouch={isTouch} />)}
+				{!shouldUseNativeControls && (<LowerControls className="overlay-lower-controls" videoState={videoState} {...otherProps} showing={showControls} isTouch={isTouch} />)}
 			</div>
 		);
 	}

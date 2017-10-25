@@ -14,9 +14,10 @@ VideoControlsMask.propTypes = {
 	poster: PropTypes.string,
 	buffering: PropTypes.bool,
 	interacted: PropTypes.bool,
+	ended: PropTypes.bool,
 	hasSources: PropTypes.bool
 };
-export default function VideoControlsMask ({poster, buffering, interacted, hasSources }) {
+export default function VideoControlsMask ({poster, buffering, interacted, hasSources, ended }) {
 	const cls = cx('video-controls-mask', {'no-sources': !hasSources});
 	const style = {};
 
@@ -28,7 +29,7 @@ export default function VideoControlsMask ({poster, buffering, interacted, hasSo
 	return (
 		<div className={cls} style={style}>
 			{!hasSources && (<span className="unable-to-play">{t('unableToPlay')}</span>)}
-			{!interacted && hasSources && (<span className="play-button" />)}
+			{(!interacted || ended) && hasSources && (<span className="play-button" />)}
 			{buffering && interacted && hasSources && (<span className="buffer"><Loading.Spinner white size="50px" /></span>)}
 		</div>
 	);
