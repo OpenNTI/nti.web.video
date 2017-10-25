@@ -20,7 +20,7 @@ const fullscreenEvents = [
 ];
 
 const MediaSourcePropType = PropTypes.shape({
-	source: PropTypes.string.isRequired,
+	src: PropTypes.string.isRequired,
 	width: PropTypes.number,
 	height: PropTypes.number,
 	type: PropTypes.string
@@ -56,7 +56,7 @@ export default class HTML5Video extends React.Component {
 		tracks: PropTypes.any,
 		allowNormalTranscripts: PropTypes.bool,
 
-		poster: PropTypes.bool,
+		poster: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
 
 		autoPlay: PropTypes.bool,
 		deferred: PropTypes.bool,

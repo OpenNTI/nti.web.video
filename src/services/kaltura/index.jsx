@@ -261,6 +261,8 @@ export default class KalturaVideo extends React.Component {
 			sources
 		};
 
+		debugger;
+
 		return (
 			<div className="kaltura-wrapper">
 				{!sourcesLoaded && (<Loading />)}
