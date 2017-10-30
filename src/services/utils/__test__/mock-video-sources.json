@@ -1,0 +1,87 @@
+[
+  {
+    "bitrate": 1080,
+    "width": 480,
+    "height": 256,
+    "tags": "mobile,web,mbr,iphone,iphonenew",
+    "src": "http://cdnbakmi.kaltura.com/p/1500101/sp/150010100/playManifest/entryId/0_nmii7y4j/flavorId/1_hrks84ge/format/url/protocol/http/a.mp4",
+    "type": "video/mp4"
+  },
+  {
+    "bitrate": 2024,
+    "width": 480,
+    "height": 256,
+    "tags": "mobile,web,mbr,iphone,iphonenew",
+    "src": "http://cdnbakmi.kaltura.com/p/1500101/sp/150010100/playManifest/entryId/0_nmii7y4j/flavorId/1_uz253fq1/format/url/protocol/http/a.mp4",
+    "type": "video/mp4"
+  },
+  {
+    "bitrate": 3160,
+    "width": 480,
+    "height": 256,
+    "tags": "mobile,web,mbr,iphone,iphonenew",
+    "src": "http://cdnbakmi.kaltura.com/p/1500101/sp/150010100/playManifest/entryId/0_nmii7y4j/flavorId/0_j0ybbmr9/format/url/protocol/http/a.mp4",
+    "type": "video/mp4"
+  },
+  {
+    "bitrate": 4384,
+    "width": 640,
+    "height": 360,
+    "tags": "mobile,web,mbr,iphone,iphonenew",
+    "src": "http://cdnbakmi.kaltura.com/p/1500101/sp/150010100/playManifest/entryId/0_nmii7y4j/flavorId/0_am6ueqxn/format/url/protocol/http/a.mp4",
+    "type": "video/mp4"
+  },
+  {
+    "bitrate": 5176,
+    "width": 640,
+    "height": 360,
+    "tags": "mobile,web,mbr,ipad,ipadnew",
+    "src": "http://cdnbakmi.kaltura.com/p/1500101/sp/150010100/playManifest/entryId/0_nmii7y4j/flavorId/0_qigvfz6k/format/url/protocol/http/a.mp4",
+    "type": "video/mp4"
+  },
+  {
+    "bitrate": 6256,
+    "width": 640,
+    "height": 360,
+    "tags": "html5,webm",
+    "src": "http://cdnbakmi.kaltura.com/p/1500101/sp/150010100/playManifest/entryId/0_nmii7y4j/flavorId/0_8l7z245f/format/url/protocol/http/a.webm",
+    "type": "video/webm"
+  },
+  {
+    "bitrate": 8616,
+    "width": 1024,
+    "height": 576,
+    "tags": "mobile,web,mbr,ipad,ipadnew",
+    "src": "http://cdnbakmi.kaltura.com/p/1500101/sp/150010100/playManifest/entryId/0_nmii7y4j/flavorId/0_n7km5ydo/format/url/protocol/http/a.mp4",
+    "type": "video/mp4"
+  },
+  {
+    "bitrate": 12880,
+    "width": 1280,
+    "height": 720,
+    "tags": "web,mbr",
+    "src": "http://cdnbakmi.kaltura.com/p/1500101/sp/150010100/playManifest/entryId/0_nmii7y4j/flavorId/0_bofi0jye/format/url/protocol/http/a.mp4",
+    "type": "video/mp4"
+  },
+  {
+    "bitrate": 20416,
+    "width": 1920,
+    "height": 1072,
+    "tags": "web,mbr",
+    "src": "http://cdnbakmi.kaltura.com/p/1500101/sp/150010100/playManifest/entryId/0_nmii7y4j/flavorId/0_hnnfs61u/format/url/protocol/http/a.mp4",
+    "type": "video/mp4"
+  },
+  {
+    "bitrate": 30808,
+    "width": 1920,
+    "height": 1080,
+    "tags": "source,web",
+    "src": "http://cdnbakmi.kaltura.com/p/1500101/sp/150010100/playManifest/entryId/0_nmii7y4j/flavorId/0_v7modoff/format/url/protocol/http/a.mp4",
+    "type": "video/mp4"
+  },
+  {
+    "data-flavorid": "HLS",
+    "type": "application/vnd.apple.mpegurl",
+    "src": "http://cdnbakmi.kaltura.com/p/1500101/sp/150010100/playManifest/entryId/0_nmii7y4j/flavorIds/0_64doqgsk,1_hrks84ge,1_uz253fq1,0_j0ybbmr9,0_am6ueqxn,0_qigvfz6k,0_n7km5ydo/format/applehttp/protocol/http/a.m3u8"
+  }
+]

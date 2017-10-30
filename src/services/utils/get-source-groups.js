@@ -13,6 +13,7 @@ export default function (sources) {
 	sources = sources.filter(src => canPlayType(src.type));
 
 	const screenWidth = getScreenWidth();
+	const MAX_ALLOWED_DEFAULT_WIDTH = Math.min(screenWidth, 1280); // Screen width for 720p
 	const groups = getResolutionGroups(sources);
 
 	const resolutions = Object.keys(groups);
@@ -28,7 +29,7 @@ export default function (sources) {
 
 		const width = getWidthOfGroup(groups[resolution]);
 
-		if (width > maxWidth && width < screenWidth) {
+		if (width > maxWidth && width <= MAX_ALLOWED_DEFAULT_WIDTH) {
 			maxWidth = width;
 			preferredResolution = resolution;
 		}
