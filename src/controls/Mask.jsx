@@ -21,11 +21,12 @@ export default function VideoControlsMask ({poster, buffering, interacted, hasSo
 	const cls = cx('video-controls-mask', {'no-sources': !hasSources});
 	const style = {};
 
-	if (poster && hasSources) {
+	if (poster && hasSources && !interacted) {
 		style.backgroundImage = `url(${poster})`;
 	} else if (hasSources) {
 		style.backgroundColor = 'transparent';
 	}
+
 	return (
 		<div className={cls} style={style}>
 			{!hasSources && (<span className="unable-to-play">{t('unableToPlay')}</span>)}
