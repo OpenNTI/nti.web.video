@@ -8,6 +8,15 @@ const AUTO_TYPES = {
 
 
 export default function (sources) {
+	if (sources.source && Array.isArray(sources.source) && sources.type) {
+		sources = sources.source.map((src, index) => {
+			return {
+				src,
+				type: sources.type[index]
+			};
+		});
+	}
+
 	if (!Array.isArray(sources)) { sources = [sources]; }
 
 	sources = sources.filter(src => canPlayType(src.type));
