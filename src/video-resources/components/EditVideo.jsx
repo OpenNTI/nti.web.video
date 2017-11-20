@@ -13,6 +13,7 @@ const Types = {
 	'vimeo': 'video/vimeo'
 };
 
+
 function createSources ({service, source}) {
 	return [{
 		MimeType: SourceMimeType,
@@ -21,6 +22,7 @@ function createSources ({service, source}) {
 		type: [Types[service]]
 	}];
 }
+
 
 function createVideoJSON (media) {
 	return Promise.all([
@@ -35,37 +37,44 @@ function createVideoJSON (media) {
 	});
 }
 
-const EditVideo = ({ onSave, onCancel, video, course, onCreate, onVideoDelete }) => {
 
-	const onNewVideoSave = async function (source) {
+
+export default class EditVideo extends React.Component {
+	static propTypes = {
+		video: PropTypes.object,
+		onCancel: PropTypes.func,
+		onSave: PropTypes.func.isRequired,
+		course: PropTypes.shape({
+			hasLink: PropTypes.func.isRequired,
+		}).isRequired,
+		onCreate: PropTypes.func.isRequired,
+		onVideoDelete: PropTypes.func.isRequired,
+	};
+
+
+	onNewVideoSave = async (source) => {
+		const {course, onCreate} = this.props;
 		const link = course.getLink('assets');
 		const media = await createMediaSourceFromUrl(getCanonicalUrlFrom(source));
 		const videoJSON = await createVideoJSON(media);
 		const service = await getService();
 		const createdVideo = await service.postParseResponse(link, videoJSON);
 		onCreate(createdVideo);
-	};
+	}
 
-	const editClass = !video ? 'embed' : 'editor';
-	return (
-		<div className={`edit-video video-resources-edit-${editClass}`}>
-			{ !video
-				? <EmbedInput onSelect={onNewVideoSave} onCancel={onCancel} />
-				: <Editor video={video} onSave={onSave} onCancel={onCancel} onVideoDelete={onVideoDelete} />
-			}
-		</div>
-	);
-};
 
-EditVideo.propTypes = {
-	video: PropTypes.object,
-	onCancel: PropTypes.func,
-	onSave: PropTypes.func.isRequired,
-	course: PropTypes.shape({
-		hasLink: PropTypes.func.isRequired,
-	}).isRequired,
-	onCreate: PropTypes.func.isRequired,
-	onVideoDelete: PropTypes.func.isRequired,
-};
+	render () {
+		const { onSave, onCancel, video, onVideoDelete } = this.props;
 
-export default EditVideo;
+		const editClass = !video ? 'embed' : 'editor';
+		return (
+			<div className={`edit-video video-resources-edit-${editClass}`}>
+				{!video ? (
+					<EmbedInput onSelect={this.onNewVideoSave} onCancel={onCancel} />
+				) : (
+					<Editor video={video} onSave={onSave} onCancel={onCancel} onVideoDelete={onVideoDelete} />
+				)}
+			</div>
+		);
+	}
+}
