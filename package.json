@@ -32,7 +32,7 @@
     "classnames": "^2.0.0",
     "invariant": "^2.1.1",
     "moment": "^2.18.1",
-    "nti-analytics": "^1.1.0",
+    "nti-analytics": "^2.0.0",
     "nti-commons": "^2.5.5",
     "nti-lib-dom": "^1.6.10",
     "nti-lib-interfaces": "^1.42.0",

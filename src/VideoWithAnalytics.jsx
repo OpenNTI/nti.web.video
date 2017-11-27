@@ -1,30 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Logger from 'nti-util-logger';
-import {
-	eventStarted,
-	eventEnded,
-	toAnalyticsPath,
-	WatchVideoEvent
-} from 'nti-analytics';
+import { toAnalyticsPath } from 'nti-analytics';
 
 import Video from './Video';
 
-const logger = Logger.get('video:component:VideoWrapper');
 
 const emptyFunction = () => {};
-
-function deprecated (o, k) { if (o[k]) { return new Error(`Deprecated prop: \`${k}\`, use \`newWatchEventFactory\` callback prop.`); } }
 
 export default class extends React.Component {
 	static displayName = 'VideoWrapper';
 
 	static propTypes = {
-		context: deprecated,
-		courseId: deprecated,
-		transcript: deprecated,
-
-
 		/**
 		 * The Video source. Either a URL or a Video model.
 		 * @type {String/Video}
@@ -55,13 +41,14 @@ export default class extends React.Component {
 		deferred: PropTypes.bool,
 
 		/**
-		 * A factory method to construct a contextually relevant WatchVideoEvent.
-		 * The one and only argument will be the video element to read off the
-		 * currentTime and duration of the video.
-		 *
-		 * The factory should return a new WatchVideoEvent instance.
+		 * An object of properties to send into the analytics events
 		 */
-		newWatchEventFactory: PropTypes.func.isRequired
+		analyticsData: PropTypes.object
+	}
+
+
+	static contextTypes = {
+		analyticsManager: PropTypes.object
 	}
 
 
@@ -74,13 +61,6 @@ export default class extends React.Component {
 	}
 
 
-	state = {
-		// keep track of the play start event so we can push analytics including duration
-		// when the video is paused, stopped, seeked, or ends.
-		playStartEvent: null
-	}
-
-
 	attachRef = (x) => this.activeVideo = x
 
 
@@ -90,19 +70,13 @@ export default class extends React.Component {
 
 	componentWillUnmount () {
 		this.mounted = false;
-
-		let {playStartEvent} = this.state;
-
-		if (playStartEvent) {
-			eventEnded(playStartEvent);
-		}
-
 	}
 
 
-	getAnalyticsEventData = (event) => {
+	getAnalyticsEventData = (event, {context = [], ...data} = {}) => {
 		return {
-			// timestamp: event.timeStamp,
+			...data,
+			context: toAnalyticsPath(context, data.resourceId),
 			target: event.target,
 			currentTime: event.target.currentTime,
 			duration: event.target.duration,
@@ -112,76 +86,25 @@ export default class extends React.Component {
 
 
 	recordPlaybackStarted = (event) => {
-		if (this.state.playStartEvent) {
-			// this can be triggered by a tap on the transcript, which jumps the video to that location.
-			logger.warn('We already have a playStartEvent. How did we get another one without a ' +
-						'pause/stop/seek/end in between?');
-			let e = this.state.playStartEvent;
-			e.finish();
-			eventEnded(e);
+		const {
+			context: {analyticsManager: Manager},
+			props: {analyticsData: data = {}}
+		} = this;
+
+		if (Manager) {
+			Manager.VideoWatch.start(data.resourceId, this.getAnalyticsEventData(event, data));
 		}
-
-		if (this.mounted) {
-			let analyticsEvent = this.newWatchVideoEvent(event);
-			if (analyticsEvent) {
-				eventStarted(analyticsEvent);
-				this.setState({
-					playStartEvent: analyticsEvent
-				});
-			}
-			return analyticsEvent;
-		}
-	}
-
-
-	newWatchVideoEvent = (browserEvent) => {
-		let {newWatchEventFactory, src} = this.props;
-
-		if (!src.ntiid) {
-			logger.warn('No ntiid. Skipping WatchVideoEvent instantiation.');
-			return null;
-		}
-
-		let target = (browserEvent || {}).target || {currentTime: 0, duration: 0};
-
-		if (newWatchEventFactory) {
-			return newWatchEventFactory(target);
-		}
-
-		//FIXME: The rest of the this code should move to the host component
-		//the Context, courseId, transcript etc are all not universally relevant
-
-		if (process.env.NODE_ENV !== 'production') {
-			logger.error('TODO: Move the rest of this method to be passed as an event factory');
-		}
-
-		let {context, courseId, transcript} = this.props;
-
-		let analyticsEvent = new WatchVideoEvent(
-			src.ntiid,
-			courseId, // courseId won't be relevant on Books
-			toAnalyticsPath(context || []),
-			target.currentTime, // video_start_time
-			target.duration, // MaxDuration, the length of the entire video
-			!!transcript // transcript is not used by this component, so its superfluous.
-		);
-
-		return analyticsEvent;
 	}
 
 
 	recordPlaybackStopped = (event) => {
-		let {playStartEvent} = this.state;
-		if (!playStartEvent) {
-			logger.warn('We don\'t have a playStartEvent. Dropping playbackStopped event on the floor.');
-			return;
-		}
+		const {
+			context: {analyticsManager: Manager},
+			props: {analyticsData: data = {}}
+		} = this;
 
-		playStartEvent.finish(event.target.currentTime);
-		eventEnded(playStartEvent);
-
-		if (this.mounted) {
-			this.setState({playStartEvent: null});
+		if (Manager) {
+			Manager.VideoWatch.stop(data.resourceId, this.getAnalyticsEventData(event, data));
 		}
 	}
 
@@ -197,10 +120,6 @@ export default class extends React.Component {
 
 
 	onPlaying = (event) => {
-		// as soon as it starts, record an empty event. (matches webapp behavior)
-		// we do this so if the user closes the window we still ahve a record of them having played the video.
-		// this.emitEmptyAnalyticsEvent();
-
 		this.recordPlaybackStarted(event);
 		this.props.onPlaying(event);
 	}
