@@ -327,7 +327,15 @@ export default class YouTubeVideo extends React.Component {
 			const {playbackRate:newRate} = this.state;
 
 			if (onRateChange && oldRate !== newRate) {
-				onRateChange(oldRate, newRate);
+				onRateChange(oldRate, newRate, {
+					timeStamp: Date.now(),
+					target: {
+						currentTime: info.currentTime || this.state.currentTime,
+						duration: info.duration,
+						playbackRate: newRate,
+					},
+					type: 'ratechange'
+				});
 			}
 		});
 		if (info.hasOwnProperty('currentTime')) {
@@ -385,7 +393,8 @@ export default class YouTubeVideo extends React.Component {
 				timeStamp: Date.now(),
 				target: {
 					currentTime: this.state.currentTime,
-					duration: this.state.duration
+					duration: this.state.duration,
+					playbackRate: this.state.playbackRate,
 				},
 				type: event
 			});

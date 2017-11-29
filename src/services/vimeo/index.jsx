@@ -204,7 +204,7 @@ export default class VimeoVideo extends React.Component {
 		data = data.data;
 
 		if (event === 'error') {
-			//console.warn(`Vimeo Error: ${data.code}: ${data.message}`);
+			logger.error(`Vimeo Error: ${data.code}: ${data.message}`);
 			//Make the view just hide the poster so the viewer can tap the embeded player's play button.
 			mappedEvent = 'playing';
 			handlerName = EventHandlers.playing;
@@ -215,6 +215,7 @@ export default class VimeoVideo extends React.Component {
 			this.postMessage('addEventListener', 'finish');	//ended
 			this.postMessage('addEventListener', 'seek');	//seeked
 			this.postMessage('addEventListener', 'playProgress'); //timeupdate
+			this.postMessage('addEventListener', 'playbackRate'); //playbackRate
 			// this.flushQueue();
 		}
 
@@ -229,7 +230,8 @@ export default class VimeoVideo extends React.Component {
 					timeStamp: Date.now(),
 					target: {
 						currentTime: data && data.seconds,
-						duration: data && data.duration
+						duration: data && data.duration,
+						playbackRate: (data && data.playbackRate) || 1
 					},
 					type: mappedEvent
 				});
