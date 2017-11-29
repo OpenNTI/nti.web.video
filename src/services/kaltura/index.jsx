@@ -258,6 +258,7 @@ export default class KalturaVideo extends React.Component {
 		const videoProps = {
 			...this.props,
 			poster,
+			source: void 0,
 			sources
 		};
 
