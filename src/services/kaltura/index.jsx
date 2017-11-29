@@ -132,7 +132,7 @@ export default class KalturaVideo extends React.Component {
 		/**
 		 * Either a URL string or a source descriptor object.
 		 *
-		 * @type {String/MediaSource}
+		 * @type {string|MediaSource}
 		 */
 		source: PropTypes.any.isRequired,
 

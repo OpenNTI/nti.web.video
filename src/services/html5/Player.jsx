@@ -40,7 +40,7 @@ export default class HTML5Video extends React.Component {
 		/**
 		 * Either a URL string or a source descriptor object.
 		 *
-		 * @type {String/MediaSource}
+		 * @type {string|MediaSource}
 		 */
 		source: PropTypes.oneOfType([
 			PropTypes.string,
