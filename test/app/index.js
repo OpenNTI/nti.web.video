@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {getService} from 'nti-web-client';
 // import {decodeFromURI} from 'nti-lib-ntiids';
 
-import {Chooser} from '../../src';
+import Video, {Chooser} from '../../src';
 import 'nti-style-common/all.scss';
 import 'nti-web-commons/lib/index.css';
 
@@ -41,20 +41,20 @@ class Test extends React.Component {
 
 ReactDOM.render(
 	React.createElement(Test),
+	document.getElementById('chooser')
+);
+
+ReactDOM.render(
+	React.createElement(Video, {src: 'https://youtu.be/ip4z4k4jcRo'}),
 	document.getElementById('youtube')
 );
 
-// ReactDOM.render(
-// 	React.createElement(Video, {src: 'https://youtu.be/ip4z4k4jcRo'}),
-// 	document.getElementById('youtube')
-// );
+ReactDOM.render(
+	React.createElement(Video, {src: 'https://vimeo.com/137531269'}),
+	document.getElementById('vimeo')
+);
 
-// ReactDOM.render(
-// 	React.createElement(Video, {src: 'https://vimeo.com/137531269'}),
-// 	document.getElementById('vimeo')
-// );
-
-// ReactDOM.render(
-// 	React.createElement(Video, {src: 'kaltura://1500101/0_nmii7y4j/'}),
-// 	document.getElementById('kaltura')
-// );
+ReactDOM.render(
+	React.createElement(Video, {src: 'kaltura://1500101/0_nmii7y4j/'}),
+	document.getElementById('kaltura')
+);
