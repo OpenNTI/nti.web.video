@@ -177,8 +177,10 @@ export default class extends React.Component {
 
 
 	render () {
+		const {...props} = this.props;
+		delete props.analyticsData;
 		return (
-			<Video {...this.props}
+			<Video {...props}
 				ref={this.attachRef}
 				onTimeUpdate={this.onTimeUpdate}
 				onSeeked={this.onSeeked}
