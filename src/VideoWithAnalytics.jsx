@@ -1,9 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { toAnalyticsPath } from 'nti-analytics';
+import Logger from 'nti-util-logger';
 
 import Video from './Video';
 
+const logger = Logger.get('video:analytics');
 
 const emptyFunction = () => {};
 
@@ -13,7 +15,7 @@ export default class extends React.Component {
 	static propTypes = {
 		/**
 		 * The Video source. Either a URL or a Video model.
-		 * @type {String/Video}
+		 * @type {String|Video}
 		 */
 		src: PropTypes.oneOfType([
 			PropTypes.string,
@@ -36,6 +38,7 @@ export default class extends React.Component {
 		onPlaying: PropTypes.func,
 		onPause: PropTypes.func,
 		onEnded: PropTypes.func,
+		onRateChange: PropTypes.func,
 
 
 		deferred: PropTypes.bool,
@@ -57,7 +60,8 @@ export default class extends React.Component {
 		onSeeked: emptyFunction,
 		onPlaying: emptyFunction,
 		onPause: emptyFunction,
-		onEnded: emptyFunction
+		onEnded: emptyFunction,
+		onRateChange: emptyFunction,
 	}
 
 
@@ -68,91 +72,106 @@ export default class extends React.Component {
 		this.mounted = true;
 	}
 
+
 	componentWillUnmount () {
 		this.mounted = false;
 	}
 
 
-	getAnalyticsEventData = (event, {context = [], ...data} = {}) => {
+	getAnalyticsEventData (action, event, {context = [], ...data} = {}) {
+		const {currentTime: videoTime, duration, playbackRate: playSpeed} = event.target;
 		return {
-			...data,
+			type: event.type,
 			context: toAnalyticsPath(context, data.resourceId),
-			target: event.target,
-			currentTime: event.target.currentTime,
-			duration: event.target.duration,
-			type: event.type
+			...data, // withTranscript is/should-be in "data"
+			duration,
+			playSpeed,
+			videoTime,
+			...(action === 'start' ? {videoStartTime: videoTime} : {}),
+			...(action === 'stop'  ? {videoEndTime: videoTime} : {}),
 		};
 	}
 
 
-	recordPlaybackStarted = (event) => {
+	sendAnalyticsEvent (domEvent, eventName, action, additionalData = {}) {
 		const {
 			context: {analyticsManager: Manager},
 			props: {analyticsData: data = {}}
 		} = this;
 
 		if (Manager) {
-			Manager.VideoWatch.start(data.resourceId, this.getAnalyticsEventData(event, data));
-		}
-	}
-
-
-	recordPlaybackStopped = (event) => {
-		const {
-			context: {analyticsManager: Manager},
-			props: {analyticsData: data = {}}
-		} = this;
-
-		if (Manager) {
-			Manager.VideoWatch.stop(data.resourceId, this.getAnalyticsEventData(event, data));
+			try {
+				// This isn't a pattern to replicate blindly. Normaly repeating yourself is better
+				// than using string hashes into objects but we don't control the object here so the
+				// optimizations cannot be performed anyways...
+				Manager[eventName][action](data.resourceId, {
+					...this.getAnalyticsEventData(domEvent, data),
+					...additionalData
+				});
+			} catch (e) {
+				logger.error(e.stack || e.message || e);
+			}
+		} else {
+			logger.warn('Missing Analytics Manager!');
 		}
 	}
 
 
 	onTimeUpdate = (event) => {
+		this.sendAnalyticsEvent(event, 'VideoWatch', 'update');
 		this.props.onTimeUpdate(event);
 	}
 
 
 	onSeeked = (event) => {
+		this.sendAnalyticsEvent(event, 'VideoSkip', 'send');
 		this.props.onSeeked(event);
 	}
 
 
 	onPlaying = (event) => {
-		this.recordPlaybackStarted(event);
+		this.sendAnalyticsEvent(event, 'VideoWatch', 'start');
 		this.props.onPlaying(event);
 	}
 
 
 	onPause = (event) => {
-		this.recordPlaybackStopped(event);
+		this.sendAnalyticsEvent(event, 'VideoWatch', 'stop');
 		this.props.onPause(event);
 	}
 
 
 	onEnded = (event) => {
-		this.recordPlaybackStopped(event);
+		this.sendAnalyticsEvent(event, 'VideoWatch', 'stop');
 		this.props.onEnded(event);
 	}
 
 
-	play = () => {
+	onRateChange = (oldRate, newRate, event) => {
+		this.sendAnalyticsEvent(event, 'VideoSpeedChange', 'send', {
+			oldPlaySpeed: oldRate,
+			newPlaySpeed: newRate
+		});
+		this.props.onRateChange(oldRate, newRate, event);
+	}
+
+
+	play () {
 		this.activeVideo.play();
 	}
 
 
-	pause = () => {
+	pause () {
 		this.activeVideo.pause();
 	}
 
 
-	stop = () => {
+	stop () {
 		this.activeVideo.stop();
 	}
 
 
-	setCurrentTime = (time) => {
+	setCurrentTime (time) {
 		this.activeVideo.setCurrentTime(time);
 	}
 
@@ -166,6 +185,7 @@ export default class extends React.Component {
 				onPlaying={this.onPlaying}
 				onPause={this.onPause}
 				onEnded={this.onEnded}
+				onRateChange={this.onRateChange}
 			/>
 		);
 	}
