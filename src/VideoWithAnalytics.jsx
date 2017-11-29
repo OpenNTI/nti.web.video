@@ -105,7 +105,7 @@ export default class extends React.Component {
 				// than using string hashes into objects but we don't control the object here so the
 				// optimizations cannot be performed anyways...
 				Manager[eventName][action](data.resourceId, {
-					...this.getAnalyticsEventData(domEvent, data),
+					...this.getAnalyticsEventData(action, domEvent, data),
 					...additionalData
 				});
 			} catch (e) {
