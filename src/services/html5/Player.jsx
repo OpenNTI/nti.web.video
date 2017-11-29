@@ -20,7 +20,7 @@ const fullscreenEvents = [
 ];
 
 const MediaSourcePropType = PropTypes.shape({
-	source: PropTypes.string.isRequired,
+	source: PropTypes.any,
 	width: PropTypes.number,
 	height: PropTypes.number,
 	type: PropTypes.string
