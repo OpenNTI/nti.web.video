@@ -10,7 +10,7 @@ const DEFAULT_TEXT = {
 	kaltura: 'Kaltura'
 };
 
-const t = scoped('VIDEO_ITEM', DEFAULT_TEXT);
+const t = scoped('video.components.video-contents.video', DEFAULT_TEXT);
 
 class Video extends Component {
 	static propTypes = {
