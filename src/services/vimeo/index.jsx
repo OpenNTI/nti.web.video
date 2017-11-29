@@ -68,7 +68,15 @@ export default class VimeoVideo extends React.Component {
 		source: PropTypes.any.isRequired,
 		autoPlay: PropTypes.bool,
 		width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-		height: PropTypes.oneOfType([PropTypes.number, PropTypes.string])
+		height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+
+		onPlaying: PropTypes.func,
+		onPause: PropTypes.func,
+		onEnded: PropTypes.func,
+		onRateChange: PropTypes.func,
+		onSeeked: PropTypes.func,
+		onTimeUpdate: PropTypes.func,
+		onReady: PropTypes.func,
 	}
 
 	state = {}

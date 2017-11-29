@@ -69,8 +69,14 @@ export default class YouTubeVideo extends React.Component {
 		onError: PropTypes.func,
 		width: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 		height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+
+		onPlaying: PropTypes.func,
+		onPause: PropTypes.func,
+		onEnded: PropTypes.func,
+		onRateChange: PropTypes.func,
+		onSeeked: PropTypes.func,
+		onTimeUpdate: PropTypes.func,
 		onReady: PropTypes.func,
-		onRateChange: PropTypes.func
 	}
 
 	state = {id: uuid(), scope: YOU_TUBE, playerState: -1}
