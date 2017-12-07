@@ -412,7 +412,9 @@ export default class HTML5Video extends React.Component {
 
 		const {props: {onPause}} = this;
 
-		this.setState({playerState: PAUSED});
+		this.setState(state => ({
+			playerState: state.playerState === UNSTARTED ? UNSTARTED : PAUSED
+		}));
 
 		if (onPause) {
 			onPause(e);
