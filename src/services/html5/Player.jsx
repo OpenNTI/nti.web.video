@@ -89,7 +89,11 @@ export default class HTML5Video extends React.Component {
 			video.setAttribute('webkit-playsinline', true);
 
 			if (this.props.autoPlay) {
-				this.play();
+				this.play()
+					.catch(() => {
+						events.debug('Failed to start, resetting state to "UNSTARTED"');
+						this.setState({playerState: UNSTARTED});
+					});
 			}
 		}
 	}
@@ -270,6 +274,7 @@ export default class HTML5Video extends React.Component {
 			onClick: this.onClick
 		};
 
+		delete videoProps.autoPlay;
 		delete videoProps.source;
 		delete videoProps.sources;
 		delete videoProps.src;
