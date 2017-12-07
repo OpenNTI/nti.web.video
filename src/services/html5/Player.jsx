@@ -77,8 +77,22 @@ export default class HTML5Video extends React.Component {
 	state = {...initialState}
 
 
-	attachRef = (x) => this.video = x
+
 	attachContainerRef = x => this.container = x
+
+
+	attachRef = (video) => {
+		this.video = video;
+
+		if (video) {
+			//attempt to tell the WebView to play inline...
+			video.setAttribute('webkit-playsinline', true);
+
+			if (this.props.autoPlay) {
+				this.play();
+			}
+		}
+	}
 
 
 	componentWillUnmount () {
@@ -103,17 +117,6 @@ export default class HTML5Video extends React.Component {
 
 
 	componentDidMount () {
-		const {props: {autoPlay}, refs: {video}} = this;
-
-		if (video) {
-			//attempt to tell the WebView to play inline...
-			video.setAttribute('webkit-playsinline', true);
-
-			if (autoPlay) {
-				this.play();
-			}
-		}
-
 		for (let event of fullscreenEvents) {
 			document.addEventListener(event, this.onFullScreenChange);
 		}
@@ -190,6 +193,7 @@ export default class HTML5Video extends React.Component {
 		const maybe = isTouch && !isIE;
 		return this.props.shouldUseNativeControls || maybe;
 	}
+
 
 	getVideoState () {
 		const {video, container} = this;
