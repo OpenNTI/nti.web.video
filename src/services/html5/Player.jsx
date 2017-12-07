@@ -551,9 +551,11 @@ export default class HTML5Video extends React.Component {
 
 		if (video && !this.isUnmounted) {
 			if (video.play) {
-				video.play();
+				return Promise.resolve(video.play());
 			}
 		}
+
+		return Promise.reject('Could not play.');
 	}
 
 
