@@ -33,6 +33,7 @@ const initialState = {
 	sourceGroups: []
 };
 
+
 export default class HTML5Video extends React.Component {
 	static service = 'html5'
 
@@ -535,7 +536,8 @@ export default class HTML5Video extends React.Component {
 	onRateChange = (e) => {
 		events.debug('ratechange %o', e);
 
-		const {playbackRate:oldRate} = this.state;
+		const {onRateChange = ()=>0} = this.props;
+		const {playbackRate:oldRate = 1} = this.state;
 		const {playbackRate:newRate} = this.getVideoState();
 
 		this.onVideoStateUpdate();
@@ -544,9 +546,7 @@ export default class HTML5Video extends React.Component {
 			playbackRate:newRate
 		});
 
-		if (this.props.onRateChange) {
-			this.props.onRateChange(oldRate, newRate, e);
-		}
+		onRateChange(oldRate, newRate, e);
 	}
 
 
@@ -761,7 +761,6 @@ export function getStateForVideo (video) {
 }
 
 
-
 /*
 https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/cross_browser_video_player#Fullscreen
  */
@@ -785,6 +784,7 @@ function canGoFullScreen () {
 		|| document.createElement('video').webkitEnterFullscreen
 	);
 }
+
 
 function requestFullScreen (container, video) {
 	const elems = [container, video];

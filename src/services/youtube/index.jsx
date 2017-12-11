@@ -319,9 +319,10 @@ export default class YouTubeVideo extends React.Component {
 		context.postMessage(JSON.stringify(data), this.state.scope);
 	}
 
+
 	handleInfoDelivery = (info) => {
 		const {onRateChange} = this.props;
-		const {playbackRate:oldRate} = this.state;
+		const {playbackRate:oldRate = 1} = this.state;
 
 		this.setState(info, () => {
 			const {playbackRate:newRate} = this.state;
@@ -338,6 +339,7 @@ export default class YouTubeVideo extends React.Component {
 				});
 			}
 		});
+
 		if (info.hasOwnProperty('currentTime')) {
 			this.fireEvent('timeupdate');
 		}
@@ -364,6 +366,7 @@ export default class YouTubeVideo extends React.Component {
 
 
 	handleApiInfoDelivery = () => {}
+
 
 	handleOnReady = () => {
 		const {onReady} = this.props;
