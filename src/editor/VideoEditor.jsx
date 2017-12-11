@@ -28,12 +28,13 @@ const DEFAULT_TEXT = {
 };
 
 const t = scoped('nti-video.editor.Editor', DEFAULT_TEXT);
+const isModal = Symbol();
 
 export default class VideoEditor extends React.Component {
 	static show (video, config, props) {
 		return new Promise((select, reject) => {
 			Prompt.modal(
-				(<VideoEditor video={video} onSave={select} onCancel={reject} _isModal {...props}/>),
+				(<VideoEditor video={video} onSave={select} onCancel={reject} {...{[isModal]: true}} {...props}/>),
 				{...config, className: 'video-editor-prompt'}
 			);
 		});
@@ -46,7 +47,7 @@ export default class VideoEditor extends React.Component {
 		onVideoDelete: PropTypes.func,
 
 		onDismiss: PropTypes.func,
-		_isModal: PropTypes.bool
+		[isModal]: PropTypes.bool
 	}
 
 	state = {}
@@ -106,7 +107,7 @@ export default class VideoEditor extends React.Component {
 
 	onSave = async () => {
 		const {title, video} = this.state;
-		const {onSave, _isModal} = this.props;
+		const {onSave, [isModal]: modal} = this.props;
 
 		this.setState({saving: true});
 
@@ -119,7 +120,7 @@ export default class VideoEditor extends React.Component {
 			});
 		}
 
-		if (onSave && _isModal) {
+		if (onSave && modal) {
 			this.unmountCallback = () => {
 				onSave(video);
 			};
@@ -136,9 +137,9 @@ export default class VideoEditor extends React.Component {
 
 
 	onCancel = (e) => {
-		const {onCancel, _isModal} = this.props;
+		const {onCancel, [isModal]: modal} = this.props;
 
-		if (_isModal) {
+		if (modal) {
 			if (e) {
 				e.preventDefault();
 				e.stopPropagation();
@@ -164,7 +165,7 @@ export default class VideoEditor extends React.Component {
 
 	doDelete = async () => {
 		const {video} = this.state;
-		const {onVideoDelete, onCancel, _isModal} = this.props;
+		const {onVideoDelete, onCancel, [isModal]: modal} = this.props;
 
 		this.setState({deleting: true});
 
@@ -177,7 +178,7 @@ export default class VideoEditor extends React.Component {
 			});
 		}
 
-		if (onVideoDelete && _isModal) {
+		if (onVideoDelete && modal) {
 			this.unmountCallback = () => {
 				onVideoDelete(video);
 
@@ -209,7 +210,7 @@ export default class VideoEditor extends React.Component {
 
 	render () {
 		const {video, saving, deleting} = this.state;
-		const {_isModal} = this.props;
+		const {[isModal]: modal} = this.props;
 
 		const buttons = [
 			{label: t('cancel'), onClick: () => this.onCancel()},
@@ -218,7 +219,7 @@ export default class VideoEditor extends React.Component {
 
 		return (
 			<div className="video-editor">
-				{_isModal && (<Panels.TitleBar className="video-prompt-header" title={t('modalTitle')} iconAction={this.onCancel} />)}
+				{modal && (<Panels.TitleBar className="video-prompt-header" title={t('modalTitle')} iconAction={this.onCancel} />)}
 				{video && this.renderVideo()}
 				{video && (<DialogButtons buttons={buttons} />)}
 				{!video && (<Loading.Mask />)}
