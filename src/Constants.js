@@ -1,5 +1,6 @@
 export const EventHandlers = {
 	playing: 'onPlaying',
+	ratechange: 'onRateChange',
 	pause: 'onPause',
 	ended: 'onEnded',
 	seeked: 'onSeeked',

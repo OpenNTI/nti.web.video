@@ -23,7 +23,8 @@ const VIMEO_EVENTS_TO_HTML5 = {
 	finish: 'ended',
 	seek: 'seeked',
 	ready: 'ready',
-	playProgress: 'timeupdate'
+	playbackRate: 'ratechange',
+	playProgress: 'timeupdate',
 };
 
 const VIMEO_URL_PARTS = /(?:https?:)?\/\/(?:(?:www|player)\.)?vimeo.com\/(?:(?:channels|video)\/(?:\w+\/)?|groups\/(?:[^/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?|#)/i;
@@ -226,7 +227,7 @@ export default class VimeoVideo extends React.Component {
 
 		if(mappedEvent && handlerName) {
 			if (this.props[handlerName]) {
-				this.props[handlerName]({
+				const mockEvent = {
 					timeStamp: Date.now(),
 					target: {
 						currentTime: data && data.seconds,
@@ -234,7 +235,17 @@ export default class VimeoVideo extends React.Component {
 						playbackRate: (data && data.playbackRate) || 1
 					},
 					type: mappedEvent
-				});
+				};
+
+				if (handlerName === EventHandlers.ratechange) {
+					const {playbackRate:oldRate = 1} = this.state;
+					const newRate = mockEvent.target.playbackRate;
+
+					this.setState({playbackRate: newRate});
+					this.props[handlerName](oldRate, newRate, mockEvent);
+				} else {
+					this.props[handlerName](mockEvent);
+				}
 			}
 
 			if (this[handlerName]) {
