@@ -28,7 +28,7 @@ const DEFAULT_TEXT = {
 };
 
 const t = scoped('nti-video.editor.Editor', DEFAULT_TEXT);
-const isModal = Symbol();
+const isModal = 'private:isModal';
 
 export default class VideoEditor extends React.Component {
 	static show (video, config, props) {
