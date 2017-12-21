@@ -99,6 +99,11 @@ export default class extends React.Component {
 			props: {analyticsData: data = {}}
 		} = this;
 
+		if (!data.resourceId) {
+			logger.warn('Missing resourceId!');
+			return;
+		}
+
 		if (Manager) {
 			try {
 				// This isn't a pattern to replicate blindly. Normaly repeating yourself is better
@@ -112,13 +117,18 @@ export default class extends React.Component {
 				logger.error(e.stack || e.message || e);
 			}
 		} else {
-			logger.warn('Missing Analytics Manager!');
+			if (!this.warnedMissing) {
+				this.warnedMissing = true;
+				logger.warn('Missing Analytics Manager!');
+			}
 		}
 	}
 
 
 	onTimeUpdate = (event) => {
-		this.sendAnalyticsEvent(event, 'VideoWatch', 'update');
+		if (this.isStarted) {
+			this.sendAnalyticsEvent(event, 'VideoWatch', 'update');
+		}
 		this.props.onTimeUpdate(event);
 	}
 
@@ -131,18 +141,21 @@ export default class extends React.Component {
 
 	onPlaying = (event) => {
 		this.sendAnalyticsEvent(event, 'VideoWatch', 'start');
+		this.isStarted = true;
 		this.props.onPlaying(event);
 	}
 
 
 	onPause = (event) => {
 		this.sendAnalyticsEvent(event, 'VideoWatch', 'stop');
+		this.isStarted = false;
 		this.props.onPause(event);
 	}
 
 
 	onEnded = (event) => {
 		this.sendAnalyticsEvent(event, 'VideoWatch', 'stop');
+		this.isStarted = false;
 		this.props.onEnded(event);
 	}
 
