@@ -10,6 +10,7 @@
     "lib"
   ],
   "scripts": {
+    "fix": "nti-cmp-scripts fix",
     "test": "nti-cmp-scripts test",
     "start": "nti-cmp-scripts start",
     "prepack": "nti-cmp-scripts build",
