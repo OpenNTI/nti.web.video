@@ -225,7 +225,8 @@ export default class KalturaVideo extends React.Component {
 			poster: data.poster,
 			sources: data.sources,
 			sourcesLoaded: true,
-			isError: (data.objectType === 'KalturaAPIException')
+			isError: (data.objectType === 'KalturaAPIException'),
+			tracks: data.tracks
 		});
 	}
 
@@ -249,7 +250,7 @@ export default class KalturaVideo extends React.Component {
 
 
 	render () {
-		const {poster, sourcesLoaded, isError, sources} = this.state;
+		const {poster, sourcesLoaded, isError, sources, tracks} = this.state;
 
 		if (isError) {
 			return (<div className="error">Unable to load video.</div>);
@@ -259,13 +260,14 @@ export default class KalturaVideo extends React.Component {
 			...this.props,
 			poster,
 			source: void 0,
-			sources
+			sources,
+			tracks
 		};
 
 		return (
 			<div className="kaltura-wrapper">
 				{!sourcesLoaded && (<Loading />)}
-				{sourcesLoaded && (<Video {...videoProps} ref={this.attachRef} allowNormalTranscripts />)}
+				{sourcesLoaded && (<Video {...videoProps} ref={this.attachRef} allowNormalTranscripts crossOrigin />)}
 			</div>
 		);
 	}
