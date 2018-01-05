@@ -36,7 +36,7 @@ function parseResult ( result ) { // API result
 		'://www.kaltura.com' :
 		'://cdnbakmi.kaltura.com';
 
-	const [, data, entryInfo] = result;
+	const [, data, entryInfo, captionInfo] = result;
 	const assets = data.flavorAssets || [];
 
 	const baseUrl = protocol + serviceUrl + '/p/' + entryInfo.partnerId +
@@ -106,6 +106,15 @@ function parseResult ( result ) { // API result
 					'/thumbnail/entry_id/' + entryInfo.id +
 					'/width/' + w + '/';
 
+	const duration = Math.ceil(entryInfo.duration) + 30;
+	const captions = captionInfo.totalCount > 0 ? 
+		captionInfo['objects'].map(caption => ({
+			lang: caption.languageCode,
+			purpose: 'captions',
+			src: `https://cdnapisec.kaltura.com/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/segmentDuration/${duration}/segmentIndex/1/captionAssetId/${caption.id}/ks/${result[0].ks}`,
+		}))
+		: [];
+
 	return {
 		objectType: data.objectType,
 		code: data.code,
@@ -114,10 +123,10 @@ function parseResult ( result ) { // API result
 		name: entryInfo.name,
 		entryId: entryInfo.id,
 		description: entryInfo.description,
-		sources: deviceSources
+		sources: deviceSources,
+		tracks: captions
 	};
 }
-
 
 export default function getSources (settings) {
 
@@ -146,7 +155,15 @@ export default function getSources (settings) {
 		'3:service': 'baseentry',
 		'3:action': 'get',
 		'3:version': '-1',
-		'3:entryId': settings.entryId
+		'3:entryId': settings.entryId,
+
+		'4:ks': '{1:result:ks}',
+		'4:service': 'caption_captionasset',
+		'4:filter:entryIdEqual': settings.entryId,
+		'4:filter:objectType': 'KalturaAssetFilter',
+		'4:filter:statusEqual': 2,
+		'4:pager:pageSize': 50,
+		'4:action': 'list'
 	};
 
 	//Do not alter these three lines
