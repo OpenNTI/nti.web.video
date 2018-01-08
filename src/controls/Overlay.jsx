@@ -128,7 +128,7 @@ export default class VideoControlsOverlay extends React.Component {
 		const showMask = !interacted || !canPlay || !hasSources || ended;
 
 		const cls = cx('video-controls-overlay', className, {
-			'show-controls': showControls || (!showMask && !interacted),
+			'show-controls': showControls && interacted,
 			'is-touch': isTouch,
 			'can-play': canPlay,
 			'native-controls': shouldUseNativeControls,
