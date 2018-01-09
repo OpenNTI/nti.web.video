@@ -263,7 +263,7 @@ export default class KalturaVideo extends React.Component {
 			poster,
 			source: void 0,
 			sources,
-			tracks: tracks || defaultTracks
+			tracks: tracks && tracks.length > 0 ? tracks : defaultTracks
 		};
 
 		return (
