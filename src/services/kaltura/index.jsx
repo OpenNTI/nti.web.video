@@ -135,7 +135,8 @@ export default class KalturaVideo extends React.Component {
 		 * @type {string|MediaSource}
 		 */
 		source: PropTypes.any.isRequired,
-
+		tracks: PropTypes.array,
+		
 		autoPlay: PropTypes.bool,
 		deferred: PropTypes.bool,
 
@@ -250,7 +251,8 @@ export default class KalturaVideo extends React.Component {
 
 
 	render () {
-		const {poster, sourcesLoaded, isError, sources, tracks} = this.state;
+		const {poster, sourcesLoaded, isError, sources, tracks: defaultTracks } = this.state;
+		const { tracks } = this.props;
 
 		if (isError) {
 			return (<div className="error">Unable to load video.</div>);
@@ -261,7 +263,7 @@ export default class KalturaVideo extends React.Component {
 			poster,
 			source: void 0,
 			sources,
-			tracks
+			tracks: tracks || defaultTracks
 		};
 
 		return (
