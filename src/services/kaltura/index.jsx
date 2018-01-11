@@ -136,7 +136,7 @@ export default class KalturaVideo extends React.Component {
 		 */
 		source: PropTypes.any.isRequired,
 		tracks: PropTypes.array,
-		
+
 		autoPlay: PropTypes.bool,
 		deferred: PropTypes.bool,
 
@@ -263,13 +263,14 @@ export default class KalturaVideo extends React.Component {
 			poster,
 			source: void 0,
 			sources,
+			crossorigin: tracks && tracks.length > 0 ? false : true,
 			tracks: tracks && tracks.length > 0 ? tracks : defaultTracks
 		};
 
 		return (
 			<div className="kaltura-wrapper">
 				{!sourcesLoaded && (<Loading />)}
-				{sourcesLoaded && (<Video {...videoProps} ref={this.attachRef} allowNormalTranscripts crossOrigin />)}
+				{sourcesLoaded && (<Video {...videoProps} ref={this.attachRef} allowNormalTranscripts />)}
 			</div>
 		);
 	}
