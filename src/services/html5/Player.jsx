@@ -56,7 +56,7 @@ export default class HTML5Video extends React.Component {
 
 		tracks: PropTypes.any,
 		allowNormalTranscripts: PropTypes.bool,
-		crossOrigin: PropTypes.bool,
+		crossOrigin: PropTypes.string,
 
 		poster: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
 
