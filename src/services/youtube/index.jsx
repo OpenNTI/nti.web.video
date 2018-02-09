@@ -230,7 +230,6 @@ export default class YouTubeVideo extends React.Component {
 				height={height}
 				frameBorder="0"
 				allowFullScreen
-				allowTransparency
 			/>
 		);
 	}
