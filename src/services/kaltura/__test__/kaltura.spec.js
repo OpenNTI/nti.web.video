@@ -4,6 +4,7 @@ import { mount } from 'enzyme';
 
 import Kaltura from '../index';
 
+const wait = n => new Promise(t => setTimeout(t, n));
 
 describe('Kaltura Service', () => {
 	beforeEach(() => {
@@ -196,22 +197,23 @@ describe('Kaltura Service', () => {
 	/*
 	*	NTI-4689: Make sure default tracks are pulled in
 	*/
-	test('should have default tracks', (done) => {
+	test('should have default tracks', async () => {
 		const wrapper = mount(<Kaltura source={'kaltura://1500101/0_nmii7y4j/'} />);
-		window.setTimeout(() => {
-			const track = wrapper.find('track').first();
-			const trackSrc = 'https://cdnapisec.kaltura.com/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/segmentDuration/155/segmentIndex/1/captionAssetId/0_qazodgom/ks/djJ8MTUwMDEwMXwvhxzhuHGGz5EjPAOn2oj-zzUW1JlHoDrdrZw0pmWKu4iZQ_ZBxMCRjQCPSls887JHBgSbl5dxdnj41jW5cpGPZNwakps1n30iZ7Pz_Q5LNQ==';
-			expect(track.prop('src')).toEqual(trackSrc);
-			expect(track.prop('srcLang')).toEqual('en');
-			expect(track.prop('kind')).toEqual('captions');
-			done();
-		}, 200);
+
+		await wait(100);
+		wrapper.update();
+
+		const track = wrapper.find('track').first();
+		const trackSrc = 'https://cdnapisec.kaltura.com/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/segmentDuration/155/segmentIndex/1/captionAssetId/0_qazodgom/ks/djJ8MTUwMDEwMXwvhxzhuHGGz5EjPAOn2oj-zzUW1JlHoDrdrZw0pmWKu4iZQ_ZBxMCRjQCPSls887JHBgSbl5dxdnj41jW5cpGPZNwakps1n30iZ7Pz_Q5LNQ==';
+		expect(track.prop('src')).toEqual(trackSrc);
+		expect(track.prop('srcLang')).toEqual('en');
+		expect(track.prop('kind')).toEqual('captions');
 	});
 
 	/*
 	*	NTI-4689: Make sure custom tracks override default
 	*/
-	test('should have custom tracks', async (done) => {
+	test('should have custom tracks', async () => {
 		const transcript = {
 			'Class': 'Transcript',
 			'CreatedTime': 1515596862.577514,
@@ -236,13 +238,14 @@ describe('Kaltura Service', () => {
 			'type': 'text/vtt'
 		};
 		const wrapper = mount(<Kaltura source={'kaltura://1500101/0_nmii7y4j/'} tracks={[transcript]} />);
-		window.setTimeout(() => {
-			const track = wrapper.find('track').first();
-			const trackSrc = '/dataserver2/Objects/tag%3Anextthought.com%2C2011-10%3Asystem-OID-0x04d808%3A5573657273/@@download/test.vtt';
-			expect(track.prop('src')).toEqual(trackSrc);
-			expect(track.prop('srcLang')).toEqual('en');
-			expect(track.prop('kind')).toEqual('captions');
-			done();
-		}, 200);
+
+		await wait(100);
+		wrapper.update();
+
+		const track = wrapper.find('track').first();
+		const trackSrc = '/dataserver2/Objects/tag%3Anextthought.com%2C2011-10%3Asystem-OID-0x04d808%3A5573657273/@@download/test.vtt';
+		expect(track.prop('src')).toEqual(trackSrc);
+		expect(track.prop('srcLang')).toEqual('en');
+		expect(track.prop('kind')).toEqual('captions');
 	});
 });
