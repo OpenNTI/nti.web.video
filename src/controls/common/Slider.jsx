@@ -62,13 +62,22 @@ export default class Slider extends React.Component {
 
 		delete otherProps.onChange;
 
+		const coerce = x => isNaN(x) ? null : x;
+
 		return (
 			<div className={cls} onClick={this.onClick} ref={this.attachRef} >
 				<div className="track">
 					<div className="lower" style={{width: `${lowerPercentage}%`}} />
 					<div className="upper" style={{width: `${upperPercentage}%`}} />
 				</div>
-				<input type="range" min={min} max={max} value={value} onChange={this.onChange} {...otherProps} />
+				<input
+					type="range"
+					min={coerce(min)}
+					max={coerce(max)}
+					value={coerce(value)}
+					onChange={this.onChange}
+					{...otherProps}
+				/>
 			</div>
 		);
 	}
