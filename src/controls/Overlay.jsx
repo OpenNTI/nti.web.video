@@ -25,6 +25,13 @@ export default class VideoControlsOverlay extends React.Component {
 	}
 
 
+	componentWillUnmount () {
+		this.unmounted = true;
+		this.setState = () => {};
+		this.stopHideTimer();
+	}
+
+
 	get interacted () {
 		const {videoState} = this.props;
 
