@@ -202,9 +202,7 @@ export default class Video extends React.Component {
 
 		return (
 			<div className={cx(
-				'nti-video', Provider.service, className,
-				//legacy "foundation" classnames...do not use them in your selectors.
-				'flex-video', 'widescreen'
+				'nti-video', Provider.service, className
 			)}>
 				<Provider {...this.props}
 					ref={this.attachRef}
