@@ -23,7 +23,7 @@ const VIMEO_EVENTS_TO_HTML5 = {
 	finish: 'ended',
 	seek: 'seeked',
 	ready: 'ready',
-	playbackRate: 'ratechange',
+	playbackratechange: 'ratechange',
 	playProgress: 'timeupdate',
 };
 
@@ -191,6 +191,7 @@ export default class VimeoVideo extends React.Component {
 	onMessage = (event) => {
 		const getData = x => typeof x === 'string' ? JSON.parse(x) : x;
 		let data = getData(event.data);
+		console.log(data.event);//eslint-disable-line
 		let mappedEvent = VIMEO_EVENTS_TO_HTML5[data.event];
 		let handlerName = EventHandlers[mappedEvent];
 
@@ -216,7 +217,7 @@ export default class VimeoVideo extends React.Component {
 			this.postMessage('addEventListener', 'finish');	//ended
 			this.postMessage('addEventListener', 'seek');	//seeked
 			this.postMessage('addEventListener', 'playProgress'); //timeupdate
-			this.postMessage('addEventListener', 'playbackRate'); //playbackRate
+			this.postMessage('addEventListener', 'playbackratechange'); //playbackRate
 			// this.flushQueue();
 		}
 
