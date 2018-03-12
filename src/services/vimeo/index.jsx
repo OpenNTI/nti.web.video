@@ -191,7 +191,7 @@ export default class VimeoVideo extends React.Component {
 	onMessage = (event) => {
 		const getData = x => typeof x === 'string' ? JSON.parse(x) : x;
 		let data = getData(event.data);
-		console.log(data.event);//eslint-disable-line
+
 		let mappedEvent = VIMEO_EVENTS_TO_HTML5[data.event];
 		let handlerName = EventHandlers[mappedEvent];
 
