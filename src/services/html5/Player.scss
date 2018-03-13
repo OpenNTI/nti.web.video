@@ -19,7 +19,15 @@
 
 	.controls {
 		position: absolute;
-		top: 0; bottom: 0;
-		left: 0; right: 0;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
 	}
+}
+
+//Supposedly hides the iOS default playbutton.
+video::-webkit-media-controls-start-playback-button {
+	display: none !important;
+	appearance: none;
 }
