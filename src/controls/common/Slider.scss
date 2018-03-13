@@ -1,6 +1,5 @@
 @import "~nti-style-common";
 
-
 .nti-slider {
 	position: relative;
 	height: 1rem;
@@ -42,6 +41,7 @@
 		outline: none;
 		padding: 0;
 		margin: 0;
+		top: -2px;
 
 		&::-webkit-slider-thumb {
 			@include thumb();
@@ -63,7 +63,6 @@
 			@include thumb();
 		}
 
-
 		&::-ms-track {
 			@include track();
 		}
@@ -71,11 +70,12 @@
 
 	.track {
 		position: absolute;
-		top: 0; bottom: 0;
-		left: 0; right: 0;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
 		padding: rem-calc(6px 0);
 		display: flex;
-
 
 		.upper, .lower {
 			height: 0.25rem;
@@ -92,6 +92,5 @@
 			background-color: rgba(255, 255, 255, 1);
 			border-radius: 4px 0 0 4px;
 		}
-
 	}
 }
