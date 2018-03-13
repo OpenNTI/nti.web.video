@@ -25,10 +25,17 @@ export default function (sources) {
 	const MAX_ALLOWED_DEFAULT_WIDTH = Math.min(screenWidth, 1280); // Screen width for 720p
 	const groups = getResolutionGroups(sources);
 
-	const resolutions = Object.keys(groups);
+	const resolutions = Object.keys(groups)
+		//ensure resolutions are smallest to biggest (assuming heights are the same ratio)
+		.sort((a, b) => {
+			if (a === 'auto') { return -1; }
+			if (b === 'auto') { return 1; }
+
+			return getWidthOfGroup(groups[a]) - getWidthOfGroup(groups[b]);
+		});
 
 	let maxWidth = -1;
-	let preferredResolution = 'default';
+	let preferredResolution = 'auto';
 
 	for (let resolution of resolutions) {
 		if (resolution === 'auto') {
@@ -42,6 +49,12 @@ export default function (sources) {
 			maxWidth = width;
 			preferredResolution = resolution;
 		}
+	}
+
+	//if we haven't found a preferredResolution, pick the closest.
+	if (maxWidth === -1 && resolutions.length > 0 && !groups.auto) {
+		preferredResolution = resolutions[0];
+		maxWidth = getWidthOfGroup(groups[preferredResolution]);
 	}
 
 	return resolutions
