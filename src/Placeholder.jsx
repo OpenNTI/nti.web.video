@@ -73,7 +73,7 @@ export default class VideoPlaceholder extends React.Component {
 		) : loading ? (
 			<div className="video-placeholder" onClick={this.onClick}/>
 		) : (
-			<div className="video-placeholder content-video video-wrap nti-video flex-video widescreen" onClick={this.onClick}>
+			<div className="video-placeholder content-video video-wrap nti-video" onClick={this.onClick}>
 				<div className="video-tap-area" style={posterRule}>
 					<div className="wrapper">
 						<div className="buttons">
