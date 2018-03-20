@@ -1,7 +1,15 @@
 /* eslint-env jest */
+import { getScreenWidth } from 'nti-lib-dom';
+
 import getSourceGroups from '../get-source-groups';
 
 import mockVideoSources from './mock-video-sources.json';
+
+
+jest.mock('nti-lib-dom', () => ({
+	...require.requireActual('nti-lib-dom'),
+	getScreenWidth: jest.fn().mockReturnValue(1285)
+}));
 
 const HLS = 'application/vnd.apple.mpegurl';
 
@@ -11,10 +19,8 @@ describe('Get Source Group Spec', () => {
 	const canPlayType = proto.canPlayType;
 
 	beforeEach(() => {
-		global.screen = {
-			width: 1285,
-			height: 1000
-		};
+
+		expect(getScreenWidth()).toBe(1285);
 
 		proto.canPlayType = () => true;
 	});
