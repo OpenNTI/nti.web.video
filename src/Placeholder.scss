@@ -7,25 +7,76 @@
 	height: 3rem;
 }
 
-
 .video-placeholder.nti-video {
 	.video-tap-area {
+		@include fill;
 		@include hardware-render;
-		position: absolute;
-		top: 0; left: 0; bottom: 0; right: 0;
+
 		background-color: $panel-background;
 		background-size: cover;
 		background-position: center center;
 
-		&.play:after {
-			background-image: url(./assets/play.png);
-			content: '';
+		.wrapper {
+			@extend %video-play-button;
+		}
+	}
+}
+
+%video-play-button {
+	position: absolute;
+	max-width: 90%;
+	top: 50%;
+	left: 50%;
+
+	.buttons {
+		display: block;
+		position: relative;
+		overflow: hidden;
+		line-height: 0;
+		top: -25px;
+		left: -50%;
+		border-radius: 5em;
+		background-color: rgba(0, 0, 0, 0.8);
+		box-shadow:
+			//stroke
+			inset 0 0 0 1px rgba(255, 255, 255, 0.15),
+			//shadow
+			0 0 3px 0 black;
+	}
+
+	.label {
+		display: block;
+		overflow: hidden;
+		vertical-align: bottom;
+		padding: 0 3.5em 0 0.5em;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		color: #fff;
+		font: normal 400 1.1rem/2.75em 'Open Sans Condensed';
+		margin-left: 50px;
+		background: none;
+
+		&::after {
 			position: absolute;
-			background: {position: center center; repeat: no-repeat;}
-			top:0;
-			left:0;
-			bottom:0;
-			right:0;
+			right: 3px;
+			top: 3px;
+		}
+	}
+
+	.play {
+		float: left;
+		display: inline-block;
+		border-radius: 50px;
+		margin: 0.2em;
+
+		&::before {
+			background-image: url(./assets/play.png);
+			position: relative;
+			overflow: hidden;
+			content: '';
+			display: inline-block;
+			width: 43px;
+			height: 43px;
 		}
 	}
 }

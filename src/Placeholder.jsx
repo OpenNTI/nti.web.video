@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import cx from 'classnames';
 import Logger from 'nti-util-logger';
 import {getModel} from 'nti-lib-interfaces';
 import {getService} from 'nti-web-client';
@@ -14,6 +15,7 @@ const Source = getModel('mediasource');
 export default class VideoPlaceholder extends React.Component {
 
 	static propTypes = {
+		className: PropTypes.string,
 		src: PropTypes.string
 	}
 
@@ -64,16 +66,16 @@ export default class VideoPlaceholder extends React.Component {
 
 
 	render () {
-		const {state: {loading, play, poster, title}} = this;
+		const {props: {className}, state: {loading, play, poster, title}} = this;
 
 		const posterRule = poster && {backgroundImage: `url(${poster})`};
 
 		return play ? (
 			<Video {...this.props} autoPlay/>
 		) : loading ? (
-			<div className="video-placeholder" onClick={this.onClick}/>
+			<div className={cx('video-placeholder', className)} onClick={this.onClick}/>
 		) : (
-			<div className="video-placeholder content-video video-wrap nti-video" onClick={this.onClick}>
+			<div className={cx('video-placeholder', 'nti-video', className)} onClick={this.onClick}>
 				<div className="video-tap-area" style={posterRule}>
 					<div className="wrapper">
 						<div className="buttons">
