@@ -9,7 +9,6 @@ import Video from '../html5/';
 import {createNonRecoverableError} from '../utils';
 
 import getSources from './SourceGrabber';
-// import selectSources from './SelectSources';
 
 
 const commands = Logger.get('video:kaltura:commands');
