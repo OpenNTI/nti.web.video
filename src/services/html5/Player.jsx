@@ -756,7 +756,7 @@ export default class HTML5Video extends React.Component {
 export function getStateForVideo (video) {
 	return {
 		time: video ? video.currentTime : 0,
-		duration: video ? (video.duration * 1000) : 0,
+		duration: video ? video.duration : 0,
 		speed: video ? video.playbackRate : 1
 	};
 }
