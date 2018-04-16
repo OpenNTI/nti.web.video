@@ -8,6 +8,10 @@ const AUTO_TYPES = {
 
 
 export default function (sources) {
+	if (!sources) {
+		return [];
+	}
+
 	if (sources.source && Array.isArray(sources.source) && sources.type) {
 		sources = sources.source.map((src, index) => {
 			return {

@@ -4,12 +4,12 @@ import url from 'url';
 import React from 'react';
 import PropTypes from 'prop-types';
 import Logger from 'nti-util-logger';
+import {Models} from 'nti-lib-interfaces';
 
 import Video from '../html5/';
 import {createNonRecoverableError} from '../utils';
 
-import getSources from './SourceGrabber';
-
+const {MediaSourceFactory} = Models.media;
 
 const commands = Logger.get('video:kaltura:commands');
 const events = Logger.get('video:kaltura:events');
@@ -170,7 +170,7 @@ export default class KalturaVideo extends React.Component {
 	}
 
 
-	setupSource (props = this.props) {
+	async setupSource (props = this.props) {
 		const data = props.source;
 		const onError = props.onError;
 		// kaltura://1500101/0_4ol5o04l/
@@ -195,25 +195,30 @@ export default class KalturaVideo extends React.Component {
 		}
 
 		events.debug('Setting source: entryId: %s, partnerId: %s', entryId, partnerId);
+		this.setState({entryId, partnerId});
 
-		this.setState({entryId, partnerId},
+		try {
+			const service = null;//await getService();
+			const canonicalUrl = KalturaVideo.getCanonicalURL([partnerId, entryId]);
+			const mediaSource = await MediaSourceFactory.from(service, canonicalUrl);
+			const resolved = await mediaSource.getResolver();
 
-			() => getSources({ entryId, partnerId }).then(sources => {
+			if (resolved.objectType === 'KalturaAPIException') {
+				return onError(createNonRecoverableError(resolved.objectType));
+			}
 
-				if (sources.objectType === 'KalturaAPIException') {
-					return onError(createNonRecoverableError(sources.objectType));
-				}
+			if(this.state.entryId === entryId) {
+				events.debug('Resolved Sources: %o', resolved);
+				this.setSources(resolved);
+			} else {
+				events.debug('Ignoring late sources resolve for %s', entryId);
+			}
 
-				if(this.state.entryId === entryId) {
-					events.debug('Resolved Sources: %o', sources);
-					this.setSources(sources);
-				} else {
-					events.debug('Ignoring late sources resolve for %s', entryId);
-				}
-
-			})
-				.catch(error => events.error('Error setting video source %s %o', entryId, error))
-		);
+		}
+		catch(error) {
+			events.error('Error setting video source %s %o', entryId, error);
+			onError(error);
+		}
 	}
 
 

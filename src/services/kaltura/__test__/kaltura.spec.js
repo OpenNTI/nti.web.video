@@ -184,7 +184,8 @@ describe('Kaltura Service', () => {
 				}
 			];
 			const response = {
-				json: () => data
+				ok: true,
+				json: () => Promise.resolve(data)
 			};
 			return Promise.resolve(response);
 		};
