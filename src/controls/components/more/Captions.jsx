@@ -14,7 +14,7 @@ const DEFAULT_TEXT = {
 	none: 'None'
 };
 
-const t = scoped('nti-video.controls.more.Captions', DEFAULT_TEXT);
+const t = scoped('video.controls.more.Captions', DEFAULT_TEXT);
 
 const formatLang = l => l.toUpperCase();
 

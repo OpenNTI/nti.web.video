@@ -17,7 +17,7 @@ const DEFAULT_TEXT = {
 	invalid: 'Invalid Link'
 };
 
-const t = scoped('nti-video.editor.EmbedInput', DEFAULT_TEXT);
+const t = scoped('video.editor.EmbedInput', DEFAULT_TEXT);
 
 async function getMediaSource (rawInput) {
 	const input = rawInput.trim();

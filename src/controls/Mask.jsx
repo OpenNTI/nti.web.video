@@ -8,7 +8,7 @@ const DEFAULT_TEXT = {
 	unableToPlay: 'Unable to play video'
 };
 
-const t = scoped('nti-video.controls.mask', DEFAULT_TEXT);
+const t = scoped('video.controls.mask', DEFAULT_TEXT);
 
 VideoControlsMask.propTypes = {
 	poster: PropTypes.string,

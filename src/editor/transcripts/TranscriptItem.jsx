@@ -25,7 +25,7 @@ const DEFAULT_TEXT = {
 	modifiedOn: 'Modified on %(time)s'
 };
 
-const t = scoped('nti-video.editor.Transcripts', DEFAULT_TEXT);
+const t = scoped('video.editor.Transcripts', DEFAULT_TEXT);
 const swallow = () => {};
 
 

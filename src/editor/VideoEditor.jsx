@@ -27,7 +27,7 @@ const DEFAULT_TEXT = {
 	deleting: 'Deleting'
 };
 
-const t = scoped('nti-video.editor.Editor', DEFAULT_TEXT);
+const t = scoped('video.editor.Editor', DEFAULT_TEXT);
 const isModal = 'private:isModal';
 
 export default class VideoEditor extends React.Component {

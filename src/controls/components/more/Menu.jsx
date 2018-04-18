@@ -19,7 +19,7 @@ const DEFAULT_TEXT = {
 	back: 'Back'
 };
 
-const t = scoped('@nti/web-video.controls.more.menu', DEFAULT_TEXT);
+const t = scoped('web-video.controls.more.menu', DEFAULT_TEXT);
 
 
 export default class VideoMoreMenu extends React.Component {

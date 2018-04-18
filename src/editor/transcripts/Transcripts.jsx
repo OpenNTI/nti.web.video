@@ -17,7 +17,7 @@ const DEFAULT_TEXT = {
 	}
 };
 
-const t = scoped('nti-video.editor.Transcripts', DEFAULT_TEXT);
+const t = scoped('video.editor.Transcripts', DEFAULT_TEXT);
 
 const AVAILABLE_LANGS = new Set(['en']);
 const AVAILABLE_PURPOSES = new Set(['normal', 'captions']);
