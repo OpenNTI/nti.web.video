@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
-import Logger from 'nti-util-logger';
-import isTouch from 'nti-util-detection-touch';
+import Logger from '@nti/util-logger';
+import isTouch from '@nti/util-detection-touch';
 
 import {createNonRecoverableError, getSourceGroups, removeSourcesFromGroups} from '../utils';
 import {Overlay as ControlsOverlay} from '../../controls';

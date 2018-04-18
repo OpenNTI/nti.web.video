@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
-import {scoped} from 'nti-lib-locale';
+import {scoped} from '@nti/lib-locale';
 
 const DEFAULT_TEXT = {
 	slowest: '0.25x',
@@ -13,7 +13,7 @@ const DEFAULT_TEXT = {
 	fastest: '2x'
 };
 
-const t = scoped('nti-web-video.controls.more.menu', DEFAULT_TEXT);
+const t = scoped('@nti/web-video.controls.more.menu', DEFAULT_TEXT);
 
 
 export default class VideoMoreControlSpeed extends React.Component {

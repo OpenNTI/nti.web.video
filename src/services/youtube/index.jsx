@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import invariant from 'invariant';
-import Logger from 'nti-util-logger';
+import Logger from '@nti/util-logger';
 import uuid from 'uuid';
 import QueryString from 'query-string';
 

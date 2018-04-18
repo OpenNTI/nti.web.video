@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {scoped} from 'nti-lib-locale';
-import {Input, DialogButtons, Loading, Panels, Prompt, Button, HOC} from 'nti-web-commons';
-import {wait} from 'nti-commons';
+import {scoped} from '@nti/lib-locale';
+import {Input, DialogButtons, Loading, Panels, Prompt, Button, HOC} from '@nti/web-commons';
+import {wait} from '@nti/lib-commons';
 
 import Video from '../Video';
 

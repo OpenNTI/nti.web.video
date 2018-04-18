@@ -1,7 +1,7 @@
 import Url from 'url';
 
-import {getService} from 'nti-web-client';
-import {getModel} from 'nti-lib-interfaces';
+import {getService} from '@nti/web-client';
+import {getModel} from '@nti/lib-interfaces';
 
 import kaltura from './kaltura';
 import vimeo from './vimeo';

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { toAnalyticsPath } from 'nti-analytics';
-import Logger from 'nti-util-logger';
+import { toAnalyticsPath } from '@nti/lib-analytics';
+import Logger from '@nti/util-logger';
 
 import Video from './Video';
 

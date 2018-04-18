@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Panels, Search, Button }  from 'nti-web-commons';
+import { Panels, Search, Button }  from '@nti/web-commons';
 
 import VideoContents from './video-contents/VideoContents';
 import EditVideo from './EditVideo';

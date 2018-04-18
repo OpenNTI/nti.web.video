@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
-import {scoped} from 'nti-lib-locale';
-import {Loading} from 'nti-web-commons';
+import {scoped} from '@nti/lib-locale';
+import {Loading} from '@nti/web-commons';
 
 const DEFAULT_TEXT = {
 	unableToPlay: 'Unable to play video'

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {scoped} from 'nti-lib-locale';
-import {Flyout, Prompt, HOC} from 'nti-web-commons';
+import {scoped} from '@nti/lib-locale';
+import {Flyout, Prompt, HOC} from '@nti/web-commons';
 
 // import { isTranscriptEditable, getTime, getTranscriptName } from './utils/TranscriptUtils';
 import {getName, canEdit, getTime} from './utils';

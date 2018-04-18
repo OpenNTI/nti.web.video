@@ -1,7 +1,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import {scoped} from 'nti-lib-locale';
+import {scoped} from '@nti/lib-locale';
 
 // import { areTranscriptsValid } from '../utils/TranscriptUtils';
 import {isValid} from './utils';

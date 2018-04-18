@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {getService} from 'nti-web-client';
-import {Models} from 'nti-lib-interfaces';
+import {getService} from '@nti/web-client';
+import {Models} from '@nti/lib-interfaces';
 
 import {createMediaSourceFromUrl, getCanonicalUrlFrom} from '../../services';
 import Editor, { EmbedInput } from '../../editor';

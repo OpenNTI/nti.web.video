@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import {Prompt, DialogButtons} from 'nti-web-commons';
-// import {Models} from 'nti-lib-interfaces';
+import {Prompt, DialogButtons} from '@nti/web-commons';
+// import {Models} from '@nti/lib-interfaces';
 import cx from 'classnames';
 
 import Browser from './Browser';

@@ -3,8 +3,8 @@ import url from 'url';
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Logger from 'nti-util-logger';
-import {Models} from 'nti-lib-interfaces';
+import Logger from '@nti/util-logger';
+import {Models} from '@nti/lib-interfaces';
 
 import Video from '../html5/';
 import {createNonRecoverableError} from '../utils';

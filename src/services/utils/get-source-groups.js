@@ -1,4 +1,4 @@
-import {getScreenWidth} from 'nti-lib-dom';
+import {getScreenWidth} from '@nti/lib-dom';
 
 import canPlayType from './can-play-type';
 
