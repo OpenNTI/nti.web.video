@@ -4,21 +4,21 @@
   "author": "nextthought",
   "description": "A Video component for ReactJS",
   "license": "UNLICENSED",
-  "main": "./lib/cjs-index.js",
-  "module": "./lib/index.js",
+  "main": "lib/cjs-index.js",
+  "module": "lib/index.js",
   "files": [
     "lib"
   ],
   "scripts": {
-    "fix": "nti-cmp-scripts fix",
-    "test": "nti-cmp-scripts test",
-    "start": "nti-cmp-scripts start",
-    "prepack": "nti-cmp-scripts build",
-    "build": "nti-cmp-scripts build",
-    "clean": "nti-cmp-scripts clean",
-    "check": "nti-cmp-scripts check",
-    "release": "nti-cmp-scripts release",
-    "install-snapshots": "nti-cmp-scripts install-snapshots"
+    "fix": "cmp-scripts fix",
+    "test": "cmp-scripts test",
+    "start": "cmp-scripts start",
+    "prepack": "cmp-scripts build",
+    "build": "cmp-scripts build",
+    "clean": "cmp-scripts clean",
+    "check": "cmp-scripts check",
+    "release": "cmp-scripts release",
+    "install-snapshots": "cmp-scripts install-snapshots"
   },
   "repository": {
     "type": "git",
@@ -47,10 +47,10 @@
     "uuid": "^3.0.1"
   },
   "devDependencies": {
+    "@nti/cmp-scripts": "^1.16.0",
     "@nti/style-common": "^1.4.5",
     "enzyme": "^3.0.0",
     "enzyme-adapter-react-16": "^1.0.1",
-    "nti-cmp-scripts": "^1.0.33",
     "raf": "^3.4.0",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
