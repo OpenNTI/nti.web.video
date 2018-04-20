@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import ReactDOM from 'react-dom';
 import {getService} from '@nti/web-client';
 // import {decodeFromURI} from '@nti/lib-ntiids';
@@ -35,26 +35,29 @@ class Test extends React.Component {
 	}
 
 	render () {
-		return (<button onClick={this.onClick}>Show Chooser</button>);
+		return (
+			<Fragment>
+
+				<button onClick={this.onClick}>Show Chooser</button>
+
+				<div style={{maxWidth: 500, margin: 15}}>
+					<h3>html5/Kaltura</h3>
+					<Video src="kaltura://1500101/0_nmii7y4j/"/>
+
+					<h3>YouTube</h3>
+					<Video src="https://youtu.be/ip4z4k4jcRo"/>
+
+					<h3>Vimeo</h3>
+					<Video src="https://vimeo.com/137531269"/>
+				</div>
+			</Fragment>
+		);
 	}
 }
 
+
+
 ReactDOM.render(
 	React.createElement(Test),
-	document.getElementById('chooser')
-);
-
-ReactDOM.render(
-	React.createElement(Video, {src: 'https://youtu.be/ip4z4k4jcRo'}),
-	document.getElementById('youtube')
-);
-
-ReactDOM.render(
-	React.createElement(Video, {src: 'https://vimeo.com/137531269'}),
-	document.getElementById('vimeo')
-);
-
-ReactDOM.render(
-	React.createElement(Video, {src: 'kaltura://1500101/0_nmii7y4j/'}),
-	document.getElementById('kaltura')
+	document.getElementById('content')
 );

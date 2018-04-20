@@ -13,34 +13,11 @@
 	<meta name="apple-mobile-web-app-capable" content="yes"/>
 	<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
 	<meta name="apple-mobile-web-app-title" content="nextthought app"/>
-	<title>NextThought Video</title>
-	<link href="index.css" type="text/css" rel="stylesheet">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
-
-	<style>
-	body {
-		padding: 5px;
-	}
-
-	h3 + div {
-		max-width: 500px;
-	}
-
-	</style>
-
+	<title><%= htmlWebpackPlugin.options.title %></title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.4/fetch.min.js"></script>
 </head>
 <body>
-	<div id="chooser"></div>
-
-	<h3>html5/Kaltura</h3>
-	<div id="kaltura"></div>
-
-	<h3>YouTube</h3>
-	<div id="youtube"></div>
-
-	<h3>Vimeo</h3>
-	<div id="vimeo"></div>
-
+	<div id="content"></div>
 	<script type="text/javascript" src="index.js"></script>
 </body>
 </html>
