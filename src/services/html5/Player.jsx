@@ -174,7 +174,7 @@ export default class HTML5Video extends React.Component {
 		if (!hls) {
 			hls = this.hls = new HLS();
 			this.detachHLSPolyfill = () => {
-				hls.off(HLS.Events.MANIFEST_PARSED, this.onCanPlay);
+				hls.off(HLS.Events.MANIFEST_PARSED, this.onManifestParsed);
 				hls.detachMedia();
 			};
 		}
@@ -184,7 +184,24 @@ export default class HTML5Video extends React.Component {
 
 		hls.loadSource(src);
 		hls.attachMedia(this.video);
-		hls.on(HLS.Events.MANIFEST_PARSED, this.onCanPlay);
+		hls.on(HLS.Events.MANIFEST_PARSED, this.onManifestParsed);
+	}
+
+
+	onManifestParsed = () => {
+		// const {tracks} = this.state;
+		// const newTracks = this.hls.subtitleTracks.filter(x => tracks.includes(x));
+		//
+		// console.log(newTracks);
+		//
+		// this.setState({
+		// 	tracks: [
+		// 		...tracks,
+		// 		...newTracks
+		// 	]
+		// });
+
+		this.onCanPlay();
 	}
 
 
