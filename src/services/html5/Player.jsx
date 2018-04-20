@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import cx from 'classnames';
 import Logger from '@nti/util-logger';
 import isTouch from '@nti/util-detection-touch';
+import HLS from 'hls.js';
 
-import {createNonRecoverableError, getSourceGroups, removeSourcesFromGroups} from '../utils';
+import {createNonRecoverableError, getSourceGroups, removeSourcesFromGroups, HLS_TYPE} from '../utils';
 import {Overlay as ControlsOverlay} from '../../controls';
 import {UNSTARTED, PLAYING, PAUSED, ENDED} from '../../Constants';
 
@@ -84,6 +85,10 @@ export default class HTML5Video extends React.Component {
 
 
 	attachRef = (video) => {
+		if (this.hls && this.video !== video) {
+			this.detachHLSPolyfill();
+		}
+
 		this.video = video;
 
 		if (video) {
@@ -161,6 +166,25 @@ export default class HTML5Video extends React.Component {
 			state: playerState != null ? playerState : UNSTARTED,
 			...videoState
 		};
+	}
+
+
+	polyfillHLS (src) {
+		let {hls} = this;
+		if (!hls) {
+			hls = this.hls = new HLS();
+			this.detachHLSPolyfill = () => {
+				hls.off(HLS.Events.MANIFEST_PARSED, this.onCanPlay);
+				hls.detachMedia();
+			};
+		}
+
+		//just incase we change source
+		this.detachHLSPolyfill();
+
+		hls.loadSource(src);
+		hls.attachMedia(this.video);
+		hls.on(HLS.Events.MANIFEST_PARSED, this.onCanPlay);
 	}
 
 
@@ -501,6 +525,12 @@ export default class HTML5Video extends React.Component {
 	onSourceError = (e) => {
 		e.stopPropagation();
 
+		if (HLS.isSupported() && e.target.type === HLS_TYPE) {
+			console.log(e.target);
+			this.polyfillHLS(e.target.src);
+			return;
+		}
+
 		this.sourceErrors = this.sourceErrors || {};
 		this.sourceErrors[e.target.getAttribute('data-raw-src')] = true;
 
@@ -682,6 +712,10 @@ export default class HTML5Video extends React.Component {
 		const {activeSourceGroup} = this.state;
 
 		if (!group || !group.name || activeSourceGroup === group.name) { return; }
+
+		if (this.detachHLSPolyfill) {
+			this.detachHLSPolyfill();
+		}
 
 		const reload = this.getReloadFn();
 
