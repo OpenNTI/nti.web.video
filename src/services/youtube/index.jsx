@@ -8,7 +8,7 @@ import QueryString from 'query-string';
 import {EventHandlers} from '../../Constants';
 import MESSAGES from '../WindowMessageListener';
 import Task from '../Task';
-import {resolveCanAccessSource, createNonRecoverableError} from '../utils';
+import {resolveCanAccessSource, createNonRecoverableError, parseJSON} from '../utils';
 
 const logger = Logger.get('video:youtube');
 
@@ -260,7 +260,7 @@ export default class YouTubeVideo extends React.Component {
 			}
 			return x;
 		};
-		const getData = x => typeof x === 'string' ? JSON.parse(x) : x;
+		const getData = x => typeof x === 'string' ? parseJSON(x) : x;
 		const data = getData(event.data);
 		const eventName = unwrap(data && data.event) || '';
 		const handlerName = 'handle' + eventName.charAt(0).toUpperCase() + eventName.substr(1);
@@ -269,7 +269,7 @@ export default class YouTubeVideo extends React.Component {
 		//event.source === this.getPlayerContext()
 
 		const originMismatch = event.origin !== this.state.scope;
-		const idMismatch = data.id !== this.state.id;
+		const idMismatch = (data && data.id) !== this.state.id;
 
 		if (originMismatch || idMismatch) {
 
