@@ -2,6 +2,7 @@
 import { getScreenWidth } from '@nti/lib-dom';
 
 import getSourceGroups from '../get-source-groups';
+import {HLS_TYPE as HLS} from '../constants';
 
 import mockVideoSources from './mock-video-sources.json';
 
@@ -11,7 +12,6 @@ jest.mock('@nti/lib-dom', () => ({
 	getScreenWidth: jest.fn().mockReturnValue(1285)
 }));
 
-const HLS = 'application/vnd.apple.mpegurl';
 
 describe('Get Source Group Spec', () => {
 	const video = document.createElement('video');

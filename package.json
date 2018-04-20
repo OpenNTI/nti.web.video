@@ -40,6 +40,7 @@
     "@nti/web-client": "^1.1.1",
     "@nti/web-commons": "0.x.x",
     "classnames": "^2.0.0",
+    "hls.js": "0.x.x",
     "invariant": "^2.1.1",
     "moment": "^2.18.1",
     "prop-types": "^15.5.10",

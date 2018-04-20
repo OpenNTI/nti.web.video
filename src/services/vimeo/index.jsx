@@ -12,7 +12,7 @@ import {
 	PAUSED
 } from '../../Constants';
 import MESSAGES from '../WindowMessageListener';
-import {resolveCanAccessSource, createNonRecoverableError} from '../utils';
+import {resolveCanAccessSource, createNonRecoverableError, parseJSON} from '../utils';
 
 
 const logger = Logger.get('video:vimeo');
@@ -189,17 +189,17 @@ export default class VimeoVideo extends React.Component {
 
 
 	onMessage = (event) => {
-		const getData = x => typeof x === 'string' ? JSON.parse(x) : x;
+		const getData = x => typeof x === 'string' ? parseJSON(x) : x;
 		let data = getData(event.data);
+
+		if (!data || data.player_id !== this.state.id) {
+			return;
+		}
 
 		let mappedEvent = VIMEO_EVENTS_TO_HTML5[data.event];
 		let handlerName = EventHandlers[mappedEvent];
 
 		event = data.event;
-
-		if (data.player_id !== this.state.id) {
-			return;
-		}
 
 		logger.debug('Vimeo Event: %s: %o', event, data.data || data);
 

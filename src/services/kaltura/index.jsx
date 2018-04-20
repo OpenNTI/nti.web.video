@@ -153,8 +153,13 @@ export default class KalturaVideo extends React.Component {
 	attachRef = (x) => this.video = x
 
 
-	componentWillMount () {
+	componentDidMount () {
 		this.setupSource(this.props);
+	}
+
+
+	componentWillUnmount () {
+		this.unmounted = true;
 	}
 
 
@@ -162,11 +167,6 @@ export default class KalturaVideo extends React.Component {
 		if (this.props.source !== nextProps.source) {
 			this.setupSource(nextProps);
 		}
-	}
-
-
-	componentDidMount () {
-		// this.setupSource(this.props);
 	}
 
 
@@ -186,36 +186,45 @@ export default class KalturaVideo extends React.Component {
 		} else if (data) {
 			let {source = ''} = data;
 			if (Array.isArray(source)) {
-				source = source[0];
+				[source] = source;
 			}
 
 			const parsed = (source || '').split(':');
-			partnerId = parsed[0];
-			entryId = parsed[1];
+			[partnerId, entryId] = parsed;
 		}
 
 		events.debug('Setting source: entryId: %s, partnerId: %s', entryId, partnerId);
+		this.entryId = entryId; //use this to tell if our async ops finished late
 		this.setState({entryId, partnerId});
 
+		const LATE = new Error();
+		const throwIfLate = async (pending) => {
+			const result = pending && await pending;
+			if (this.unmounted || this.entryId !== entryId) {throw LATE;}
+			return result;
+		};
+
 		try {
-			const service = null;//await getService();
+			const service = null;//await throwIfLate(getService());
 			const canonicalUrl = KalturaVideo.getCanonicalURL([partnerId, entryId]);
-			const mediaSource = await MediaSourceFactory.from(service, canonicalUrl);
-			const resolved = await mediaSource.getResolver();
+			const mediaSource = await throwIfLate(MediaSourceFactory.from(service, canonicalUrl));
+			const resolved = await throwIfLate(mediaSource.getResolver());
 
 			if (resolved.objectType === 'KalturaAPIException') {
 				return onError(createNonRecoverableError(resolved.objectType));
 			}
 
-			if(this.state.entryId === entryId) {
-				events.debug('Resolved Sources: %o', resolved);
-				this.setSources(resolved);
-			} else {
-				events.debug('Ignoring late sources resolve for %s', entryId);
-			}
+			await throwIfLate();
 
+			events.debug('Resolved Sources: %o', resolved);
+			this.setSources(resolved);
 		}
 		catch(error) {
+			if (error === LATE) {
+				events.debug('Ignoring late sources resolve for %s', entryId);
+				return;
+			}
+
 			events.error('Error setting video source %s %o', entryId, error);
 			onError(error);
 		}

@@ -1,9 +1,10 @@
 import {getScreenWidth} from '@nti/lib-dom';
 
+import {HLS_TYPE} from './constants';
 import canPlayType from './can-play-type';
 
 const AUTO_TYPES = {
-	'application/vnd.apple.mpegurl': true
+	[HLS_TYPE]: true
 };
 
 

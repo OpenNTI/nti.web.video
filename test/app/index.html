@@ -21,36 +21,25 @@
 	body {
 		padding: 5px;
 	}
-	.video-wrapper {
-		display: inline-block;
-	}
-	.tap-area.play {
-		position: absolute;
-		top: 0px;
-		left: 0px;
-		right: 0px;
-		bottom: 0px;
-		background-repeat: no-repeat;
-		background-size: cover;
+
+	h3 + div {
+		max-width: 500px;
 	}
 
-	video {
-		max-width: 100%;
-	}
 	</style>
 
 </head>
 <body>
 	<div id="chooser"></div>
 
+	<h3>html5/Kaltura</h3>
+	<div id="kaltura"></div>
+
 	<h3>YouTube</h3>
 	<div id="youtube"></div>
 
 	<h3>Vimeo</h3>
 	<div id="vimeo"></div>
-
-	<h3>Kaltura</h3>
-	<div id="kaltura"></div>
 
 	<script type="text/javascript" src="index.js"></script>
 </body>
