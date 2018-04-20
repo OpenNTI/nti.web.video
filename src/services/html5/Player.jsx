@@ -174,13 +174,11 @@ export default class HTML5Video extends React.Component {
 		if (!hls) {
 			hls = this.hls = new HLS();
 			this.detachHLSPolyfill = () => {
+				delete this.hls;
 				hls.off(HLS.Events.MANIFEST_PARSED, this.onManifestParsed);
 				hls.detachMedia();
 			};
 		}
-
-		//just incase we change source
-		this.detachHLSPolyfill();
 
 		hls.loadSource(src);
 		hls.attachMedia(this.video);
@@ -202,6 +200,10 @@ export default class HTML5Video extends React.Component {
 		// });
 
 		this.onCanPlay();
+		const {state} = this.getVideoState();
+		if (state === PLAYING) {
+			this.play();
+		}
 	}
 
 
@@ -286,7 +288,7 @@ export default class HTML5Video extends React.Component {
 				video.load();
 
 				if (state === PLAYING) {
-					this.play();
+					this.play().catch(() => {});
 				}
 
 				this.timeToSetOnLoad = currentTime;
@@ -543,7 +545,7 @@ export default class HTML5Video extends React.Component {
 		e.stopPropagation();
 
 		if (HLS.isSupported() && e.target.type === HLS_TYPE) {
-			console.log(e.target);
+			events.error('HLS Supported, got error for HLS source: %o\nEvent: %o', e.target, e.nativeEvent);
 			this.polyfillHLS(e.target.src);
 			return;
 		}
@@ -736,11 +738,7 @@ export default class HTML5Video extends React.Component {
 
 		const reload = this.getReloadFn();
 
-		this.setState({
-			activeSourceGroup: group.name
-		}, () => {
-			reload();
-		});
+		this.setState({ activeSourceGroup: group.name }, reload);
 	}
 
 
