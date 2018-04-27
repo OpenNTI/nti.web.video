@@ -27,7 +27,6 @@ const initialState = {
 	sources: [],
 	sourcesLoaded: false,
 	isError: false,
-	interacted: false
 };
 
 /**
@@ -137,7 +136,6 @@ export default class KalturaVideo extends React.Component {
 		tracks: PropTypes.array,
 
 		autoPlay: PropTypes.bool,
-		deferred: PropTypes.bool,
 
 		onPlaying: PropTypes.func,
 		onPause: PropTypes.func,
@@ -291,7 +289,6 @@ export default class KalturaVideo extends React.Component {
 
 	play = () => {
 		const {video} = this;
-		this.setState({interacted: true});
 
 		commands.debug('play');
 
