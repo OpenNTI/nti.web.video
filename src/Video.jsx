@@ -152,10 +152,12 @@ export default class Video extends React.Component {
 	play = () => {
 		commands.debug('Play');
 
-		if (this.isReady) {
-			this.activeVideo.play();
-		} else {
+		if (!this.isReady) {
 			this.commandQueue.push(() => this.play());
+		}
+
+		if (this.isReady || this.props.deferred) {
+			this.activeVideo.play();
 		}
 	}
 
