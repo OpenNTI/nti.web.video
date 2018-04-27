@@ -169,20 +169,34 @@ export default class HTML5Video extends React.Component {
 	}
 
 
-	polyfillHLS (src) {
+	async polyfillHLS (src) {
+		if (!HLS.isSupported()) {
+			return;
+		}
+
+		const ready = HLS.Events.MANIFEST_PARSED;
 		let {hls} = this;
 		if (!hls) {
 			hls = this.hls = new HLS();
 			this.detachHLSPolyfill = () => {
 				delete this.hls;
-				hls.off(HLS.Events.MANIFEST_PARSED, this.onManifestParsed);
+				hls.off(ready, this.onManifestParsed);
 				hls.detachMedia();
 			};
+		} else {
+			hls.off(ready, this.onManifestParsed);
+			hls.detachMedia();
 		}
 
-		hls.loadSource(src);
-		hls.attachMedia(this.video);
-		hls.on(HLS.Events.MANIFEST_PARSED, this.onManifestParsed);
+		return new Promise(f => {
+			const cont = () => (hls.off(ready, cont), f());
+
+			hls.on(ready, cont);
+			hls.on(ready, this.onManifestParsed);
+
+			hls.loadSource(src);
+			hls.attachMedia(this.video);
+		});
 	}
 
 
