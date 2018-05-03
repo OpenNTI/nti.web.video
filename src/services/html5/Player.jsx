@@ -559,7 +559,7 @@ export default class HTML5Video extends React.Component {
 		e.stopPropagation();
 
 		if (HLS.isSupported() && e.target.type === HLS_TYPE && !this.hls) {
-			events.error('HLS Supported, got error for HLS source: %o\nEvent: %o', e.target, e.nativeEvent);
+			events.debug('HLS Supported, got error for HLS source: %o\nEvent: %o', e.target, e.nativeEvent);
 			this.polyfillHLS(e.target.src);
 			return;
 		}
