@@ -75,6 +75,12 @@ export default class extends React.Component {
 
 	componentWillUnmount () {
 		this.mounted = false;
+		if (this.isStarted) {
+			const target = this.videoTarget;
+			this.isStarted = false;
+			this.sendAnalyticsEvent({target, type: 'stop'}, 'VideoWatch', 'stop');
+		}
+		logger.debug('Unmounted');
 	}
 
 
@@ -142,6 +148,7 @@ export default class extends React.Component {
 	onPlaying = (event) => {
 		this.sendAnalyticsEvent(event, 'VideoWatch', 'start');
 		this.isStarted = true;
+		this.videoTarget = event.target;
 		this.props.onPlaying(event);
 	}
 
