@@ -24,6 +24,9 @@
     "type": "git",
     "url": "https://github.com/NextThought/nti.web.component.video.git"
   },
+  "publishConfig": {
+    "registry": "https://npm.nextthought.com"
+  },
   "keywords": [
     "react",
     "video",
