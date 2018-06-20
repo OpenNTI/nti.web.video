@@ -2,13 +2,14 @@ import HLS from 'hls.js';
 
 import {HLS_TYPE} from './constants';
 
-// Internet Explorer 6-11 (testing conditional execution of comment)
-const isIE = /*@cc_on!@*/false || !!document.documentMode;
 
 let video = null;
 
 function canPlay (type) {
 	video = video || (document && document.createElement && document.createElement('video'));
+
+	// Internet Explorer 6-11 (testing conditional execution of comment)
+	const isIE = /*@cc_on!@*/false || !!document.documentMode;
 
 	return !type
 		|| !video
