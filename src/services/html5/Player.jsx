@@ -175,6 +175,7 @@ export default class HTML5Video extends React.Component {
 		}
 
 		const ready = HLS.Events.MANIFEST_PARSED;
+		const error = HLS.Events.ERROR;
 		let {hls} = this;
 		if (!hls) {
 			hls = this.hls = new HLS();
@@ -193,7 +194,7 @@ export default class HTML5Video extends React.Component {
 
 			hls.on(ready, cont);
 			hls.on(ready, this.onManifestParsed);
-
+			hls.on(error, this.onError);
 			hls.loadSource(src);
 			hls.attachMedia(this.video);
 		});
