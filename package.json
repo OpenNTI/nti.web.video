@@ -47,7 +47,7 @@
     "invariant": "^2.1.1",
     "moment": "^2.18.1",
     "prop-types": "^15.5.10",
-    "query-string": "^5.0.0",
+    "query-string": "^6.1.0",
     "uuid": "^3.0.1"
   },
   "devDependencies": {
