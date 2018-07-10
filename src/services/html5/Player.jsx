@@ -194,7 +194,7 @@ export default class HTML5Video extends React.Component {
 
 			hls.on(ready, cont);
 			hls.on(ready, this.onManifestParsed);
-			hls.on(error, this.onError);
+			hls.on(error, this.onHLSError);
 			hls.loadSource(src);
 			hls.attachMedia(this.video);
 		});
@@ -543,18 +543,47 @@ export default class HTML5Video extends React.Component {
 	}
 
 
-	onError = (e) => {
-		events.debug('error %o', e);
+	removeErroredSources () {
+		const reload = this.getReloadFn();
+		const { onError } = this.props;
+		const { sourceGroups } = this.state;
+		const updatedSourceGroups = removeSourcesFromGroups(sourceGroups, this.sourceErrors);
+		const preferredGroup = updatedSourceGroups.find(group => group.preferred);
 
-		this.setState({
-			error: 'Could not play video. Network or Browser error.'
-		});
-
-		if (this.props.onError) {
-			this.props.onError(createNonRecoverableError('Unable to load html5 video.'));
+		if (!updatedSourceGroups.length && onError) {
+			onError(createNonRecoverableError('Unable to load html5 video.'));
 		}
+
+		this.setState(
+			{
+				sourceGroups: updatedSourceGroups,
+				activeSourceGroup: preferredGroup && preferredGroup.name
+			},
+			() => {
+				reload();
+			}
+		);
 	}
 
+	onHLSError = (e) => {
+		const {sourceGroups} = this.state;
+
+		if (this.detachHLSPolyfill) {
+			this.detachHLSPolyfill();
+		}
+
+		this.sourceErrors = this.sourceErrors || {};
+
+		for (let group of sourceGroups) {
+			for (let source of group.sources) {
+				if (source.type === HLS_TYPE) {
+					this.sourceErrors[source.src] = true;
+				}
+			}
+		}
+
+		this.removeErroredSources();
+	}
 
 	onSourceError = (e) => {
 		e.stopPropagation();
@@ -568,24 +597,20 @@ export default class HTML5Video extends React.Component {
 		this.sourceErrors = this.sourceErrors || {};
 		this.sourceErrors[e.target.getAttribute('data-raw-src')] = true;
 
-		const reload = this.getReloadFn();
-		const {onError} = this.props;
-		const {sourceGroups} = this.state;
-		const updatedSourceGroups = removeSourcesFromGroups(sourceGroups, this.sourceErrors);
-		const preferredGroup = updatedSourceGroups.find(group => group.preferred);
-
-		if (!updatedSourceGroups.length && onError) {
-			onError(createNonRecoverableError('Unable to load html5 video.'));
-		}
-
-		this.setState({
-			sourceGroups: updatedSourceGroups,
-			activeSourceGroup: preferredGroup && preferredGroup.name
-		}, () => {
-			reload();
-		});
+		this.removeErroredSources();
 	}
 
+	onError = (e) => {
+		events.debug('error %o', e);
+
+		this.setState({
+			error: 'Could not play video. Network or Browser error.'
+		});
+
+		if (this.props.onError) {
+			this.props.onError(createNonRecoverableError('Unable to load html5 video.'));
+		}
+	}
 
 	onVolumeChange = (e) => {
 		events.debug('volumechange %o', e);
