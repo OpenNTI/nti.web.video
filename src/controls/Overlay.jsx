@@ -105,6 +105,9 @@ export default class VideoControlsOverlay extends React.Component {
 
 
 	onClick = (e) => {
+		e.stopPropagation();
+		e.preventDefault();
+
 		this.togglePlayPause();
 	}
 
