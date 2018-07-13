@@ -89,6 +89,9 @@ export default class VideoControlsOverlay extends React.Component {
 
 
 	onTouch = (e) => {
+		e.stopPropagation();
+		e.preventDefault();
+
 		const {interacted} = this;
 		const {showControls} = this.state;
 
