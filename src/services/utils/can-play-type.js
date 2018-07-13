@@ -6,6 +6,10 @@ import {HLS_TYPE} from './constants';
 let video = null;
 
 function canPlay (type) {
+	if (typeof document === 'undefined') {
+		return true; //server side
+	}
+
 	video = video || (document && document.createElement && document.createElement('video'));
 
 	// Internet Explorer 6-11 (testing conditional execution of comment)
