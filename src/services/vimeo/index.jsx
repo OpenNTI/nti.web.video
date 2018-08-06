@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Logger from '@nti/util-logger';
+import Player from '@vimeo/player';
 import uuid from 'uuid';
 import QueryString from 'query-string';
 
@@ -11,24 +12,20 @@ import {
 	PLAYING,
 	PAUSED
 } from '../../Constants';
-import MESSAGES from '../WindowMessageListener';
-import {resolveCanAccessSource, createNonRecoverableError, parseJSON} from '../utils';
-
+import {resolveCanAccessSource, createNonRecoverableError} from '../utils';
 
 const logger = Logger.get('video:vimeo');
+const VIMEO_URL_PARTS = /(?:https?:)?\/\/(?:(?:www|player)\.)?vimeo.com\/(?:(?:channels|video)\/(?:\w+\/)?|groups\/(?:[^/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?|#)/i;
+const VIMEO_PROTOCOL_PARTS = /vimeo:\/\/(\d+\/)?(\d+)/i;
 
-const VIMEO_EVENTS_TO_HTML5 = {
+const VIMEO_EVENTS = {
 	play: 'playing',
 	pause: 'pause',
 	finish: 'ended',
 	seek: 'seeked',
-	ready: 'ready',
 	playbackratechange: 'ratechange',
 	playProgress: 'timeupdate',
 };
-
-const VIMEO_URL_PARTS = /(?:https?:)?\/\/(?:(?:www|player)\.)?vimeo.com\/(?:(?:channels|video)\/(?:\w+\/)?|groups\/(?:[^/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?|#)/i;
-const VIMEO_PROTOCOL_PARTS = /vimeo:\/\/(\d+\/)?(\d+)/i;
 
 //TODO: To detect an unrecoverable error try pinging the Vimeo API
 //instead of waiting for the to fail. That should catch both cases:
@@ -81,7 +78,7 @@ export default class VimeoVideo extends React.Component {
 	}
 
 
-	attachRef = (x) => { this.iframe = x; };
+	iframe = React.createRef()
 
 
 	constructor (props) {
@@ -94,20 +91,102 @@ export default class VimeoVideo extends React.Component {
 
 	componentDidMount () {
 		this.ensureAccess(this.props);
-		MESSAGES.add(this.onMessage);
+		this.setupPlayer();
 	}
 
 
-	componentDidUpdate ({source}) {
+	componentDidUpdate ({source}, {playerURL}) {
 		if (this.props.source !== source) {
 			this.ensureAccess();
 			this.updateURL(this.props);
+		}
+
+		if (this.state.playerURL !== playerURL) {
+			this.setupPlayer();
 		}
 	}
 
 
 	componentWillUnmount () {
-		MESSAGES.remove(this.onMessage);
+		this.teardownPlayer();
+	}
+
+	teardownPlayer () {
+		const {player} = this;
+		delete this.player;
+
+		if (!player) {
+			return;
+		}
+
+		for (let event of Object.keys(VIMEO_EVENTS)) {
+			player.off(event);
+		}
+
+		player.destroy();
+	}
+
+	setupPlayer () {
+		this.teardownPlayer();
+
+		const iframe = this.iframe.current;
+
+		if (!iframe) {
+			return;
+		}
+
+		this.player = new Player(iframe);
+		// this.player.setAutopause(false);
+		this.player.ready().then(this.onReady);
+		this.player.on('error', this.onError);
+		for (let event of Object.keys(VIMEO_EVENTS)) {
+			this.player.on(event, data => this.onEvent(event, data));
+		}
+	}
+
+
+	onReady = () => {
+		logger.debug('Ready');
+		const {onReady} = this.props;
+		if (onReady) {
+			onReady();
+		}
+	}
+
+
+	onEvent (event, data) {
+		const mappedEvent = VIMEO_EVENTS[event];
+		const handlerName = EventHandlers[mappedEvent];
+
+		logger.debug(event, data);
+
+		if(mappedEvent && handlerName) {
+			if (this.props[handlerName]) {
+				const mockEvent = {
+					timeStamp: Date.now(),
+					target: {
+						currentTime: data && data.seconds,
+						duration: data && data.duration,
+						playbackRate: (data && data.playbackRate) || 1
+					},
+					type: mappedEvent
+				};
+
+				if (handlerName === EventHandlers.ratechange) {
+					const {playbackRate:oldRate = 1} = this.state;
+					const newRate = mockEvent.target.playbackRate;
+
+					this.setState({playbackRate: newRate});
+					this.props[handlerName](oldRate, newRate, mockEvent);
+				} else {
+					this.props[handlerName](mockEvent);
+				}
+			}
+
+			if (this[handlerName]) {
+				this[handlerName]();
+			}
+		}
 	}
 
 
@@ -160,6 +239,7 @@ export default class VimeoVideo extends React.Component {
 		return 'https://player.vimeo.com/video/' + videoId + '?' + QueryString.stringify(args);
 	}
 
+
 	updateURL = (props, id, updater = x => this.setState(x)) => {
 		const url = this.buildURL(props, id);
 		updater({
@@ -183,96 +263,6 @@ export default class VimeoVideo extends React.Component {
 	}
 
 
-	getPlayerContext = () => {
-		const {iframe} = this;
-		return iframe && (iframe.contentWindow || window.frames[iframe.name]);
-	}
-
-
-	onMessage = (event) => {
-		const getData = x => typeof x === 'string' ? parseJSON(x) : x;
-		let data = getData(event.data);
-
-		if (!data || data.player_id !== this.state.id) {
-			return;
-		}
-
-		let mappedEvent = VIMEO_EVENTS_TO_HTML5[data.event];
-		let handlerName = EventHandlers[mappedEvent];
-
-		event = data.event;
-
-		logger.debug('Vimeo Event: %s: %o', event, data.data || data);
-
-		data = data.data;
-
-		if (event === 'error') {
-			logger.error(`Vimeo Error: ${data.code}: ${data.message}`);
-			//Make the view just hide the poster so the viewer can tap the embeded player's play button.
-			mappedEvent = 'playing';
-			handlerName = EventHandlers.playing;
-		}
-		else if (event === 'ready') {
-			this.postMessage('addEventListener', 'play');	//playing
-			this.postMessage('addEventListener', 'pause');	//pause
-			this.postMessage('addEventListener', 'finish');	//ended
-			this.postMessage('addEventListener', 'seek');	//seeked
-			this.postMessage('addEventListener', 'playProgress'); //timeupdate
-			this.postMessage('addEventListener', 'playbackratechange'); //playbackRate
-			// this.flushQueue();
-		}
-
-
-		this.setState({
-			videoData: data
-		});
-
-		if(mappedEvent && handlerName) {
-			if (this.props[handlerName]) {
-				const mockEvent = {
-					timeStamp: Date.now(),
-					target: {
-						currentTime: data && data.seconds,
-						duration: data && data.duration,
-						playbackRate: (data && data.playbackRate) || 1
-					},
-					type: mappedEvent
-				};
-
-				if (handlerName === EventHandlers.ratechange) {
-					const {playbackRate:oldRate = 1} = this.state;
-					const newRate = mockEvent.target.playbackRate;
-
-					this.setState({playbackRate: newRate});
-					this.props[handlerName](oldRate, newRate, mockEvent);
-				} else {
-					this.props[handlerName](mockEvent);
-				}
-			}
-
-			if (this[handlerName]) {
-				this[handlerName]();
-			}
-		}
-	}
-
-
-	postMessage = (method, params) => {
-		let context = this.getPlayerContext(), data;
-		if (!context) {
-			logger.warn(this.state.id, ' No Player Context!');
-			return;
-		}
-
-		data = {
-			method: method,
-			value: params
-		};
-
-		context.postMessage(JSON.stringify(data), this.state.scope);
-	}
-
-
 	render () {
 
 		if (!this.state.playerURL) {
@@ -284,8 +274,9 @@ export default class VimeoVideo extends React.Component {
 
 		return (
 			<iframe
+				allow="autoplay; encrypted-media"
 				name={id}
-				ref={this.attachRef}
+				ref={this.iframe}
 				src={this.state.playerURL}
 				width={width}
 				height={height}
@@ -293,6 +284,13 @@ export default class VimeoVideo extends React.Component {
 				allowFullScreen
 			/>
 		);
+	}
+
+
+	onError = (data) => {
+		logger.error(`Vimeo Error: ${data.name}: ${data.method || ''}: ${data.message}`);
+		//Make the view just hide the poster so the viewer can tap the embedded player's play button.
+		this.onEvent('play', data);
 	}
 
 
@@ -313,19 +311,22 @@ export default class VimeoVideo extends React.Component {
 
 	play = () => {
 		//ready?
-		this.postMessage('play');
+		this.player.play();
+		this.setState({playerState: PLAYING});
 		//else queue.
 	};
 
 	pause = () => {
-		this.postMessage('pause');
+		this.player.pause();
 	};
 
 	stop = () => {
-		this.postMessage('stop');
+		logger.debug('stopping');
+		this.player.pause();
+		this.player.setCurrentTime(0);
 	};
 
 	setCurrentTime = (time) => {
-		this.postMessage('seekTo', time);
+		this.player.setCurrentTime(time);
 	};
 }

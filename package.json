@@ -42,6 +42,7 @@
     "@nti/util-logger": "^1.0.0",
     "@nti/web-client": "^1.1.1",
     "@nti/web-commons": "0.x.x",
+    "@vimeo/player": "^2.6.3",
     "classnames": "^2.0.0",
     "hls.js": "0.x.x",
     "invariant": "^2.1.1",
