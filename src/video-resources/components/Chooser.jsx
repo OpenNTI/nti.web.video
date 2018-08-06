@@ -37,7 +37,7 @@ class Chooser extends Component {
 		});
 	}
 
-	componentWillMount () {
+	componentDidMount () {
 		const { course } = this.props;
 		course.getAssets('application/vnd.nextthought.ntivideo')
 			.then(videos => {

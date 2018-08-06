@@ -26,28 +26,26 @@ class Video extends Component {
 		thumbnail: ''
 	}
 
-	componentWillMount () {
-		const { video } = this.props;
-		video.getThumbnail()
-			.then(thumbnail => {
-				this.setState({
-					thumbnail
-				});
-			});
+	componentDidMount () {
+		this.resolveThumbnail();
 	}
 
-	componentWillReceiveProps (nextProps) {
-		const { thumbnail: existingThumbnail } = this.state;
-		const { video } = nextProps;
-		if (existingThumbnail === '') {
-			video.getThumbnail()
-				.then(thumbnail => {
-					this.setState({
-						thumbnail
-					});
-				});
+
+	componentDidUpdate ({video}) {
+		if (video !== this.props.video) {
+			this.resolveThumbnail();
 		}
 	}
+
+
+	async resolveThumbnail ({video} = this.props) {
+		try {
+			this.setState({ thumbnail: await video.getThumbnail() });
+		} catch (e) {
+			this.setState({ thumbnail: '', error: e });
+		}
+	}
+
 
 	onSelectChange = () => {
 		const { onSelectChange, video } = this.props;

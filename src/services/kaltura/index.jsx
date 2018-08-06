@@ -161,9 +161,10 @@ export default class KalturaVideo extends React.Component {
 	}
 
 
-	componentWillReceiveProps (nextProps) {
-		if (this.props.source !== nextProps.source) {
-			this.setupSource(nextProps);
+	componentDidUpdate ({source}) {
+		if (this.props.source !== source) {
+			this.setState(initialState);
+			this.setupSource();
 		}
 	}
 
@@ -240,13 +241,6 @@ export default class KalturaVideo extends React.Component {
 			isError: (data.objectType === 'KalturaAPIException'),
 			tracks: data.tracks
 		});
-	}
-
-
-	componentWillUpdate (nextProps) {
-		if (nextProps.source !== this.props.source) {
-			this.setState(initialState);
-		}
 	}
 
 

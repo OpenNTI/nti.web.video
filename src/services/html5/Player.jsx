@@ -31,7 +31,8 @@ const initialState = {
 	error: false,
 	interacted: false,
 	videoState: {},
-	sourceGroups: []
+	sourceGroups: [],
+	tracks: []
 };
 
 
@@ -115,38 +116,23 @@ export default class HTML5Video extends React.Component {
 	}
 
 
-	componentWillMount () {
-		this.setupSource(this.props);
-	}
-
-
-	componentWillReceiveProps (nextProps) {
-		if (this.props.source !== nextProps.source) {
-			this.setupSource(nextProps);
-		}
-	}
-
-
 	componentDidMount () {
+		this.setupSource(this.props);
 		for (let event of fullscreenEvents) {
 			document.addEventListener(event, this.onFullScreenChange);
 		}
 	}
 
 
-	componentWillUpdate (nextProps) {
-		if (nextProps.source !== this.props.source) {
+	componentDidUpdate ({source}) {
+		if (source !== this.props.source) {
 			this.setState({...initialState});
-		}
-	}
-
-
-	componentDidUpdate (prevProps) {
-		let {video} = this;
-		if (prevProps.source !== this.props.source) {
-			if (video) {
-				video.load();
-			}
+			this.setupSource(this.props, () => {
+				let {video} = this;
+				if (video) {
+					video.load();
+				}
+			});
 		}
 	}
 
@@ -222,8 +208,7 @@ export default class HTML5Video extends React.Component {
 	}
 
 
-	setupSource (props) {
-		let {source, sources, tracks, allowNormalTranscripts} = props;
+	setupSource ({source, sources, tracks, allowNormalTranscripts} = this.props, callback) {
 		const sourceGroups = getSourceGroups(sources || source);
 		const preferredGroup = sourceGroups.find(group => group.preferred);
 
@@ -245,7 +230,7 @@ export default class HTML5Video extends React.Component {
 			sourceGroups,
 			activeSourceGroup: preferredGroup && preferredGroup.name,
 			tracks
-		});
+		}, callback);
 
 		if (this.state.error) {
 			this.onError();

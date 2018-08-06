@@ -10,14 +10,15 @@ export default class VideoControlMore extends React.Component {
 		showing: PropTypes.bool
 	}
 
-	attachFlyoutRef = x => this.flyout = x
+	flyout = React.createRef()
 
-	componentWillReceiveProps (nextProps) {
-		const {showing:isShowing} = this.props;
-		const {showing:willShow} = nextProps;
+	componentDidUpdate (prevProps) {
+		const {showing:isShowing} = prevProps;
+		const {showing:willShow} = this.props;
+		const {current: ref} = this.flyout;
 
-		if (isShowing && !willShow && this.flyout) {
-			this.flyout.dismiss();
+		if (isShowing && !willShow && ref) {
+			ref.dismiss();
 		}
 	}
 
@@ -26,11 +27,10 @@ export default class VideoControlMore extends React.Component {
 
 		return (
 			<div className="video-more-control">
-				<Flyout.InlineFlyout trigger={trigger} ref={this.attachFlyoutRef}>
+				<Flyout.InlineFlyout trigger={trigger} ref={this.flyout}>
 					<Menu {...this.props} />
 				</Flyout.InlineFlyout>
 			</div>
 		);
 	}
 }
-

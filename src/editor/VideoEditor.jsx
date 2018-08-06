@@ -52,16 +52,13 @@ export default class VideoEditor extends React.Component {
 
 	state = {}
 
-	componentWillReceiveProps (nextProps) {
-		const {video:nextVideo} = nextProps;
-		const {video:prevVideo} = this.props;
-
-		if (nextVideo !== prevVideo) {
-			this.resolveState(nextProps);
+	componentDidUpdate ({video}) {
+		if (this.props.video !== video) {
+			this.resolveState();
 		}
 	}
 
-	componentWillMount () {
+	componentDidMount () {
 		this.resolveState(this.props);
 	}
 

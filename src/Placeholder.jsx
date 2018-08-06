@@ -23,20 +23,19 @@ export default class VideoPlaceholder extends React.Component {
 	state = {}
 
 
-	componentWillMount () {
-		this.setHandler(this.props);
+	componentDidMount () {
+		this.setHandler();
 	}
 
 
-	componentWillReceiveProps (props) {
-		if (this.props.src !== props.src) {
-			this.setHandler(props);
+	componentDidUpdate ({src}) {
+		if (this.props.src !== src) {
+			this.setHandler();
 		}
 	}
 
 
-	setHandler (props) {
-		const {src} = props;
+	setHandler ({src} = this.props) {
 		const handler = getHandler(src);
 		const {service: videoService} = handler || {};
 		const videoId = handler && handler.getID && handler.getID(src);

@@ -79,23 +79,26 @@ export default class YouTubeVideo extends React.Component {
 		onReady: PropTypes.func,
 	}
 
-	state = {id: uuid(), scope: YOU_TUBE, playerState: -1}
-
 
 	attachRef = (x) => { this.iframe = x; }
 
 
-	componentWillMount () {
-		this.updateURL(this.props);
-		this.setState({
+	constructor (props) {
+		super(props);
+		this.state = {
+			id: uuid(),
+			scope: YOU_TUBE,
+			playerState: -1,
 			initTask: new Task(this.sendListening, 250)
-		});
+		};
+
+		this.updateURL(props, x => Object.assign(this.state, x));
 	}
 
 
 	componentDidMount () {
-		this.ensureAccess(this.props);
-		this.updateURL(this.props);
+		this.ensureAccess();
+		this.updateURL();
 		MESSAGES.add(this.onMessage);
 	}
 
@@ -103,12 +106,6 @@ export default class YouTubeVideo extends React.Component {
 	componentWillUnmount () {
 		this.state.initTask.stop();
 		MESSAGES.remove(this.onMessage);
-	}
-
-
-	componentWillReceiveProps (props) {
-		this.ensureAccess(this.props);
-		this.updateURL(props);
 	}
 
 
@@ -122,6 +119,12 @@ export default class YouTubeVideo extends React.Component {
 			'Something changed the initTask!'
 		);
 
+		if (prevProps.source !== this.props.source) {
+			this.ensureAccess();
+			this.updateURL();
+			return;
+		}
+
 		if (state.initialized && state.playerURL === prevState.playerURL) {
 			initTask.stop();
 			return;
@@ -130,7 +133,7 @@ export default class YouTubeVideo extends React.Component {
 		initTask.start();
 
 		if (state.autoPlay !== prevState.autoPlay) {
-			this.updateURL(this.props);
+			this.updateURL();
 		}
 	}
 
@@ -187,7 +190,7 @@ export default class YouTubeVideo extends React.Component {
 			rel: 0,
 			showinfo: 0,
 			playsinline: 1,
-			autoplay: (props.autoPlay || (this.state.autoPlay && deferred)) ? 1 : 0,
+			autoplay: (props.autoPlay || ((this.state || {}).autoPlay && deferred)) ? 1 : 0,
 			origin: location.protocol + '//' + location.host
 		};
 
@@ -195,8 +198,8 @@ export default class YouTubeVideo extends React.Component {
 	}
 
 
-	updateURL = (props) => {
-		this.setState({playerURL: this.buildURL(props)});
+	updateURL = (props = this.props, update = x => this.setState(x)) => {
+		update({playerURL: this.buildURL(props)});
 	}
 
 

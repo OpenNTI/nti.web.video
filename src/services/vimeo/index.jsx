@@ -80,16 +80,15 @@ export default class VimeoVideo extends React.Component {
 		onReady: PropTypes.func,
 	}
 
-	state = {}
-
 
 	attachRef = (x) => { this.iframe = x; };
 
 
-	componentWillMount () {
+	constructor (props) {
+		super(props);
 		const id = uuid();
-		this.setState({id});
-		this.updateURL(this.props, id);
+		this.state = {id};
+		this.updateURL(props, id, x => Object.assign(this.state, x));
 	}
 
 
@@ -99,9 +98,11 @@ export default class VimeoVideo extends React.Component {
 	}
 
 
-	componentWillReceiveProps (nextProps) {
-		this.ensureAccess(nextProps);
-		this.updateURL(nextProps);
+	componentDidUpdate ({source}) {
+		if (this.props.source !== source) {
+			this.ensureAccess();
+			this.updateURL(this.props);
+		}
 	}
 
 
@@ -159,9 +160,9 @@ export default class VimeoVideo extends React.Component {
 		return 'https://player.vimeo.com/video/' + videoId + '?' + QueryString.stringify(args);
 	}
 
-	updateURL = (props, id) => {
+	updateURL = (props, id, updater = x => this.setState(x)) => {
 		const url = this.buildURL(props, id);
-		this.setState({
+		updater({
 			scope: url.split('?')[0],
 			playerURL: url
 		});

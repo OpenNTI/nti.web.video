@@ -56,13 +56,12 @@ export default class EmbedInput extends React.Component {
 		};
 	}
 
-	componentWillReceiveProps (nextProps) {
-		const {value:nextValue} = nextProps;
-		const {value:prevValue} = this.props;
+	componentDidUpdate ({value: previous}) {
+		const {value} = this.props;
 
-		if (nextValue !== prevValue) {
+		if (value !== previous) {
 			this.setState({
-				value: nextValue
+				value
 			});
 		}
 	}

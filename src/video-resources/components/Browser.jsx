@@ -36,13 +36,16 @@ class Browser extends Component {
 		};
 	}
 
-	componentWillReceiveProps (nextProps) {
-		const { videos } = nextProps;
+	componentDidUpdate (prevProps) {
 		const { search } = this.state;
-		this.setState({
-			videos,
-			videoContents: search === '' ? videos : videos.filter(video => this.itemMatchesSearch(video, search))
-		});
+		const { videos } = this.props;
+
+		if (videos !== prevProps.videos) {
+			this.setState({
+				videos,
+				videoContents: search === '' ? videos : videos.filter(video => this.itemMatchesSearch(video, search))
+			});
+		}
 	}
 
 	onSearch = (search) => {
