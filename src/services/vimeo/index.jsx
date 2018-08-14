@@ -27,6 +27,8 @@ const VIMEO_EVENTS = {
 	playProgress: 'timeupdate',
 };
 
+const logRejection = p => p && p.catch && p.catch(e => logger.debug(e.stack || e.message || e));
+
 //TODO: To detect an unrecoverable error try pinging the Vimeo API
 //instead of waiting for the to fail. That should catch both cases:
 //1) Vimeo is blocked
@@ -137,7 +139,7 @@ export default class VimeoVideo extends React.Component {
 
 		this.player = new Player(iframe);
 		// this.player.setAutopause(false);
-		this.player.ready().then(this.onReady);
+		logRejection(this.player.ready().then(this.onReady));
 		this.player.on('error', this.onError);
 		for (let event of Object.keys(VIMEO_EVENTS)) {
 			this.player.on(event, data => this.onEvent(event, data));
@@ -311,22 +313,22 @@ export default class VimeoVideo extends React.Component {
 
 	play = () => {
 		//ready?
-		this.player.play();
+		logRejection(this.player.play());
 		this.setState({playerState: PLAYING});
 		//else queue.
 	};
 
 	pause = () => {
-		this.player.pause();
+		logRejection(this.player.pause());
 	};
 
 	stop = () => {
 		logger.debug('stopping');
-		this.player.pause();
-		this.player.setCurrentTime(0);
+		logRejection(this.player.pause());
+		logRejection(this.player.setCurrentTime(0));
 	};
 
 	setCurrentTime = (time) => {
-		this.player.setCurrentTime(time);
+		logRejection(this.player.setCurrentTime(time));
 	};
 }
