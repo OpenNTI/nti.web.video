@@ -162,6 +162,8 @@ export default class VimeoVideo extends React.Component {
 
 		logger.debug(event, data);
 
+		this.setState({videoData: data});
+
 		if(mappedEvent && handlerName) {
 			if (this.props[handlerName]) {
 				const mockEvent = {
