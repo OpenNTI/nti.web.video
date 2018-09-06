@@ -4,10 +4,11 @@
   "author": "nextthought",
   "description": "A Video component for ReactJS",
   "license": "UNLICENSED",
-  "main": "lib/cjs-index.js",
-  "module": "lib/index.js",
+  "main": "lib/index.js",
+  "module": "src/index.js",
   "files": [
-    "lib"
+    "lib",
+    "src"
   ],
   "scripts": {
     "fix": "cmp-scripts fix",
@@ -52,7 +53,7 @@
     "uuid": "^3.0.1"
   },
   "devDependencies": {
-    "@nti/cmp-scripts": "^1.17.16",
+    "@nti/cmp-scripts": "^2.0.0",
     "@nti/style-common": "^1.4.5",
     "enzyme": "^3.0.0",
     "enzyme-adapter-react-16": "^1.0.1",
