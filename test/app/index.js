@@ -4,8 +4,6 @@ import {getService} from '@nti/web-client';
 // import {decodeFromURI} from '@nti/lib-ntiids';
 
 import Video, {Chooser} from '../../src';
-import '@nti/style-common/all.scss';
-import '@nti/web-commons/lib/index.css';
 
 window.$AppConfig = window.$AppConfig || {server: '/dataserver2/'};
 
