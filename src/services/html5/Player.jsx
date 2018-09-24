@@ -199,8 +199,7 @@ export default class HTML5Video extends React.Component {
 		// 		...newTracks
 		// 	]
 		// });
-
-		this.onCanPlay();
+		// this.onCanPlay();
 		const {state} = this.getVideoState();
 		if (state === PLAYING) {
 			this.play();
