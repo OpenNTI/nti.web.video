@@ -625,7 +625,7 @@ export default class HTML5Video extends React.Component {
 	}
 
 
-	play = () => {
+	play = async () => {
 		const {video} = this;
 		this.setState({interacted: true});
 
@@ -633,7 +633,11 @@ export default class HTML5Video extends React.Component {
 
 		if (video && !this.isUnmounted) {
 			if (video.play) {
-				return Promise.resolve(video.play());
+				try {
+					return await video.play();
+				} catch (e) {
+					commands.warn(e);
+				}
 			}
 		}
 
