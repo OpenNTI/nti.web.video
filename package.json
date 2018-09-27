@@ -1,6 +1,6 @@
 {
   "name": "@nti/web-video",
-  "version": "1.38.0",
+  "version": "1.39.0-alpha",
   "author": "nextthought",
   "description": "A Video component for ReactJS",
   "license": "UNLICENSED",
