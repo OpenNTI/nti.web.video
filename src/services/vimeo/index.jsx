@@ -125,7 +125,7 @@ export default class VimeoVideo extends React.Component {
 			player.off(event);
 		}
 
-		player.destroy();
+		logRejection(player.unload());
 	}
 
 	setupPlayer () {
