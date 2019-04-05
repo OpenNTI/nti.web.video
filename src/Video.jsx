@@ -1,3 +1,5 @@
+import EventEmitter from 'events';
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
@@ -9,6 +11,23 @@ import Fallback from './services/html5';
 const emptyFunction = () => {};
 const commands = Logger.get('video:commands');
 const events = Logger.get('video:events');
+const busEvents = Logger.get('video:bus-events');
+
+const BUS_EVENTS = {
+	BASE_TYPE: 'video-event',
+	PAUSE_OTHERS: 'pause-others'
+};
+
+class EventBus extends EventEmitter {
+	pauseOthers (sender) {
+		this.emit(BUS_EVENTS.BASE_TYPE, {
+			type: BUS_EVENTS.PAUSE_OTHERS,
+			payload: {
+				sender
+			}
+		});
+	}
+}
 
 export default class Video extends React.Component {
 	static propTypes = {
@@ -26,9 +45,9 @@ export default class Video extends React.Component {
 		onError: PropTypes.func,
 		onReady: PropTypes.func,
 
+		ignoreEventBus: PropTypes.bool,
 		deferred: PropTypes.bool
 	}
-
 
 	static defaultProps = {
 		onTimeUpdate: emptyFunction,
@@ -37,6 +56,8 @@ export default class Video extends React.Component {
 		onPause: emptyFunction,
 		onEnded: emptyFunction
 	}
+
+	static eventBus = new EventBus()
 
 	state = {
 		activeIndex: 0,
@@ -49,9 +70,34 @@ export default class Video extends React.Component {
 	constructor (props) {
 		super(props);
 
+		if (!props.ignoreEventBus) {
+			const {eventBus} = this.constructor;
+			eventBus.on(BUS_EVENTS.BASE_TYPE, this.handleBusEvent);
+			this.unsubscribe = [() => eventBus.off(BUS_EVENTS.BASE_TYPE, this.handleBusEvent)];
+	
+			eventBus.pauseOthers(this);
+		}
+		
 		this.commandQueue = [];
 	}
 
+	handleBusEvent = ({type, payload}) => {
+		const handler = this[type];
+		if (handler) {
+			try {
+				handler(payload);
+			}
+			catch (e) {
+				busEvents.error(e);
+			}
+		}
+	}
+
+	[BUS_EVENTS.PAUSE_OTHERS] = ({sender} = {}) => {
+		if (this !== sender) {
+			this.pause();
+		}
+	}
 
 	getPlayerState () {
 		return this.activeVideo && this.activeVideo.getPlayerState();
@@ -64,6 +110,9 @@ export default class Video extends React.Component {
 
 
 	componentWillUnmount () {
+		(this.unsubscribe || []).forEach(method => method());
+		delete this.unsubscribe;
+
 		try {
 			this.stop();
 		} catch (e) {
