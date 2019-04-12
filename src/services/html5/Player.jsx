@@ -410,8 +410,6 @@ export default class HTML5Video extends React.Component {
 	}
 
 
-
-
 	onCanPlay = () => {
 		const {video} = this;
 		const {onReady} = this.props;
