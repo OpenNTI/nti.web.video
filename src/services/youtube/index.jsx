@@ -232,6 +232,7 @@ export default class YouTubeVideo extends React.Component {
 				width={width}
 				height={height}
 				frameBorder="0"
+				allow="autoplay"
 				allowFullScreen
 			/>
 		);
@@ -408,7 +409,6 @@ export default class YouTubeVideo extends React.Component {
 
 
 	play = () => {
-
 		if (this.props.deferred) {
 			if (!this.state.autoPlay) {
 				this.setState({autoPlay: true}, ()=> {
