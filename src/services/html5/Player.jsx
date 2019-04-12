@@ -410,6 +410,8 @@ export default class HTML5Video extends React.Component {
 	}
 
 
+
+
 	onCanPlay = () => {
 		const {video} = this;
 		const {onReady} = this.props;
@@ -427,6 +429,10 @@ export default class HTML5Video extends React.Component {
 		this.setState({
 			canPlay: true,
 			playbackRate
+		}, () => {
+			if (this.playWhenAble) {
+				this.play();
+			}
 		});
 	}
 
@@ -626,6 +632,15 @@ export default class HTML5Video extends React.Component {
 
 	play = async () => {
 		const {video} = this;
+		const {canPlay} = this.state;
+
+		if (!canPlay) {
+			this.playWhenAble = true;
+			return;
+		}
+
+		delete this.playWhenAble;
+
 		this.setState({interacted: true});
 
 		commands.debug('play');
