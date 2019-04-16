@@ -632,6 +632,8 @@ export default class HTML5Video extends React.Component {
 		const {video} = this;
 		const {canPlay} = this.state;
 
+		this.setState({interacted: true});
+
 		if (!canPlay) {
 			this.playWhenAble = true;
 			return;
@@ -639,7 +641,6 @@ export default class HTML5Video extends React.Component {
 
 		delete this.playWhenAble;
 
-		this.setState({interacted: true});
 
 		commands.debug('play');
 
