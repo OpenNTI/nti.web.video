@@ -121,25 +121,30 @@ export default class Video extends React.Component {
 	}
 
 	onError = (e) => {
+		let sourceWillChange = false;
+
 		if (e && e.nonRecoverable) {
-			this.onNonRecoverableError(e);
+			sourceWillChange = this.onNonRecoverableError(e);
 		}
 
 		if (this.props.onError) {
-			this.props.onError(e);
+			this.props.onError(Object.assign(e, {sourceWillChange}));
 		}
 	}
 
 
 	onNonRecoverableError = () => {
-		const {src:video} = this.props;
-		const {activeIndex} = this.state;
+		const {src: video} = this.props;
+		const {activeIndex: oldIndex} = this.state;
 		const sources = video && video.sources ? video.sources : [];
+		const activeIndex = oldIndex + 1;
 
-		if (activeIndex + 1 < sources.length) {
+		if (activeIndex < sources.length) {
 			this.setState({
-				activeIndex: activeIndex + 1
+				activeIndex
 			});
+
+			return true;
 		}
 	}
 
