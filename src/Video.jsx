@@ -46,7 +46,8 @@ export default class Video extends React.Component {
 		onReady: PropTypes.func,
 
 		ignoreEventBus: PropTypes.bool,
-		deferred: PropTypes.bool
+		deferred: PropTypes.bool,
+		startTime: PropTypes.number
 	}
 
 	static defaultProps = {
@@ -74,10 +75,10 @@ export default class Video extends React.Component {
 			const {eventBus} = this.constructor;
 			eventBus.on(BUS_EVENTS.BASE_TYPE, this.handleBusEvent);
 			this.unsubscribe = [() => eventBus.off(BUS_EVENTS.BASE_TYPE, this.handleBusEvent)];
-	
+
 			eventBus.pauseOthers(this);
 		}
-		
+
 		this.commandQueue = [];
 	}
 
@@ -106,6 +107,11 @@ export default class Video extends React.Component {
 
 	get isReady () {
 		return this.state.ready;
+	}
+
+
+	componentDidMount () {
+		this._setupStartTime();
 	}
 
 
@@ -203,6 +209,26 @@ export default class Video extends React.Component {
 	}
 
 
+	_setupStartTime () {
+		const {startTime} = this.props;
+
+		if (!startTime) { return; }
+
+		const setStartTime = () => {
+			//Give the video a change to autoplay
+			setTimeout(() => {
+				this.setCurrentTime(startTime);
+			}, 10);
+		};
+
+		if (this.isReady) {
+			setStartTime();
+		} else {
+			this.commandQueue.push(setStartTime);
+		}
+	}
+
+
 	play = () => {
 		commands.debug('Play');
 
@@ -251,10 +277,13 @@ export default class Video extends React.Component {
 
 	render () {
 		const {src: video, className} = this.props;
+		const videoProps = {...this.props};
 		const {activeIndex} = this.state;
 		const Provider = getHandler(video, activeIndex) || Fallback;
 		const videoSource = video && (video.sources || {})[activeIndex];
 		const tracks = (video && video.transcripts) || [];
+
+		delete videoProps.startTime;
 
 		return (
 			<div className={cx(
