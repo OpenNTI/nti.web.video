@@ -10,7 +10,8 @@ export default class Slider extends React.Component {
 		min: PropTypes.number,
 		max: PropTypes.number,
 		value: PropTypes.number,
-		onChange: PropTypes.func
+		onChange: PropTypes.func,
+		readOnly: PropTypes.bool
 	}
 
 
@@ -54,8 +55,8 @@ export default class Slider extends React.Component {
 
 
 	render () {
-		const {className, min, max, value, ...otherProps} = this.props;
-		const cls = cx('nti-slider', className);
+		const {className, min, max, value, readOnly, ...otherProps} = this.props;
+		const cls = cx('nti-slider', className, {'read-only': readOnly});
 
 		const lowerPercentage = (value / (max - min)) * 100;
 		const upperPercentage = 100 - lowerPercentage;

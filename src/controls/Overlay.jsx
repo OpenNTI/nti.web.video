@@ -6,7 +6,10 @@ import isTouch from '@nti/util-detection-touch';
 import {hasInteractedWithVideo, isPlaying, isEnded} from './utils';
 import LowerControls from './LowerControls';
 import Mask from './Mask';
+import SmallControls from './SmallControls';
 import UpperControls from './UpperControls';
+
+const SMALL_CONTROL_CUTOFF = 300;
 
 const HIDE_ON_INACTIVE = 5000;
 const HIDE_ON_LEAVE = 1000;
@@ -23,6 +26,8 @@ export default class VideoControlsOverlay extends React.Component {
 	state = {
 		showControls: false
 	}
+
+	attachRef = x => this.node = x
 
 
 	componentWillUnmount () {
@@ -139,6 +144,8 @@ export default class VideoControlsOverlay extends React.Component {
 		const {videoState, className, shouldUseNativeControls, ...otherProps} = this.props;
 		const {showControls} = this.state;
 		const showMask = !interacted || !canPlay || !hasSources || ended;
+		const useSmallControls = this.node && this.node.clientWidth < SMALL_CONTROL_CUTOFF;
+
 
 		const cls = cx('video-controls-overlay', className, {
 			'show-controls': showControls && interacted,
@@ -153,10 +160,44 @@ export default class VideoControlsOverlay extends React.Component {
 			{onClick: this.onClick, onMouseOver: this.onMouseOver, onMouseOut: this.onMouseOut, onMouseMove: this.onMouseMove};
 
 		return (
-			<div className={cls} {...listeners} >
-				{showMask && (<Mask buffering={!canPlay} interacted={interacted} ended={ended} hasSources={hasSources} {...otherProps} />)}
-				{!shouldUseNativeControls && (<UpperControls className="overlay-upper-controls" videoState={videoState} {...otherProps} showing={showControls} isTouch={isTouch} />)}
-				{!shouldUseNativeControls && (<LowerControls className="overlay-lower-controls" videoState={videoState} {...otherProps} showing={showControls} isTouch={isTouch} />)}
+			<div className={cls} {...listeners} ref={this.attachRef}>
+				{showMask && (
+					<Mask
+						buffering={!canPlay}
+						interacted={interacted}
+						ended={ended}
+						hasSources={hasSources}
+						small={useSmallControls}
+						{...otherProps}
+					/>
+				)}
+				{!shouldUseNativeControls && useSmallControls && (
+					<SmallControls
+						className="overlay-small-controls"
+						videoState={videoState}
+						{...otherProps}
+						showing={showControls}
+						isTouch={isTouch}
+					/>
+				)}
+				{!shouldUseNativeControls && !useSmallControls && (
+					<UpperControls
+						className="overlay-upper-controls"
+						videoState={videoState}
+						{...otherProps}
+						showing={showControls}
+						isTouch={isTouch}
+					/>
+				)}
+				{!shouldUseNativeControls && !useSmallControls && (
+					<LowerControls
+						className="overlay-lower-controls"
+						videoState={videoState}
+						{...otherProps}
+						showing={showControls}
+						isTouch={isTouch}
+					/>
+				)}
 			</div>
 		);
 	}

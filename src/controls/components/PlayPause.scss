@@ -18,6 +18,16 @@
 		}
 	}
 
+	&.shadow {
+		.play-icon {
+			filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.15));
+		}
+
+		.pause-icon {
+			filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.15));
+		}
+	}
+
 	.play-icon, .pause-icon {
 		width: 100%;
 		height: 100%;

@@ -10,7 +10,8 @@ export default class VideoControlsPlayPause extends React.Component {
 			state: PropTypes.number
 		}),
 		onPlay: PropTypes.func,
-		onPause: PropTypes.func
+		onPause: PropTypes.func,
+		shadow: PropTypes.bool
 	}
 
 	get playing () {
@@ -37,8 +38,8 @@ export default class VideoControlsPlayPause extends React.Component {
 
 
 	render () {
-		const {playing} = this;
-		const cls = cx('play-pause-control', {playing: playing, paused: !playing});
+		const {playing, shadow} = this;
+		const cls = cx('play-pause-control', {playing: playing, paused: !playing, shadow});
 
 		return (
 			<div className={cls} onClick={this.onClick}>

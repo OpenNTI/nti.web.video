@@ -15,10 +15,11 @@ VideoControlsMask.propTypes = {
 	buffering: PropTypes.bool,
 	interacted: PropTypes.bool,
 	ended: PropTypes.bool,
-	hasSources: PropTypes.bool
+	hasSources: PropTypes.bool,
+	small: PropTypes.bool
 };
-export default function VideoControlsMask ({poster, buffering, interacted, hasSources, ended }) {
-	const cls = cx('video-controls-mask', {'no-sources': !hasSources});
+export default function VideoControlsMask ({poster, buffering, interacted, hasSources, ended, small }) {
+	const cls = cx('video-controls-mask', {'no-sources': !hasSources, small});
 	const style = {};
 
 	if (poster && hasSources && !interacted) {
