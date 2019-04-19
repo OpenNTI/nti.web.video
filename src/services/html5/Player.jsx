@@ -630,25 +630,18 @@ export default class HTML5Video extends React.Component {
 
 	play = async () => {
 		const {video} = this;
-		const {canPlay} = this.state;
 
 		this.setState({interacted: true});
-
-		if (!canPlay) {
-			this.playWhenAble = true;
-			return;
-		}
-
-		delete this.playWhenAble;
-
 
 		commands.debug('play');
 
 		if (video && !this.isUnmounted) {
 			if (video.play) {
 				try {
-					return await video.play();
+					return await video.play()
+						.then(x => (delete this.playWhenAble, x));
 				} catch (e) {
+					this.playWhenAble = true;
 					commands.warn(e);
 				}
 			}
