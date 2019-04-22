@@ -4,6 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import Logger from '@nti/util-logger';
+import {Decorators, AddClass} from '@nti/web-commons';
 
 import {getHandler} from './services';
 import Fallback from './services/html5';
@@ -29,7 +30,9 @@ class EventBus extends EventEmitter {
 	}
 }
 
-export default class Video extends React.Component {
+export default
+@Decorators.fullScreenMonitor()
+class Video extends React.Component {
 	static propTypes = {
 		className: PropTypes.string,
 		src: PropTypes.oneOfType([
@@ -47,7 +50,9 @@ export default class Video extends React.Component {
 
 		ignoreEventBus: PropTypes.bool,
 		deferred: PropTypes.bool,
-		startTime: PropTypes.number
+		startTime: PropTypes.number,
+
+		fullscreenElement: PropTypes.node
 	}
 
 	static defaultProps = {
@@ -65,7 +70,7 @@ export default class Video extends React.Component {
 		ready: false
 	}
 
-
+	attachContainer = x => this.container = x
 	attachRef = (x) => this.activeVideo = x
 
 	constructor (props) {
@@ -112,6 +117,11 @@ export default class Video extends React.Component {
 
 	componentDidMount () {
 		this._setupStartTime();
+		this._setupFullScreen();
+	}
+
+	componentDidUpdate () {
+		this._setupFullScreen();
 	}
 
 
@@ -209,6 +219,24 @@ export default class Video extends React.Component {
 	}
 
 
+	_setupFullScreen () {
+		const {container} = this;
+		const {isFullScreen} = this.state;
+		const {fullscreenElement} = this.props;
+
+		const setFullScreen = () => !isFullScreen && this.setState({isFullScreen: true});
+		const setNotFullScreen = () => isFullScreen && this.setState({isFullScreen: false});
+
+		const containsFullScreen = container && fullscreenElement && container.contains(fullscreenElement);
+
+		if (containsFullScreen) {
+			setFullScreen();
+		} else {
+			setNotFullScreen();
+		}
+	}
+
+
 	_setupStartTime () {
 		const {startTime} = this.props;
 
@@ -278,7 +306,7 @@ export default class Video extends React.Component {
 	render () {
 		const {src: video, className} = this.props;
 		const videoProps = {...this.props};
-		const {activeIndex} = this.state;
+		const {activeIndex, isFullScreen} = this.state;
 		const Provider = getHandler(video, activeIndex) || Fallback;
 		const videoSource = video && (video.sources || {})[activeIndex];
 		const tracks = (video && video.transcripts) || [];
@@ -286,9 +314,11 @@ export default class Video extends React.Component {
 		delete videoProps.startTime;
 
 		return (
-			<div className={cx(
-				'nti-video', Provider.service, className
-			)}>
+			<div
+				ref={this.attachContainer}
+				className={cx('nti-video', Provider.service, className, {fullscreen: isFullScreen})}
+			>
+				{isFullScreen && (<AddClass className="full-screen-video" />)}
 				<Provider {...this.props}
 					ref={this.attachRef}
 					source={videoSource || video}
