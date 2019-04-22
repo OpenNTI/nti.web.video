@@ -23,7 +23,7 @@ export default function SmallVideoControls ({className, ...otherProps}) {
 					<div className="spacer" />
 					<FullScreen {...otherProps} />
 				</div>
-				<siv className="spacer" />
+				<div className="spacer" />
 				<div className={cx('small-video-controls-lower')}>
 					<Scrubber {...otherProps} readOnly />
 				</div>
