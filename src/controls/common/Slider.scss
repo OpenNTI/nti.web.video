@@ -72,7 +72,7 @@
 		}
 	}
 
-	&.read-only {
+	&.no-thumb {
 		input[type='range'] {
 			&::-webkit-slider-thumb {
 				@include readOnlyThumb();

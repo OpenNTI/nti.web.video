@@ -25,7 +25,7 @@ export default function SmallVideoControls ({className, ...otherProps}) {
 				</div>
 				<div className="spacer" />
 				<div className={cx('small-video-controls-lower')}>
-					<Scrubber {...otherProps} readOnly />
+					<Scrubber {...otherProps} noThumb />
 				</div>
 			</div>
 		</div>

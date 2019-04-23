@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import cx from 'classnames';
 
 import Slider from '../common/Slider';
 import {formatTime} from '../utils';
@@ -20,7 +19,8 @@ export default class VideoScrubber extends React.Component {
 		}),
 		setCurrentTime: PropTypes.func,
 		isTouch: PropTypes.bool,
-		readOnly: PropTypes.bool
+		readOnly: PropTypes.bool,
+		noThumb: PropTypes.bool
 	}
 
 	attachWrapperRef = x => this.wrapper = x
@@ -94,13 +94,13 @@ export default class VideoScrubber extends React.Component {
 
 	render () {
 		const {duration, currentTime} = this;
-		const {videoState, isTouch, readOnly} = this.props;
+		const {videoState, isTouch, readOnly, noThumb} = this.props;
 		const {percentage, label} = this.state;
 
 		return (
 			<div ref={this.attachWrapperRef} className="video-control-scrubber" onMouseMove={this.onMouseMove} onMouseOut={this.onMouseOut} onClick={stop}>
 				<LoadingProgress videoState={videoState} />
-				<Slider min={0} max={duration} value={currentTime} onChange={this.onScrub} readOnly={readOnly} />
+				<Slider min={0} max={duration} value={currentTime} onChange={this.onScrub} readOnly={readOnly} noThumb={noThumb} />
 				{label && !isTouch && this.renderTooltip(label, percentage)}
 			</div>
 		);
