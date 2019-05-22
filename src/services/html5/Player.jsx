@@ -166,7 +166,9 @@ export default class HTML5Video extends React.Component {
 		if (!hls) {
 			hls = this.hls = new HLS();
 			this.detachHLSPolyfill = () => {
+				delete this.detachHLSPolyfill;
 				delete this.hls;
+				hls.off(error, this.onHLSError);
 				hls.off(ready, this.onManifestParsed);
 				hls.detachMedia();
 			};
@@ -178,9 +180,9 @@ export default class HTML5Video extends React.Component {
 		return new Promise(f => {
 			const cont = () => (hls.off(ready, cont), f());
 
-			hls.on(ready, cont);
-			hls.on(ready, this.onManifestParsed);
 			hls.on(error, this.onHLSError);
+			hls.on(ready, this.onManifestParsed);
+			hls.on(ready, cont);
 			hls.loadSource(src);
 			hls.attachMedia(this.video);
 		});
