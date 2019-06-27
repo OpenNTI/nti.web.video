@@ -155,7 +155,7 @@ class Browser extends Component {
 					</div>
 					<Toolbar>
 						{	!isEditing
-							? <Button className="create-video-button" rounded name="create" onClick={this.onEditClick}>Create Video</Button>
+							? <Button className="create-video-button" rounded name="create" onClick={this.onEditClick}>Add Video</Button>
 							:	<Button className="back-button" rounded name="back" onClick={this.onEditCancel}>Back to Videos</Button>
 						}
 						<ToolbarButton
