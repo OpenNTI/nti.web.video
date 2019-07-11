@@ -25,6 +25,8 @@ const VIMEO_EVENTS = {
 	seek: 'seeked',
 	playbackratechange: 'ratechange',
 	playProgress: 'timeupdate',
+	timeupdate: 'timeupdate',
+	seeked: 'seeked'
 };
 
 const logRejection = p => p && p.catch && p.catch(e => logger.debug(e.stack || e.message || e));
