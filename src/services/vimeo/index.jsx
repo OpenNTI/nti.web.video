@@ -272,6 +272,10 @@ export default class VimeoVideo extends React.Component {
 
 
 	render () {
+		if (this.state.resetting) {
+			return null;
+		}
+
 		if (!this.state.playerURL) {
 			return (<div>No source</div>);
 		}
@@ -308,7 +312,7 @@ export default class VimeoVideo extends React.Component {
 
 	onEnded () {
 		if (isFlag('reset-vimeo-player-on-end')) {
-			this.setupPlayer();
+			this.setState({resetting: true}, () => this.setState({resetting: false}, () => this.setupPlayer()));
 		}
 		this.setState({playerState: ENDED});
 	}
