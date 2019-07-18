@@ -4,6 +4,7 @@ import Logger from '@nti/util-logger';
 import Player from '@vimeo/player';
 import uuid from 'uuid';
 import QueryString from 'query-string';
+import {isFlag} from '@nti/web-client';
 
 import {
 	EventHandlers,
@@ -22,6 +23,7 @@ const VIMEO_EVENTS = {
 	play: 'playing',
 	pause: 'pause',
 	finish: 'ended',
+	ended: 'ended',
 	seek: 'seeked',
 	playbackratechange: 'ratechange',
 	playProgress: 'timeupdate',
@@ -270,7 +272,6 @@ export default class VimeoVideo extends React.Component {
 
 
 	render () {
-
 		if (!this.state.playerURL) {
 			return (<div>No source</div>);
 		}
@@ -306,6 +307,9 @@ export default class VimeoVideo extends React.Component {
 
 
 	onEnded () {
+		if (isFlag('reset-vimeo-player-on-end')) {
+			this.setupPlayer();
+		}
 		this.setState({playerState: ENDED});
 	}
 
