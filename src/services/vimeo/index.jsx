@@ -312,7 +312,15 @@ export default class VimeoVideo extends React.Component {
 
 	onEnded () {
 		if (isFlag('reset-vimeo-player-on-end')) {
-			this.setState({resetting: true}, () => this.setState({resetting: false}, () => this.setupPlayer()));
+			const id = uuid();
+			this.setState({resetting: true, id}, () => {
+				this.updateURL({...this.props, autoPlay: false}, id, (state) => {
+					this.setState({
+						...state,
+						resetting: false
+					}, () => this.setupPlayer());
+				});
+			});
 		}
 		this.setState({playerState: ENDED});
 	}
