@@ -67,20 +67,44 @@ export default class extends React.Component {
 
 	attachRef = (x) => this.activeVideo = x
 
+	getCurrentVideoTarget () {
+		const state = this.activeVideo && this.activeVideo.getPlayerState();
+
+		return state ? {currentTime: state.time, duration: state.duration, playbackRate: state.speed} : this.videoTarget;
+	}
+
 
 	componentDidMount () {
 		this.mounted = true;
+	}
+
+	getSnapshotBeforeUpdate (prevProps) {
+		const {analyticsData:data} = this.props;
+		const {analyticsData:prevData} = prevProps;
+	
+		if (Boolean(data) !== Boolean(prevData) || data.resourceId !== prevData.resourceId) {
+			this.resetAnalytics(this.props, prevProps);
+		}
 	}
 
 
 	componentWillUnmount () {
 		this.mounted = false;
 		if (this.isStarted) {
-			const target = this.videoTarget;
+			const target = this.getCurrentVideoTarget();
 			this.isStarted = false;
 			this.sendAnalyticsEvent({target, type: 'stop'}, 'VideoWatch', 'stop');
 		}
 		logger.debug('Unmounted');
+	}
+
+
+	resetAnalytics (current, prev) {
+		if (this.isStarted) {
+			const target = this.getCurrentVideoTarget();
+			this.isStarted = false;
+			this.sendAnalyticsEvent({target, type: 'stop'}, 'VideoWatch', 'stop', void 0, prev);
+		}
 	}
 
 
@@ -99,11 +123,9 @@ export default class extends React.Component {
 	}
 
 
-	sendAnalyticsEvent (domEvent, eventName, action, additionalData = {}) {
-		const {
-			context: {analyticsManager: Manager},
-			props: {analyticsData: data = {}}
-		} = this;
+	sendAnalyticsEvent (domEvent, eventName, action, additionalData = {}, props = this.props) {
+		const {analyticsManager:Manager} = this.context;
+		const {analyticsData: data = {}} = props;
 
 		if (!data.resourceId) {
 			logger.warn('Missing resourceId!');
