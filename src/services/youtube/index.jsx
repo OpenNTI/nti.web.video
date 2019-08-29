@@ -343,7 +343,7 @@ export default class YouTubeVideo extends React.Component {
 			}
 		});
 
-		if (info.hasOwnProperty('currentTime')) {
+		if (Object.prototype.hasOwnProperty.call(info,'currentTime')) {
 			this.fireEvent('timeupdate');
 		}
 	}

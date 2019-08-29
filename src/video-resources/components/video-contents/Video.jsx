@@ -16,6 +16,7 @@ class Video extends Component {
 	static propTypes = {
 		video: PropTypes.shape({
 			title: PropTypes.string,
+			sources: PropTypes.array,
 			NTIID: PropTypes.string,
 		}).isRequired,
 		onSelectChange: PropTypes.func.isRequired,

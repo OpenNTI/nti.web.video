@@ -45,6 +45,7 @@ export default class EditVideo extends React.Component {
 		onCancel: PropTypes.func,
 		onSave: PropTypes.func.isRequired,
 		course: PropTypes.shape({
+			getLink: PropTypes.func.isRequired,
 			hasLink: PropTypes.func.isRequired,
 		}).isRequired,
 		onCreate: PropTypes.func.isRequired,
