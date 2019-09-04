@@ -6,6 +6,7 @@
   "license": "UNLICENSED",
   "main": "lib/index.js",
   "module": "src/index.js",
+  "sideEffects": false,
   "files": [
     "lib",
     "src"
