@@ -6,7 +6,10 @@
   "license": "UNLICENSED",
   "main": "lib/index.js",
   "module": "src/index.js",
-  "sideEffects": false,
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
   "files": [
     "lib",
     "src"
