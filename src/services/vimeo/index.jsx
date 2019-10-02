@@ -293,6 +293,8 @@ export default class VimeoVideo extends React.Component {
 				height={height}
 				frameBorder="0"
 				allowFullScreen
+				tabIndex="-1"
+				aria-hidden="true"
 			/>
 		);
 	}
