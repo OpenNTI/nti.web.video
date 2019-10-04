@@ -317,8 +317,6 @@ class Video extends React.Component {
 			<div
 				ref={this.attachContainer}
 				className={cx('nti-video', Provider.service, className, {fullscreen: isFullScreen})}
-				tabIndex="-1"
-				aria-hidden="true"
 			>
 				{isFullScreen && (<AddClass className="full-screen-video" />)}
 				<Provider {...this.props}

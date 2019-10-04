@@ -234,6 +234,8 @@ export default class YouTubeVideo extends React.Component {
 				frameBorder="0"
 				allow="autoplay"
 				allowFullScreen
+				role="iframe"
+				title="YouTube video player"
 			/>
 		);
 	}
