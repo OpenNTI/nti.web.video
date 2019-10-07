@@ -344,12 +344,11 @@ export default class HTML5Video extends React.Component {
 					onVolumeChange={this.onVolumeChange}
 					onRateChange={this.onRateChange}
 					onWaiting={this.onWaiting}
-					controls
 				>
 					{loadVideo && this.renderSources()}
 					{loadVideo && this.renderTracks()}
 				</video>
-				{/* <ControlsOverlay
+				<ControlsOverlay
 					className="controls"
 					shouldUseNativeControls={shouldUseNativeControls}
 					poster={poster}
@@ -366,7 +365,7 @@ export default class HTML5Video extends React.Component {
 					unselectAllTracks={this.unselectAllTracks}
 					goFullScreen={this.goFullScreen}
 					exitFullScreen={this.exitFullScreen}
-				/> */}
+				/>
 			</div>
 		);
 	}
