@@ -6,12 +6,14 @@ import {getModel} from '@nti/lib-interfaces';
 import kaltura from './kaltura';
 import vimeo from './vimeo';
 import youtube from './youtube';
+import wistia from './wistia';
 
 const kalturaRe = /kaltura/i;
 const vimeoRe = /vimeo/i;
 const youtubeRe = /youtu(\.?)be/i;
+const wistiaRe = /wistia/i;
 
-const serviceMap = { youtube, vimeo, kaltura };
+const serviceMap = { youtube, vimeo, kaltura, wistia };
 const PROTOCOL_LESS = /^\/\//i;
 const ensureProtocol = x => PROTOCOL_LESS.test(x) ? `http:${x}` : x;
 
@@ -40,17 +42,17 @@ export function getUrl (data) {
 
 function getHandlerFromUrl (url) {
 	let handler = null;
+	
 	if (kalturaRe.test(url.protocol) || kalturaRe.test(url.host)) {
 		handler = kaltura;
-	}
-
-	else if (vimeoRe.test(url.host) || vimeoRe.test(url.protocol)) {
+	} else if (vimeoRe.test(url.host) || vimeoRe.test(url.protocol)) {
 		handler = vimeo;
+	} else if (youtubeRe.test(url.host)) {
+		handler = youtube;
+	} else if (wistiaRe.test(url.host)) {
+		handler = wistia;
 	}
 
-	else if (youtubeRe.test(url.host)) {
-		handler = youtube;
-	}
 	return handler;
 }
 
