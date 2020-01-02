@@ -63,10 +63,10 @@ export default class WistiaVideoPlayer extends React.Component {
 	}
 
 	setupSource () {
-		const {source} = this.props;
+		const {source, autoPlay} = this.props;
 
 		this.setState({
-			playerURL: WistiaPlayer.getEmbedURL(source)
+			playerURL: WistiaPlayer.getEmbedURL(source, {autoPlay})
 		});
 	}
 

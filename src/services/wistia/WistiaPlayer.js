@@ -53,11 +53,17 @@ class Players {
 const PlayerCache = new Players();
 
 export default class WistiaPlayer extends EventEmitter {
-	static getEmbedURL (source) {
+	static getEmbedURL (source, options) {
 		const {source: ids} = source;
 		const sourceId = Array.isArray(ids) ? ids[0] : ids;
 
-		return `//fast.wistia.net/embed/iframe/${sourceId}`;
+		let url = new URL(`https://fast.wistia.net/embed/iframe/${sourceId}`);
+
+		if (options.autoPlay) {
+			url.searchParams.set('autoPlay', 'true');
+		}
+
+		return url.toString();
 	}
 
 	#player = null;
