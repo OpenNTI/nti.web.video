@@ -39,7 +39,14 @@ class Test extends React.Component {
 				<button onClick={this.onClick}>Show Chooser</button>
 
 				<div style={{maxWidth: 500, margin: 15}}>
+					<h3>html5/Kaltura</h3>
 					<Video src="kaltura://1500101/0_nmii7y4j/"/>
+
+					<h3>YouTube</h3>
+					<Video src="https://youtu.be/ip4z4k4jcRo"/>
+
+					<h3>Vimeo</h3>
+					<Video src="https://vimeo.com/137531269"/>
 				</div>
 			</Fragment>
 		);
