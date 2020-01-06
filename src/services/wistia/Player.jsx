@@ -53,6 +53,10 @@ export default class WistiaVideoPlayer extends React.Component {
 		this.setupSource();
 	}
 
+	componentWillUnmount () {
+		this.tearDownPlayer();
+	}
+
 	componentDidUpdate (prevProps) {
 		const {source} = this.props;
 		const {source: prevSource} = prevProps;
@@ -120,6 +124,18 @@ export default class WistiaVideoPlayer extends React.Component {
 	}
 
 
+	getPlayerState () {
+		const {playerState} = this.state;
+		const state = this.player && this.player.getPlayerState();
+
+		return {
+			service: WistiaVideoPlayer.service,
+			state: playerState != null ? playerState : UNSTARTED,
+			...(state || {})
+		};
+	}
+
+
 	onPlay = () => {
 		this.setState({playerState: PLAYING});
 
@@ -156,9 +172,9 @@ export default class WistiaVideoPlayer extends React.Component {
 		}
 	}
 
-	onRateChange = () => {
+	onRateChange = ({oldRate, newRate}) => {
 		if (this.props.onRateChange) {
-			this.props.onRateChange({target: this.player});
+			this.props.onRateChange(oldRate, newRate, {target: this.player});
 		}
 	}
 

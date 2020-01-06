@@ -4,6 +4,8 @@ import {ExternalLibraryManager} from '@nti/web-client';
 
 const WistiaJS = '//fast.wistia.net/assets/external/E-v1.js';
 
+//Docs: https://wistia.com/support/developers/player-api
+
 class Players {
 	#players = new WeakMap();
 	#listeners = new WeakMap();
@@ -73,6 +75,7 @@ export default class WistiaPlayer extends EventEmitter {
 
 		this.commandQueue = [];
 		this.setupListeners(iframe);
+		this.playbackRate = 1;
 
 		const echo = (event) => (() => this.emit(event));
 
@@ -80,8 +83,11 @@ export default class WistiaPlayer extends EventEmitter {
 		this.pauseEvent = echo('pause');
 		this.endEvent = echo('end');
 		this.timeChangeEvent = echo('timechange');
-		this.rateChangeEvent = echo('ratechange');
 		this.seekEvent = echo('seek');
+		this.rateChangeEvent = (playbackRate) => {
+			this.emit('ratechange', {oldRate: this.playbackRate, newRate: playbackRate});
+			this.playbackRate = playbackRate;
+		};
 	}
 
 	async setupListeners (iframe) {
@@ -126,9 +132,20 @@ export default class WistiaPlayer extends EventEmitter {
 
 	setCurrentTime (time) {
 		if (this.#player) {
-			this.player.time(time);
+			this.#player.time(time);
 		} else {
 			this.commandQueue.push(() => this.setCurrentTime(time));
 		}
+	}
+
+
+	getPlayerState () {
+		if (!this.#player) { return null; }
+
+		return {
+			time: this.#player.time(),
+			duration: this.#player.duration(),
+			speed: this.playbackRate
+		};
 	}
 }
