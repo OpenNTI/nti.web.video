@@ -7,7 +7,8 @@ import { scoped } from '@nti/lib-locale';
 const DEFAULT_TEXT = {
 	youtube: 'YouTube',
 	vimeo: 'Vimeo',
-	kaltura: 'Kaltura'
+	kaltura: 'Kaltura',
+	wistia: 'Wistia'
 };
 
 const t = scoped('video.components.video-contents.video', DEFAULT_TEXT);
