@@ -9,7 +9,7 @@ const WistiaRegex = {
 	},
 	iframeEmbed: {
 		url: /wistia\.net\/embed\/iframe/,
-		id: /wistia\.net\/embed\/iframe\/.([^.?/]*)/
+		id: /wistia\.net\/embed\/iframe\/([^.?/"]*)/
 	}
 };
 
