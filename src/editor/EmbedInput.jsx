@@ -10,7 +10,7 @@ import {createMediaSourceFromUrl} from '../services';
 import {parseEmbedCode} from './utils';
 
 const DEFAULT_TEXT = {
-	header: 'Enter a link to a YouTube, Vimeo, or Kaltura video.',
+	header: 'Enter a link to a YouTube, Vimeo, Wistia, or Kaltura video.',
 	cancel: 'Cancel',
 	done: 'Done',
 	placeholder: 'Enter a link or embed code',
