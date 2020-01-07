@@ -79,6 +79,13 @@ export default class WistiaVideoPlayer extends React.Component {
 
 		this.player = player;
 
+		player.onceReady()
+			.then(() => {
+				if (this.props.onReady) {
+					this.props.onReady();
+				}
+			});
+
 		player.addListener('play', this.onPlay);
 		player.addListener('pause', this.onPause);
 		player.addListener('end', this.onEnd);

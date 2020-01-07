@@ -92,6 +92,19 @@ export default class WistiaPlayer extends EventEmitter {
 		};
 	}
 
+	onceReady () {
+		return new Promise((fulfill) => {
+			if (this.#player) { return fulfill(); }
+
+			const onReady = () => {
+				this.removeListener('ready', onReady);
+				fulfill();
+			};
+
+			this.addListener('ready', onReady);
+		});
+	}
+
 	async setupListeners (iframe) {
 		const player = await PlayerCache.getPlayer(iframe);
 
@@ -103,6 +116,8 @@ export default class WistiaPlayer extends EventEmitter {
 		player.bind('timechange', this.timeChangeEvent);
 		player.bind('playbackratechange', this.rateChangeEvent);
 		player.bind('seek', this.seekEvent);
+
+		this.emit('ready');
 	}
 
 	teardown () {
@@ -149,5 +164,10 @@ export default class WistiaPlayer extends EventEmitter {
 			duration: this.#player.duration(),
 			speed: this.playbackRate
 		};
+	}
+
+
+	get currentTime () {
+		return this.#player && this.#player.time();
 	}
 }
