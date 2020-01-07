@@ -56,6 +56,8 @@ const PlayerCache = new Players();
 
 export default class WistiaPlayer extends EventEmitter {
 	static getEmbedURL (source, options) {
+		if (typeof source === 'string') { return source; }
+
 		const {source: ids} = source;
 		const sourceId = Array.isArray(ids) ? ids[0] : ids;
 
