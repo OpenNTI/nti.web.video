@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {getService} from '@nti/web-client';
 // import {decodeFromURI} from '@nti/lib-ntiids';
 
-import Video, {Chooser} from '../../src';
+import Video, {Chooser, Poster} from '../../src';
 
 window.$AppConfig = window.$AppConfig || {server: '/dataserver2/'};
 
@@ -16,21 +16,21 @@ window.$AppConfig = window.$AppConfig || {server: '/dataserver2/'};
 // };
 
 
-let courseID = localStorage.getItem('course-ntiid');
+// let courseID = localStorage.getItem('course-ntiid');
 
-if (!courseID) {
-	courseID = window.prompt('Enter Course NTIID');
-	localStorage.setItem('course-ntiid', courseID);
-}
+// if (!courseID) {
+// 	courseID = window.prompt('Enter Course NTIID');
+// 	localStorage.setItem('course-ntiid', courseID);
+// }
 
 class Test extends React.Component {
 
-	onClick = async () => {
-		const service = await getService();
-		const course = await service.getObject(courseID);
+	// onClick = async () => {
+	// 	const service = await getService();
+	// 	const course = await service.getObject(courseID);
 
-		Chooser.show(course);
-	}
+	// 	Chooser.show(course);
+	// }
 
 	render () {
 		return (
@@ -43,7 +43,9 @@ class Test extends React.Component {
 					<Video src="kaltura://1500101/0_nmii7y4j/"/>
 
 					<h3>YouTube</h3>
-					<Video src="https://youtu.be/ip4z4k4jcRo"/>
+					<Poster src="https://youtu.be/ip4z4k4jcRo">
+						<Video src="https://youtu.be/ip4z4k4jcRo" onPlaying={(e) => console.log('Youtube Playing: ', e)}/>
+					</Poster>
 
 					<h3>Vimeo</h3>
 					<Video src="https://vimeo.com/137531269"/>

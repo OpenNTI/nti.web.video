@@ -43,7 +43,8 @@ export default class EmbedInput extends React.Component {
 		value: PropTypes.string,
 		onSelect: PropTypes.func,
 		onCancel: PropTypes.func,
-		onDismiss: PropTypes.func
+		onDismiss: PropTypes.func,
+		autoFocus: PropTypes.bool
 	}
 
 	constructor (props) {
@@ -117,6 +118,7 @@ export default class EmbedInput extends React.Component {
 
 
 	render () {
+		const {autoFocus} = this.props;
 		const {value, saving, invalid} = this.state;
 
 		const buttons = [
@@ -130,7 +132,7 @@ export default class EmbedInput extends React.Component {
 					<h1 className="heading">{t('header')}</h1>
 					<label>
 						<span>Link</span>
-						<input type="text" placeholder={t('placeholder')} value={value} onChange={this.onInputChange} />
+						<input autoFocus={Boolean(autoFocus)} type="text" placeholder={t('placeholder')} value={value} onChange={this.onInputChange} />
 					</label>
 					{invalid && (<span className="error">{t('invalid')}</span>)}
 				</div>
