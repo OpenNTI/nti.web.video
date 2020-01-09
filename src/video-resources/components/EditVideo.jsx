@@ -10,7 +10,8 @@ const SourceMimeType = 'application/vnd.nextthought.ntivideosource';
 const Types = {
 	'kaltura': 'video/kaltura',
 	'youtube': 'video/youtube',
-	'vimeo': 'video/vimeo'
+	'vimeo': 'video/vimeo',
+	'wistia': 'video/wistia'
 };
 
 
