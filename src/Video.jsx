@@ -168,6 +168,8 @@ class Video extends React.Component {
 	onTimeUpdate = (event) => {
 		events.debug('timeUpdate %o', event);
 		this.props.onTimeUpdate(event);
+
+		sessionStorage.setItem(this._getVideoKey(), event.target.currentTime);
 	}
 
 
@@ -238,7 +240,8 @@ class Video extends React.Component {
 
 
 	_setupStartTime () {
-		const {startTime} = this.props;
+		let leftOffTime = sessionStorage.getItem(this._getVideoKey());
+		const startTime = leftOffTime ?? this.props.startTime;
 
 		if (!startTime) { return; }
 
@@ -254,6 +257,11 @@ class Video extends React.Component {
 		} else {
 			this.commandQueue.push(setStartTime);
 		}
+	}
+
+
+	_getVideoKey () {
+		return typeof this.props.src === 'string' ? this.props.src : this.props.src.NTIID;
 	}
 
 
