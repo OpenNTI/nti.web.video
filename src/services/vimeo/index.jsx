@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Logger from '@nti/util-logger';
 import Player from '@vimeo/player';
-import uuid from 'uuid';
+import {v4 as uuid} from 'uuid';
 import QueryString from 'query-string';
 import {isFlag} from '@nti/web-client';
 
@@ -89,7 +89,7 @@ export default class VimeoVideo extends React.Component {
 
 	constructor (props) {
 		super(props);
-		const id = uuid.v4();
+		const id = uuid();
 		this.state = {id};
 		this.updateURL(props, id, x => Object.assign(this.state, x));
 	}
@@ -314,7 +314,7 @@ export default class VimeoVideo extends React.Component {
 
 	onEnded () {
 		if (isFlag('reset-vimeo-player-on-end')) {
-			const id = uuid.v4();
+			const id = uuid();
 			this.setState({resetting: true, id}, () => {
 				this.updateURL({...this.props, autoPlay: false}, id, (state) => {
 					this.setState({
