@@ -54,7 +54,7 @@
     "moment": "^2.18.1",
     "prop-types": "^15.5.10",
     "query-string": "^6.1.0",
-    "uuid": "^3.0.1"
+    "uuid": "^7.0.1"
   },
   "devDependencies": {
     "@nti/cmp-scripts": "^2.0.0",
