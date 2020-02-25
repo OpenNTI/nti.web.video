@@ -86,7 +86,7 @@ export default class YouTubeVideo extends React.Component {
 	constructor (props) {
 		super(props);
 		this.state = {
-			id: uuid(),
+			id: uuid.v4(),
 			scope: YOU_TUBE,
 			playerState: -1,
 			initTask: new Task(this.sendListening, 250)

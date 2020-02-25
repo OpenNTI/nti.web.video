@@ -89,7 +89,7 @@ export default class VimeoVideo extends React.Component {
 
 	constructor (props) {
 		super(props);
-		const id = uuid();
+		const id = uuid.v4();
 		this.state = {id};
 		this.updateURL(props, id, x => Object.assign(this.state, x));
 	}
@@ -314,7 +314,7 @@ export default class VimeoVideo extends React.Component {
 
 	onEnded () {
 		if (isFlag('reset-vimeo-player-on-end')) {
-			const id = uuid();
+			const id = uuid.v4();
 			this.setState({resetting: true, id}, () => {
 				this.updateURL({...this.props, autoPlay: false}, id, (state) => {
 					this.setState({
