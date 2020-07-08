@@ -8,7 +8,7 @@ import mockVideoSources from './mock-video-sources.json';
 
 
 jest.mock('@nti/lib-dom', () => ({
-	...require.requireActual('@nti/lib-dom'),
+	...jest.requireActual('@nti/lib-dom'),
 	getScreenWidth: jest.fn().mockReturnValue(1285)
 }));
 
