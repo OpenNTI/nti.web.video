@@ -166,16 +166,19 @@ export default class VimeoVideo extends React.Component {
 
 		logger.debug(event, data);
 
-		this.setState({videoData: data});
+		const {videoData} = this.state;
+		const newVideoData = {...(videoData ?? {}), ...data};
+
+		this.setState({videoData: newVideoData});
 
 		if(mappedEvent && handlerName) {
 			if (this.props[handlerName]) {
 				const mockEvent = {
 					timeStamp: Date.now(),
 					target: {
-						currentTime: data && data.seconds,
-						duration: data && data.duration,
-						playbackRate: (data && data.playbackRate) || 1
+						currentTime: videoData && videoData.seconds,
+						duration: videoData && videoData.duration,
+						playbackRate: (videoData && videoData.playbackRate) || 1
 					},
 					type: mappedEvent
 				};
