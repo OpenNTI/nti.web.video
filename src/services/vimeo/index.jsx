@@ -176,7 +176,7 @@ export default class VimeoVideo extends React.Component {
 				const mockEvent = {
 					timeStamp: Date.now(),
 					target: {
-						currentTime: videoData && videoData.seconds,
+						currentTime: videoData?.seconds ?? 0,
 						duration: videoData && videoData.duration,
 						playbackRate: (videoData && videoData.playbackRate) || 1
 					},
