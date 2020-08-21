@@ -1,3 +1,4 @@
+import './Video.scss';
 import EventEmitter from 'events';
 
 import React from 'react';

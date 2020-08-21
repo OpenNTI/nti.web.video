@@ -1,3 +1,4 @@
+import './VideoEditor.scss';
 import React from 'react';
 import PropTypes from 'prop-types';
 import {scoped} from '@nti/lib-locale';
