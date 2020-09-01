@@ -142,6 +142,7 @@ export default class VimeoVideo extends React.Component {
 		}
 
 		this.player = new Player(iframe);
+		this.playerData = {};
 		// this.player.setAutopause(false);
 		logRejection(this.player.ready().then(this.onReady));
 		this.player.on('error', this.onError);
@@ -166,10 +167,8 @@ export default class VimeoVideo extends React.Component {
 
 		logger.debug(event, data);
 
-		const {videoData} = this.state;
-		const newVideoData = {...(videoData ?? {}), ...data};
-
-		this.setState({videoData: newVideoData});
+		this.playerData = {...(this.playerData ?? {}), ...data};
+		const videoData = this.playerData;
 
 		if(mappedEvent && handlerName) {
 			if (this.props[handlerName]) {
@@ -261,8 +260,8 @@ export default class VimeoVideo extends React.Component {
 
 
 	getPlayerState () {
-		const {videoData, playerState} = this.state;
-		const {duration, seconds} = videoData || {};
+		const {playerState} = this.state;
+		const {duration, seconds} = this.playerData || {};
 
 		return {
 			service: VimeoVideo.service,
