@@ -188,6 +188,12 @@ export default class VimeoVideo extends React.Component {
 
 					this.setState({playbackRate: newRate});
 					this.props[handlerName](oldRate, newRate, mockEvent);
+				} else if (handlerName === EventHandlers.seeked) {
+					if (this.state.playerState === PLAYING) {
+						this.props[EventHandlers.pause]?.(mockEvent);
+					}
+
+					this.props[handlerName](mockEvent);
 				} else {
 					this.props[handlerName](mockEvent);
 				}
