@@ -33,6 +33,25 @@ const VIMEO_EVENTS = {
 
 const logRejection = p => p && p.catch && p.catch(e => logger.debug(e.stack || e.message || e));
 
+function getAccumulator (fn) {
+	let timeout = null;
+	let accumulated = [];
+
+	return (...args) => {
+		if (timeout) {
+			accumulated.push(args);
+			return;
+		}
+
+		accumulated = [args];
+		timeout = setTimeout(() => {
+			fn(accumulated);
+			accumulated = [];
+			timeout = null;
+		}, 1);
+	};
+}
+
 //TODO: To detect an unrecoverable error try pinging the Vimeo API
 //instead of waiting for the to fail. That should catch both cases:
 //1) Vimeo is blocked
@@ -146,8 +165,11 @@ export default class VimeoVideo extends React.Component {
 		// this.player.setAutopause(false);
 		logRejection(this.player.ready().then(this.onReady));
 		this.player.on('error', this.onError);
+
+		const handler = getAccumulator((...args) => this.onAccumulatedEvents(...args));
+
 		for (let event of Object.keys(VIMEO_EVENTS)) {
-			this.player.on(event, data => this.onEvent(event, data));
+			this.player.on(event, data => handler(event, data));
 		}
 	}
 
@@ -161,11 +183,29 @@ export default class VimeoVideo extends React.Component {
 	}
 
 
+	onAccumulatedEvents (events) {
+		const fire = ([name, data]) => this.onEvent(name, data);
+		const seeked = events.find(([name]) => name === 'seeked');
+
+		if (seeked) {
+			fire(seeked);
+			events
+				.filter(([name]) => name !== 'seeked')
+				.forEach(fire);
+		} else {
+			events.forEach(fire);
+		}
+	}
+
+
 	onEvent (event, data) {
+		console.log('VIMEO EVENT: ', event, data);
 		const mappedEvent = VIMEO_EVENTS[event];
 		const handlerName = EventHandlers[mappedEvent];
 
 		logger.debug(event, data);
+
+		const prevData = this.playerData;
 
 		this.playerData = {...(this.playerData ?? {}), ...data};
 		const videoData = this.playerData;
@@ -190,7 +230,15 @@ export default class VimeoVideo extends React.Component {
 					this.props[handlerName](oldRate, newRate, mockEvent);
 				} else if (handlerName === EventHandlers.seeked) {
 					if (this.state.playerState === PLAYING) {
-						this.props[EventHandlers.pause]?.(mockEvent);
+						this.props[EventHandlers.pause]?.({
+							timeStamp: Date.now(),
+							target: {
+								currentTime: prevData?.seconds ?? 0,
+								duration: prevData?.duration,
+								playbakRate: prevData?.playbackRate ?? 1
+							},
+							type: VIMEO_EVENTS['pause']
+						});
 					}
 
 					this.props[handlerName](mockEvent);
