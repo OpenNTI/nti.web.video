@@ -9,6 +9,8 @@ const logger = Logger.get('video:analytics');
 
 const emptyFunction = () => {};
 
+const StopWatchThreshold = 5;
+
 export default class extends React.Component {
 	static displayName = 'VideoWrapper';
 
@@ -81,7 +83,7 @@ export default class extends React.Component {
 	getSnapshotBeforeUpdate (prevProps) {
 		const {analyticsData:data} = this.props;
 		const {analyticsData:prevData} = prevProps;
-	
+
 		if (Boolean(data) !== Boolean(prevData) || data.resourceId !== prevData.resourceId) {
 			this.resetAnalytics(this.props, prevProps);
 		}
@@ -154,9 +156,36 @@ export default class extends React.Component {
 
 
 	onTimeUpdate = (event) => {
+		const {target:video} = event;
+		const previousTime = this.previousTime;
+		const currentTime = video.currentTime ?? 0;
+		const diff = previousTime != null ? (currentTime - previousTime) : 0;
+
+		this.previousTime = currentTime;
+
 		if (this.isStarted) {
-			this.sendAnalyticsEvent(event, 'VideoWatch', 'update');
+			if (diff < 0 || diff > StopWatchThreshold) {
+				//Stop the current watch event
+				this.sendAnalyticsEvent(
+					{
+						type: 'stop',
+						target: {
+							currentTime: previousTime,
+							duration: video.duration,
+							playbackRate: video.playbackRate
+						}
+					},
+					'VideoWatch',
+					'stop'
+				);
+
+				//start a new watch event
+				this.sendAnalyticsEvent(event, 'VideoWatch', 'start');
+			} else {
+				this.sendAnalyticsEvent(event, 'VideoWatch', 'update');
+			}
 		}
+
 		this.props.onTimeUpdate(event);
 	}
 
