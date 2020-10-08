@@ -24,7 +24,7 @@
 
 		padding: 0.25rem 0.5rem;
 		border-radius: 0.25rem;
-		background-color: $primary-grey;
+		background-color: var(--primary-grey);
 		color: white;
 		font-size: 0.875rem;
 
@@ -39,7 +39,7 @@
 			position: absolute;
 			pointer-events: none;
 			border-color: rgba(136, 183, 213, 0);
-			border-top-color: $primary-grey;
+			border-top-color: var(--primary-grey);
 			border-width: 6px;
 			margin-left: -6px;
 		}

@@ -3,7 +3,7 @@
 .video-more-control {
 	.inline-flyout {
 		.inner-flyout {
-			background: $primary-grey;
+			background: var(--primary-grey);
 			color: white;
 			border-radius: 4px;
 			top: auto;
@@ -20,7 +20,7 @@
 				position: absolute;
 				pointer-events: none;
 				border-color: rgba(136, 183, 213, 0);
-				border-top-color: $primary-grey;
+				border-top-color: var(--primary-grey);
 				border-width: 6px;
 			}
 
