@@ -30,8 +30,8 @@
 			}
 
 			> span {
-				color: $disabled-button-color;
-				background: $disabled-button-background;
+				color: var(--disabled-button-color);
+				background: var(--disabled-button-background);
 			}
 		}
 
@@ -60,9 +60,9 @@
 	margin-bottom: 10px;
 
 	.label {
-		font: normal bold 0.625rem/1rem $body-font-family;
+		font: normal bold 0.625rem/1rem var(--body-font-family);
 		text-transform: uppercase;
-		color: $secondary-grey;
+		color: var(--secondary-grey);
 	}
 
 	div.add-transcript {
@@ -73,7 +73,7 @@
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 		display: inline-block;
-		color: #3fb3f6;
+		color: var(--primary-blue);
 		padding: 10px;
 
 		&.disabled {
@@ -83,8 +83,8 @@
 			}
 
 			> span {
-				color: $disabled-button-color;
-				background: $disabled-button-background;
+				color: var(--disabled-button-color);
+				background: var(--disabled-button-background);
 			}
 		}
 
@@ -125,7 +125,7 @@
 	}
 
 	.edit-link {
-		color: #3fb3f6;
+		color: var(--primary-blue);
 		cursor: pointer;
 		font-size: 12px;
 		margin-left: 10px;
