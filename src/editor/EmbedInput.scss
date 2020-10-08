@@ -67,7 +67,7 @@
 
 	.error {
 		font: normal bold 0.625rem/1 $body-font-family;
-		color: $primary-red;
+		color: var(--primary-red);
 		text-transform: uppercase;
 	}
 }
