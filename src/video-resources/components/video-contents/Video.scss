@@ -10,8 +10,8 @@
     position: relative;
 
 	&.selection {
-	    -webkit-box-shadow: 0 0 0 3px #3fb3f6;
-	    box-shadow: 0 0 0 3px #3fb3f6;
+	    -webkit-box-shadow: 0 0 0 3px var(--primary-blue);
+	    box-shadow: 0 0 0 3px var(--primary-blue);
 	}
 
 	.providers {

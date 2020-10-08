@@ -73,7 +73,7 @@
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 		display: inline-block;
-		color: #3fb3f6;
+		color: var(--primary-blue);
 		padding: 10px;
 
 		&.disabled {
@@ -125,7 +125,7 @@
 	}
 
 	.edit-link {
-		color: #3fb3f6;
+		color: var(--primary-blue);
 		cursor: pointer;
 		font-size: 12px;
 		margin-left: 10px;
