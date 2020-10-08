@@ -12,7 +12,7 @@
 		@include fill;
 		@include hardware-render;
 
-		background-color: $panel-background;
+		background-color: var(--panel-background);
 		background-size: cover;
 		background-position: center center;
 

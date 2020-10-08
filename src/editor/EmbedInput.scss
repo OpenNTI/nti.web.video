@@ -40,7 +40,7 @@
 	}
 
 	.dialog-buttons {
-		background: $panel-background;
+		background: var(--panel-background);
 	}
 
 	.saving-mask {
