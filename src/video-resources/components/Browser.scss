@@ -40,11 +40,11 @@
 
 	.video-header-name {
 	    text-align: center;
-	    color: #757474;
+	    color: var(--secondary-grey);
 	    white-space: nowrap;
 	    text-overflow: ellipsis;
 	    overflow: hidden;
-	    font: normal 400 1.5em/1.5 "Open Sans", sans-serif;
+	    font: normal 400 1.5em/1.5 var(--body-font-family);
 	    -webkit-font-smoothing: antialiased;
 	}
 
@@ -68,7 +68,7 @@
 		margin: rem-calc(15px) auto;
 		padding: rem-calc(11px 20px 13px);
 		border-radius: 2px;
-		background: $primary-blue;
+		background: var(--primary-blue);
 		max-width: rem-calc(205px);
 		color: white;
 		font-size: rem-calc(13px);

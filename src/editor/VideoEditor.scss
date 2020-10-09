@@ -15,7 +15,7 @@
 	}
 
 	.dialog-buttons {
-		background: $panel-background;
+		background: var(--panel-background);
 	}
 
 	.meta {
@@ -28,7 +28,7 @@
 
 		.error {
 			margin-top: 0;
-			color: $primary-red;
+			color: var(--primary-red);
 			font-size: .85rem;
 			line-height: 24px;
 			width: 650px;
@@ -37,7 +37,7 @@
 		.delete {
 			display: inline-block;
 			cursor: pointer;
-			background-color: #F35252;
+			background-color: var(--primary-red);
 			color: white;
 			border-radius: 3px;
 			text-align: center;

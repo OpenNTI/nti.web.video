@@ -24,7 +24,7 @@
 			}
 
 			.option-value, i {
-				color: $tertiary-grey;
+				color: var(--tertiary-grey);
 				flex: 0 0 auto;
 			}
 
@@ -39,7 +39,7 @@
 
 		.back {
 			padding: 0.5rem 1rem;
-			color: $tertiary-grey;
+			color: var(--tertiary-grey);
 			font-size: 0.875rem;
 			cursor: pointer;
 		}
