@@ -44,7 +44,7 @@
 	    white-space: nowrap;
 	    text-overflow: ellipsis;
 	    overflow: hidden;
-	    font: normal 400 1.5em/1.5 "Open Sans", sans-serif;
+	    font: normal 400 1.5em/1.5 var(--body-font-family);
 	    -webkit-font-smoothing: antialiased;
 	}
 
