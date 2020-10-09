@@ -30,8 +30,8 @@
 			}
 
 			> span {
-				color: $disabled-button-color;
-				background: $disabled-button-background;
+				color: var(--disabled-button-color);
+				background: var(--disabled-button-background);
 			}
 		}
 
@@ -83,8 +83,8 @@
 			}
 
 			> span {
-				color: $disabled-button-color;
-				background: $disabled-button-background;
+				color: var(--disabled-button-color);
+				background: var(--disabled-button-background);
 			}
 		}
 
