@@ -200,6 +200,7 @@ export default class extends React.Component {
 		this.sendAnalyticsEvent(event, 'VideoWatch', 'start');
 		this.isStarted = true;
 		this.videoTarget = event.target;
+		this.previousTime = event.target?.currentTime ?? 0;
 		this.props.onPlaying(event);
 	}
 
