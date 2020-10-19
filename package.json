@@ -48,7 +48,6 @@
     "classnames": "^2.0.0",
     "hls.js": "0.x.x",
     "invariant": "^2.1.1",
-    "moment": "^2.18.1",
     "prop-types": "^15.5.10",
     "query-string": "^6.1.0",
     "uuid": "^7.0.1"
