@@ -7,27 +7,28 @@
 		height: 100%;
 		background: white;
 
-	.editor-container {
-	  overflow: auto;
-	  flex: 1 1 auto;
-	  padding-top: 20px;
+		.editor-container {
+			overflow: auto;
+			flex: 1 1 auto;
+			padding-top: 20px;
 
-	  .editor-wrapper {
-		  max-width: 703px;
-		  margin: auto;
-	  }
+			.editor-wrapper {
+				max-width: 703px;
+				margin: auto;
+			}
+		}
 	}
-  }
 
-  .video-embed-input {
-	  width: 100%;
-	  display: flex;
-	  flex-direction: column;
-	  height: 100%;
-	  .picker {
-		  flex: 1;
-	  }
-  }
+	.video-embed-input {
+		width: 100%;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+
+		.picker {
+			flex: 1;
+		}
+	}
 }
 
 .video-resources-edit-editor {

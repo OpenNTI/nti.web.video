@@ -4,9 +4,9 @@ const region = new Intl.DateTimeFormat('en-US', {
 	hour12: true,
 });
 
-function withOrdinal(n) {
+function withOrdinal (n) {
 	n = typeof n === 'string' ? parseInt(n, 10) : n;
-	const s = ["th", "st", "nd", "rd"], v = n % 100;
+	const s = ['th', 'st', 'nd', 'rd'], v = n % 100;
 	return n + (s[(v - 20) % 10] || s[v] || s[0]);
 }
 
