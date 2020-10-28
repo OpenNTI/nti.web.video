@@ -9,7 +9,7 @@ import {isValid} from './utils';
 import TranscriptItem from './TranscriptItem';
 
 const DEFAULT_TEXT = {
-	add: 'Add Transcript',
+	add: 'Add Transcript (.vtt)',
 	captions: 'Transcript File (Optional)',
 	errors: {
 		update: 'Could not update transcript',
