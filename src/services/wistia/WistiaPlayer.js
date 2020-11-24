@@ -41,7 +41,7 @@ class Players {
 		if (this.#players.has(iframe)) { return Promise.resolve(this.#players.get(iframe)); }
 
 		return new Promise((fulfill) => {
-			this.#listeners.set(iframe, video => fulfill(video));	
+			this.#listeners.set(iframe, video => fulfill(video));
 
 			this.loadScript();
 		});
@@ -168,6 +168,10 @@ export default class WistiaPlayer extends EventEmitter {
 
 
 	get currentTime () {
-		return this.#player && this.#player.time();
+		return this.#player?.time();
+	}
+
+	get duration () {
+		return this.#player?.duration();
 	}
 }
