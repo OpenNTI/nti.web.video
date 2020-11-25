@@ -119,7 +119,6 @@ export default class WistiaVideoPlayer extends React.Component {
 				ref={this.attachIframe}
 				width={width}
 				height={height}
-				allowTransparency
 				frameBorder="0"
 				scrolling="no"
 				allowFullScreen
