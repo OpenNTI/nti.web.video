@@ -15,6 +15,12 @@
 	}
 }
 
+.badges {
+	position: absolute;
+	top: 15px;
+	right: 15px;
+}
+
 .overlay {
 	position: absolute;
 	top: 0;
@@ -55,5 +61,48 @@
 
 	& .label {
 		display: none;
+	}
+}
+
+.video-poster.poster .button {
+	display: block;
+	position: relative;
+	overflow: hidden;
+	line-height: 0;
+	border-radius: 5em;
+	background-color: rgba(0, 0, 0, 0.8);
+	box-shadow:
+		inset 0 0 0 1px rgba(255, 255, 255, 0.15),
+		0 0 3px 0 black;
+
+	& .play {
+		display: inline-block;
+		float: left;
+		border-radius: 50px;
+		margin: 0.2em;
+		width: 43px;
+		height: 43px;
+		background-image: url('./assets/play.png');
+		background-size: cover;
+	}
+
+	& .label {
+		display: block;
+		overflow: hidden;
+		vertical-align: bottom;
+		padding: 0 1.5em 0 0.5em;
+		margin-left: 50px;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		color: #fff;
+		font-size: 1.1rem;
+		line-height: 2.75em;
+	}
+}
+
+@media (max-width: 480px) {
+	.badges {
+		top: 5.4px;
+		right: 5.4px;
 	}
 }

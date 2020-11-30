@@ -18,7 +18,7 @@ const Sizes = [
 ];
 
 const AspectRatios = {
-	[Poster]: 9 / 16,
+	[Poster]: 16 / 9,
 	[Thumbnail]: 15 / 11 //taken from the size in the overview
 };
 
@@ -83,14 +83,16 @@ export default function VideoCurtain ({className, video, progress, badges, onPla
 			<div className={Styles.overlay}>
 				<div className={Styles.button}>
 					<span className={Styles.play} title={t('play')} onClick={onPlayClick} />
-					<Text.Base className={Styles.label} title={title}>{title}</Text.Base>
+					<Text.Condensed className={Styles.label} title={title}>{title}</Text.Condensed>
 				</div>
 			</div>
-			{progress && progress < 1 && (
-				<div className={Styles.progressBar}>
-					<div className={Styles.progress} style={{width: `${bucketProgress(progress) * 100}%`}} />
-				</div>
-			)}
+			{progress && progress < 1 ?
+				(
+					<div className={Styles.progressBar}>
+						<div className={Styles.progress} style={{width: `${bucketProgress(progress) * 100}%`}} />
+					</div>
+				) : null
+			}
 		</Monitor.ElementSize>
 	);
 }
