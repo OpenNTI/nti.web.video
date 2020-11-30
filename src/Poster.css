@@ -1,0 +1,59 @@
+.video-poster {
+	position: relative;
+	background-color: var(--panel-background);
+}
+
+.asset {
+	width: 100%;
+
+	& img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		object-position: center center;
+	}
+}
+
+.overlay {
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+}
+
+.progress-bar {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: #6d7278;
+	height: 4px;
+
+	& .progress {
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		background: var(--secondary-green);
+	}
+}
+
+.video-poster.thumbnail .button {
+	& .play {
+		display: inline-block;
+		width: 24px;
+		height: 24px;
+		background-size: contain;
+		background-image: url('./assets/play-icon.svg');
+	}
+
+	& .label {
+		display: none;
+	}
+}
