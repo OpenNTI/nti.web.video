@@ -57,7 +57,7 @@ export default function VideoCurtain ({className, video, progress, badges, onPla
 		const thumbnail = await video.getThumbnail();
 
 		return {[Poster]: poster, [Thumbnail]: thumbnail};
-	}, []);
+	}, [video]);
 
 	const assets = isResolved(resolver) ? resolver : null;
 
