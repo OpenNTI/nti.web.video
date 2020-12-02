@@ -85,13 +85,20 @@ export default class extends React.Component {
 		const {analyticsData:prevData} = prevProps;
 
 		if (Boolean(data) !== Boolean(prevData) || data.resourceId !== prevData.resourceId) {
-			this.resetAnalytics(this.props, prevProps);
+			return true;
 		}
+
+		return null;
 	}
 
 	// Keep warning from printing...
 	// React Warning: getSnapshotBeforeUpdate() should be used with componentDidUpdate(). This component defines getSnapshotBeforeUpdate() only.
-	componentDidUpdate () {}
+	// React wants the getSnapshotBeforeUpdate() to return null or a value... so lets use it.
+	componentDidUpdate (prevProps, prevState, snapshot) {
+		if (snapshot) {
+			this.resetAnalytics(this.props, prevProps);
+		}
+	}
 
 
 	componentWillUnmount () {
