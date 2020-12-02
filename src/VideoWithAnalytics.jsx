@@ -89,6 +89,10 @@ export default class extends React.Component {
 		}
 	}
 
+	// Keep warning from printing...
+	// React Warning: getSnapshotBeforeUpdate() should be used with componentDidUpdate(). This component defines getSnapshotBeforeUpdate() only.
+	componentDidUpdate () {}
+
 
 	componentWillUnmount () {
 		this.mounted = false;
