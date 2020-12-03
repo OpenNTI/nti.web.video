@@ -13,7 +13,7 @@ const Poster = 'poster';
 const Thumbnail = 'thumbnail';
 
 const Sizes = [
-	{query: size => size.width < 420, size: Thumbnail},
+	{query: size => size.width < 320, size: Thumbnail},
 	{query: () => true, size: Poster}
 ];
 
