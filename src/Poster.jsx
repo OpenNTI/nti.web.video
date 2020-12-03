@@ -4,7 +4,7 @@ import cx from 'classnames';
 import {scoped} from '@nti/lib-locale';
 import {Hooks, Monitor, Text, Image} from '@nti/web-commons';
 
-import Styles from './Poster.css';
+import styles from './Poster.css';
 
 const {useResolver} = Hooks;
 const {isResolved} = useResolver;
@@ -71,25 +71,25 @@ export default function VideoCurtain ({className, video, progress, badges, onPla
 	return (
 		<Monitor.ElementSize
 			{...otherProps}
-			className={cx(className, Styles.videoPoster, Styles[size])}
+			className={cx(className, styles.videoPoster, styles[size])}
 			onChange={onSizeChange}
 		>
 			{asset && (
-				<Image.Container className={Styles.asset} aspectRatio={AspectRatios[size]}>
+				<Image.Container className={styles.asset} aspectRatio={AspectRatios[size]}>
 					<img src={asset} />
 				</Image.Container>
 			)}
-			{(badges && badges.length > 0) ? (<div className={Styles.badges}>{badges}</div>) : null}
-			<div className={Styles.overlay}>
-				<div className={Styles.button}>
-					<span className={Styles.play} title={t('play')} onClick={onPlayClick} />
-					<Text.Condensed className={Styles.label} title={title}>{title}</Text.Condensed>
+			<div className={styles.overlay}>
+				<div className={styles.button}>
+					<span className={styles.play} title={t('play')} onClick={onPlayClick} />
+					<Text.Condensed className={styles.label} title={title}>{title}</Text.Condensed>
 				</div>
 			</div>
+			{(badges && badges.length > 0) ? (<div className={styles.badges}>{badges}</div>) : null}
 			{progress && progress < 1 ?
 				(
-					<div className={Styles.progressBar}>
-						<div className={Styles.progress} style={{width: `${bucketProgress(progress) * 100}%`}} />
+					<div className={styles.progressBar}>
+						<div className={styles.progress} style={{width: `${bucketProgress(progress) * 100}%`}} />
 					</div>
 				) : null
 			}
