@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import {scoped} from '@nti/lib-locale';
+import { toCSSClassName } from '@nti/lib-dom';
 import {Hooks, Monitor, Text, Image} from '@nti/web-commons';
 
 import styles from './Poster.css';
@@ -81,7 +82,7 @@ export default function VideoCurtain ({className, video, progress, badges, onPla
 			)}
 			<div className={styles.overlay}>
 				<div className={styles.button}>
-					<span className={styles.play} title={t('play')} onClick={onPlayClick} />
+					<span className={styles.play} title={t('play')} onClick={onPlayClick} data-test-id={`play-button-${toCSSClassName(title)}`}/>
 					<Text.Condensed className={styles.label} title={title}>{title}</Text.Condensed>
 				</div>
 			</div>
