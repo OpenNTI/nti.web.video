@@ -312,6 +312,7 @@ class Video extends React.Component {
 		const videoSource = video && (video.sources || {})[activeIndex];
 		const tracks = (video && video.transcripts) || [];
 
+		delete videoProps.fullscreenElement;
 		delete videoProps.startTime;
 
 		return (
@@ -320,7 +321,7 @@ class Video extends React.Component {
 				className={cx('nti-video', Provider.service, className, {fullscreen: isFullScreen})}
 			>
 				{isFullScreen && (<AddClass className="full-screen-video" />)}
-				<Provider {...this.props}
+				<Provider {...videoProps}
 					ref={this.attachRef}
 					source={videoSource || video}
 					tracks={tracks}
