@@ -86,7 +86,7 @@ export default function VideoCurtain ({className, video, progress, badges, onPla
 					<Text.Condensed className={styles.label} title={title}>{title}</Text.Condensed>
 				</div>
 			</div>
-			{(badges && badges.length > 0) ? (<div className={styles.badges}>{badges}</div>) : null}
+			{(badges && badges.length > 0) ? (<div className={cx('video-badges', styles.badges)}>{badges}</div>) : null}
 			{progress && progress < 1 ?
 				(
 					<div className={styles.progressBar}>
