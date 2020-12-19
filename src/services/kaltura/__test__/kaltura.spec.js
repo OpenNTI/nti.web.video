@@ -1,10 +1,10 @@
 /* eslint-env jest */
 import React from 'react';
-import { mount } from 'enzyme';
+import { render, waitFor } from '@testing-library/react';
+import { wait } from '@nti/lib-commons';
 
 import Kaltura from '../index';
 
-const wait = n => new Promise(t => setTimeout(t, n));
 
 describe('Kaltura Service', () => {
 	beforeEach(() => {
@@ -199,16 +199,16 @@ describe('Kaltura Service', () => {
 	*	NTI-4689: Make sure default tracks are pulled in
 	*/
 	test('should have default tracks', async () => {
-		const wrapper = mount(<Kaltura source={'kaltura://1500101/0_nmii7y4j/'} />);
+		const {container} = render(<Kaltura source={'kaltura://1500101/0_nmii7y4j/'} />);
+		await waitFor(() => {
 
-		await wait(100);
-		wrapper.update();
+			const track = container.querySelector('track');
+			const trackSrc = 'https://cdnapisec.kaltura.com/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/segmentDuration/155/segmentIndex/1/captionAssetId/0_qazodgom/ks/djJ8MTUwMDEwMXwvhxzhuHGGz5EjPAOn2oj-zzUW1JlHoDrdrZw0pmWKu4iZQ_ZBxMCRjQCPSls887JHBgSbl5dxdnj41jW5cpGPZNwakps1n30iZ7Pz_Q5LNQ==';
+			expect(track.getAttribute('src')).toEqual(trackSrc);
+			expect(track.getAttribute('srcLang')).toEqual('en');
+			expect(track.getAttribute('kind')).toEqual('captions');
 
-		const track = wrapper.find('track').first();
-		const trackSrc = 'https://cdnapisec.kaltura.com/api_v3/index.php/service/caption_captionasset/action/serveWebVTT/segmentDuration/155/segmentIndex/1/captionAssetId/0_qazodgom/ks/djJ8MTUwMDEwMXwvhxzhuHGGz5EjPAOn2oj-zzUW1JlHoDrdrZw0pmWKu4iZQ_ZBxMCRjQCPSls887JHBgSbl5dxdnj41jW5cpGPZNwakps1n30iZ7Pz_Q5LNQ==';
-		expect(track.prop('src')).toEqual(trackSrc);
-		expect(track.prop('srcLang')).toEqual('en');
-		expect(track.prop('kind')).toEqual('captions');
+		});
 	});
 
 	/*
@@ -238,15 +238,14 @@ describe('Kaltura Service', () => {
 			'srcjsonp': null,
 			'type': 'text/vtt'
 		};
-		const wrapper = mount(<Kaltura source={'kaltura://1500101/0_nmii7y4j/'} tracks={[transcript]} />);
+		const {container} = render(<Kaltura source={'kaltura://1500101/0_nmii7y4j/'} tracks={[transcript]} />);
 
-		await wait(100);
-		wrapper.update();
-
-		const track = wrapper.find('track').first();
-		const trackSrc = '/dataserver2/Objects/tag%3Anextthought.com%2C2011-10%3Asystem-OID-0x04d808%3A5573657273/@@download/test.vtt';
-		expect(track.prop('src')).toEqual(trackSrc);
-		expect(track.prop('srcLang')).toEqual('en');
-		expect(track.prop('kind')).toEqual('captions');
+		await waitFor(() => {
+			const track = container.querySelector('track');
+			const trackSrc = '/dataserver2/Objects/tag%3Anextthought.com%2C2011-10%3Asystem-OID-0x04d808%3A5573657273/@@download/test.vtt';
+			expect(track.getAttribute('src')).toEqual(trackSrc);
+			expect(track.getAttribute('srcLang')).toEqual('en');
+			expect(track.getAttribute('kind')).toEqual('captions');
+		});
 	});
 });

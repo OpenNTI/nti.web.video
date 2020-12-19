@@ -1,5 +1,5 @@
 // import React from 'react';
-// import { mount } from 'enzyme';
+// import { render, fireEvent } from '@testing-library/react';
 
 // import Transcripts from '../Transcripts';
 
