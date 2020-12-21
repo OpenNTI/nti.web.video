@@ -1,7 +1,6 @@
 /* eslint-env jest */
 import React from 'react';
 import { render, waitFor } from '@testing-library/react';
-import { wait } from '@nti/lib-commons';
 
 import Kaltura from '../index';
 
