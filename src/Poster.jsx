@@ -82,7 +82,7 @@ export default function VideoCurtain ({className, video, progress, badges, onPla
 			)}
 			<div className={styles.overlay}>
 				<div className={styles.button}>
-					<span className={styles.play} title={t('play')} onClick={onPlayClick} data-test-id={`play-button-${toCSSClassName(title)}`}/>
+					<span className={styles.play} title={t('play')} onClick={onPlayClick} data-testid={`play-button-${toCSSClassName(title)}`}/>
 					<Text.Condensed className={styles.label} title={title}>{title}</Text.Condensed>
 				</div>
 			</div>
