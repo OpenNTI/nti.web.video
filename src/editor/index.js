@@ -2,4 +2,4 @@ import Editor from './VideoEditor';
 
 export default Editor;
 
-export EmbedInput from './EmbedInput';
+export {default as EmbedInput} from './EmbedInput';
