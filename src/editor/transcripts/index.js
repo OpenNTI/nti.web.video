@@ -1,1 +1,1 @@
-export default from './Transcripts';
+export { default } from './Transcripts';
