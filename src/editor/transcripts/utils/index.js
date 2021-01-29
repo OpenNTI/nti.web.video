@@ -1,4 +1,4 @@
-export canEdit from './can-edit';
-export getName from './get-name';
-export getTime from './get-time';
-export isValid from './is-valid';
+export { default as canEdit } from './can-edit';
+export { default as getName } from './get-name';
+export { default as getTime } from './get-time';
+export { default as isValid } from './is-valid';

@@ -1,2 +1,2 @@
-export parseEmbedCode from './parse-embed-code';
-export resolveVideo from './resolve-video';
+export { default as parseEmbedCode } from './parse-embed-code';
+export { default as resolveVideo } from './resolve-video';
