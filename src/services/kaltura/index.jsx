@@ -87,7 +87,7 @@ export default class KalturaVideo extends React.Component {
 	 * with Vimeo and YouTube (and the Video component), but in rst the
 	 * server expects `${partnerId}:${entryId}`.
 	 * @param  {string} href kaltura video href
-	 * @return {string} id of the form `${partnerId}/${entryId}`
+	 * @returns {string} id of the form `${partnerId}/${entryId}`
 	 */
 	static getIDParts (href) {
 		if (Array.isArray(href)) {

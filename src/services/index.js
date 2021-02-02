@@ -80,7 +80,7 @@ export async function createMediaSourceFromUrl (url) {
 /**
  * Get canonical URL from service and source
  * @param  {string|Object} args - `${service} ${source}` or {service: ..., source: ...}
- * @return {string} canonical url
+ * @returns {string} canonical url
  */
 export function getCanonicalUrlFrom (args) {
 	const stringToObjectForm = str => {

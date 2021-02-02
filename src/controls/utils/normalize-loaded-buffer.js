@@ -12,8 +12,8 @@
  *
  * @param  {Object} videoState The state of the video
  * @param {TimeRange} videoState.buffered the loaded ranges
- * @param {Number} videoState.duration the length of the video
- * @return {Array}        An array covering all the loaded and unloaded ranges
+ * @param {number} videoState.duration the length of the video
+ * @returns {Array}        An array covering all the loaded and unloaded ranges
  */
 export default function (videoState) {
 	const {buffered, duration} = videoState || {};
