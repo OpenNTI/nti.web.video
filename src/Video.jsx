@@ -31,8 +31,6 @@ class EventBus extends EventEmitter {
 	}
 }
 
-export default
-@Decorators.fullScreenMonitor()
 class Video extends React.Component {
 	static propTypes = {
 		className: PropTypes.string,
@@ -337,3 +335,6 @@ class Video extends React.Component {
 		);
 	}
 }
+
+
+export default Decorators.fullScreenMonitor()(Video);
