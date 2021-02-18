@@ -1,7 +1,7 @@
 import './Chooser.scss';
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {Prompt, DialogButtons} from '@nti/web-commons';
+import { Prompt, DialogButtons } from '@nti/web-commons';
 // import {Models} from '@nti/lib-interfaces';
 import cx from 'classnames';
 
@@ -16,15 +16,15 @@ class Chooser extends Component {
 		onCancel: PropTypes.func,
 		onDismiss: PropTypes.func,
 		onSelect: PropTypes.func,
-		onVideoDelete: PropTypes.func
-	}
+		onVideoDelete: PropTypes.func,
+	};
 
 	state = {
 		isEditing: false,
-		videos: null
+		videos: null,
 	};
 
-	static show (course, config, props) {
+	static show(course, config, props) {
 		return new Promise((select, reject) => {
 			modal(
 				<Chooser
@@ -33,40 +33,43 @@ class Chooser extends Component {
 					onCancel={reject}
 					{...props}
 				/>,
-				{...config, className: 'video-resource-chooser-dialog'}
+				{ ...config, className: 'video-resource-chooser-dialog' }
 			);
 		});
 	}
 
-	componentDidMount () {
+	componentDidMount() {
 		const { course } = this.props;
-		course.getAssets('application/vnd.nextthought.ntivideo')
+		course
+			.getAssets('application/vnd.nextthought.ntivideo')
 			.then(videos => {
 				this.setState({
-					videos: videos.sort((a, b) => (a.title || '').localeCompare((b.title || '')))
+					videos: videos.sort((a, b) =>
+						(a.title || '').localeCompare(b.title || '')
+					),
 				});
 			});
 	}
 
-	componentWillUnmount () {
+	componentWillUnmount() {
 		if (this.unmountCallback) {
 			this.unmountCallback();
 		}
 	}
 
-	dismiss () {
-		const {onDismiss} = this.props;
+	dismiss() {
+		const { onDismiss } = this.props;
 		if (onDismiss) {
 			onDismiss();
 		}
 	}
 
-	onCancel = (e) => {
+	onCancel = e => {
 		if (e) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
-		const {onCancel} = this.props;
+		const { onCancel } = this.props;
 
 		//Use this call back to wait until the Chooser has been closed
 		this.unmountCallback = () => {
@@ -76,16 +79,21 @@ class Chooser extends Component {
 		};
 
 		this.dismiss();
-	}
+	};
 
-	onSelect = (e) => {
+	onSelect = e => {
 		if (e) {
 			e.preventDefault();
 			e.stopPropagation();
 		}
-		const {props: {onSelect}, state: {selected}} = this;
+		const {
+			props: { onSelect },
+			state: { selected },
+		} = this;
 
-		if (!selected) { return; }
+		if (!selected) {
+			return;
+		}
 
 		//Use this call back to wait until the Chooser has been closed
 		this.unmountCallback = () => {
@@ -96,21 +104,21 @@ class Chooser extends Component {
 
 		this.dismiss();
 		return true;
-	}
+	};
 
-	selectVideo = (selected) => {
+	selectVideo = selected => {
 		this.setState({
-			selected
+			selected,
 		});
-	}
+	};
 
-	setEditing = (isEditing) => {
+	setEditing = isEditing => {
 		this.setState({
-			isEditing
+			isEditing,
 		});
-	}
+	};
 
-	onEdit = (video) => {
+	onEdit = video => {
 		const { videos } = this.state;
 		const newVideos = videos.slice();
 		const found = videos.findIndex(v => v.getID() === video.getID());
@@ -124,27 +132,28 @@ class Chooser extends Component {
 		this.setState({
 			videos: newVideos,
 			isEditing: false,
-			selected: video
+			selected: video,
 		});
-	}
+	};
 
-	onDelete = (video) => {
+	onDelete = video => {
 		Prompt.areYouSure('').then(() => {
 			this.doDelete(video);
 		});
-	}
+	};
 
-	doDelete = (video) => {
-		video.delete()
+	doDelete = video => {
+		video
+			.delete()
 			.then(() => {
 				this.onVideoDeleted(video);
 			})
 			.catch(error => {
 				console.error(error); //eslint-disable-line
 			});
-	}
+	};
 
-	onVideoDeleted = (video) => {
+	onVideoDeleted = video => {
 		const { videos } = this.state;
 		const { onVideoDelete } = this.props;
 		const newVideos = videos.slice();
@@ -152,13 +161,13 @@ class Chooser extends Component {
 		newVideos.splice(videoIndex, 1);
 		this.setState({
 			videos: newVideos,
-			selected: false
+			selected: false,
 		});
 
 		onVideoDelete && onVideoDelete(video.getID());
-	}
+	};
 
-	render () {
+	render() {
 		const { course } = this.props;
 		const { isEditing, videos } = this.state;
 
@@ -166,13 +175,13 @@ class Chooser extends Component {
 			{
 				label: 'Cancel',
 				className: 'cancel',
-				onClick: this.onCancel
+				onClick: this.onCancel,
 			},
 			{
-				className: cx({disabled: false}),
+				className: cx({ disabled: false }),
 				label: 'Select',
-				onClick: this.onSelect
-			}
+				onClick: this.onSelect,
+			},
 		];
 		return (
 			<div className="video-resource-chooser">

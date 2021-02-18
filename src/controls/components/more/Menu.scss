@@ -1,4 +1,4 @@
-@import "~@nti/style-common";
+@import '~@nti/style-common';
 
 .video-more-controls-menu {
 	width: 150px;
@@ -22,7 +22,8 @@
 				flex: 1 1 auto;
 			}
 
-			.option-value, i {
+			.option-value,
+			i {
 				color: var(--tertiary-grey);
 				flex: 0 0 auto;
 			}
@@ -68,7 +69,9 @@
 		}
 	}
 
-	&.speed, &.captions, &.quality {
+	&.speed,
+	&.captions,
+	&.quality {
 		.top-level {
 			display: none;
 		}

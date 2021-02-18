@@ -6,37 +6,32 @@ describe('Can Edit', () => {
 		const transcript = {
 			Links: [
 				{
-					rel: 'something'
+					rel: 'something',
 				},
 				{
-					rel: 'edit'
-				}
-			]
+					rel: 'edit',
+				},
+			],
 		};
 
-		expect(canEdit(transcript))
-			.toBe(true);
+		expect(canEdit(transcript)).toBe(true);
 	});
 
 	test('Is not editable', () => {
 		const transcript = {
 			Links: [
 				{
-					rel: 'something'
-				}
-			]
+					rel: 'something',
+				},
+			],
 		};
 
-		expect(canEdit(transcript))
-			.toBe(false);
+		expect(canEdit(transcript)).toBe(false);
 	});
 
 	test('Is not editable, no links', () => {
-		const transcript = {
+		const transcript = {};
 
-		};
-
-		expect(canEdit(transcript))
-			.toBe(false);
+		expect(canEdit(transcript)).toBe(false);
 	});
 });

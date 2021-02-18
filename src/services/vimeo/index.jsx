@@ -2,18 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Logger from '@nti/util-logger';
 import Player from '@vimeo/player';
-import {v4 as uuid} from 'uuid';
+import { v4 as uuid } from 'uuid';
 import QueryString from 'query-string';
-import {isFlag} from '@nti/web-client';
+import { isFlag } from '@nti/web-client';
 
 import {
 	EventHandlers,
 	UNSTARTED,
 	ENDED,
 	PLAYING,
-	PAUSED
+	PAUSED,
 } from '../../Constants';
-import {resolveCanAccessSource, createNonRecoverableError} from '../utils';
+import { resolveCanAccessSource, createNonRecoverableError } from '../utils';
 
 const logger = Logger.get('video:vimeo');
 const VIMEO_URL_PARTS = /(?:https?:)?\/\/(?:(?:www|player)\.)?vimeo.com\/(?:(?:channels|video)\/(?:\w+\/)?|groups\/(?:[^/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?|#)/i;
@@ -28,10 +28,11 @@ const VIMEO_EVENTS = {
 	playbackratechange: 'ratechange',
 	playProgress: 'timeupdate',
 	timeupdate: 'timeupdate',
-	seeked: 'seeked'
+	seeked: 'seeked',
 };
 
-const logRejection = p => p && p.catch && p.catch(e => logger.debug(e.stack || e.message || e));
+const logRejection = p =>
+	p && p.catch && p.catch(e => logger.debug(e.stack || e.message || e));
 
 //TODO: To detect an unrecoverable error try pinging the Vimeo API
 //instead of waiting for the to fail. That should catch both cases:
@@ -41,29 +42,34 @@ const logRejection = p => p && p.catch && p.catch(e => logger.debug(e.stack || e
 export default class VimeoVideo extends React.Component {
 	static service = 'vimeo';
 
-	static getID (url) {
+	static getID(url) {
 		/** @see test */
 
 		const getFromCustomProtocol = x => x.match(VIMEO_PROTOCOL_PARTS);
 		const getFromURL = x => x.match(VIMEO_URL_PARTS);
 
-		const [/*matchedURL*/, /*albumId*/, id] = getFromCustomProtocol(url) || getFromURL(url) || [];
+		const [, , /*matchedURL*/ /*albumId*/ id] =
+			getFromCustomProtocol(url) || getFromURL(url) || [];
 		return id || null;
 	}
 
-	static async resolveID (url) {
-		const endpoint = `https://vimeo.com/api/oembed.json?url=${encodeURIComponent(url)}`;
+	static async resolveID(url) {
+		const endpoint = `https://vimeo.com/api/oembed.json?url=${encodeURIComponent(
+			url
+		)}`;
 		const response = await fetch(endpoint);
 
 		if (!response.ok) {
-			throw new Error(`Invalid: ${response.statusCode}: ${response.statusText}`);
+			throw new Error(
+				`Invalid: ${response.statusCode}: ${response.statusText}`
+			);
 		}
 
 		const data = await response.json();
 		return data.video_id;
 	}
 
-	static getCanonicalURL (url, videoId) {
+	static getCanonicalURL(url, videoId) {
 		const id = videoId || this.getID(url);
 		return `https://www.vimeo.com/${id}`;
 	}
@@ -81,27 +87,23 @@ export default class VimeoVideo extends React.Component {
 		onSeeked: PropTypes.func,
 		onTimeUpdate: PropTypes.func,
 		onReady: PropTypes.func,
-	}
+	};
 
+	iframe = React.createRef();
 
-	iframe = React.createRef()
-
-
-	constructor (props) {
+	constructor(props) {
 		super(props);
 		const id = uuid();
-		this.state = {id};
+		this.state = { id };
 		this.updateURL(props, id, x => Object.assign(this.state, x));
 	}
 
-
-	componentDidMount () {
+	componentDidMount() {
 		this.ensureAccess(this.props);
 		this.setupPlayer();
 	}
 
-
-	componentDidUpdate ({source}, {playerURL}) {
+	componentDidUpdate({ source }, { playerURL }) {
 		if (this.props.source !== source) {
 			this.ensureAccess();
 			this.updateURL(this.props);
@@ -112,13 +114,12 @@ export default class VimeoVideo extends React.Component {
 		}
 	}
 
-
-	componentWillUnmount () {
+	componentWillUnmount() {
 		this.teardownPlayer();
 	}
 
-	teardownPlayer () {
-		const {player} = this;
+	teardownPlayer() {
+		const { player } = this;
 		delete this.player;
 
 		if (!player) {
@@ -132,7 +133,7 @@ export default class VimeoVideo extends React.Component {
 		logRejection(player.unload());
 	}
 
-	setupPlayer () {
+	setupPlayer() {
 		this.teardownPlayer();
 
 		const iframe = this.iframe.current;
@@ -151,42 +152,41 @@ export default class VimeoVideo extends React.Component {
 		}
 	}
 
-
 	onReady = () => {
 		logger.debug('Ready');
-		const {onReady} = this.props;
+		const { onReady } = this.props;
 		if (onReady) {
 			onReady();
 		}
-	}
+	};
 
-
-	onEvent (event, data) {
+	onEvent(event, data) {
 		const mappedEvent = VIMEO_EVENTS[event];
 		const handlerName = EventHandlers[mappedEvent];
 
 		logger.debug(event, data);
 
-		this.playerData = {...(this.playerData ?? {}), ...data};
+		this.playerData = { ...(this.playerData ?? {}), ...data };
 		const videoData = this.playerData;
 
-		if(mappedEvent && handlerName) {
+		if (mappedEvent && handlerName) {
 			if (this.props[handlerName]) {
 				const mockEvent = {
 					timeStamp: Date.now(),
 					target: {
 						currentTime: videoData?.seconds ?? 0,
 						duration: videoData && videoData.duration,
-						playbackRate: (videoData && videoData.playbackRate) || 1
+						playbackRate:
+							(videoData && videoData.playbackRate) || 1,
 					},
-					type: mappedEvent
+					type: mappedEvent,
 				};
 
 				if (handlerName === EventHandlers.ratechange) {
-					const {playbackRate:oldRate = 1} = this.state;
+					const { playbackRate: oldRate = 1 } = this.state;
 					const newRate = mockEvent.target.playbackRate;
 
-					this.setState({playbackRate: newRate});
+					this.setState({ playbackRate: newRate });
 					this.props[handlerName](oldRate, newRate, mockEvent);
 				} else {
 					this.props[handlerName](mockEvent);
@@ -199,12 +199,13 @@ export default class VimeoVideo extends React.Component {
 		}
 	}
 
-
-	async ensureAccess (props = this.props) {
-		const {source, onError} = props;
+	async ensureAccess(props = this.props) {
+		const { source, onError } = props;
 
 		const onNoAccess = () => {
-			const error = createNonRecoverableError('Unable to access vimeo video');
+			const error = createNonRecoverableError(
+				'Unable to access vimeo video'
+			);
 
 			if (onError) {
 				onError(error);
@@ -214,17 +215,21 @@ export default class VimeoVideo extends React.Component {
 		try {
 			const canAccess = await resolveCanAccessSource(source);
 
-			if (!canAccess) { onNoAccess(); }
+			if (!canAccess) {
+				onNoAccess();
+			}
 		} catch (e) {
 			onNoAccess(e);
 		}
 	}
 
-
 	buildURL = (props, id = this.state.id) => {
-		const {source: mediaSource, autoPlay} = props;
+		const { source: mediaSource, autoPlay } = props;
 
-		let videoId = typeof mediaSource === 'string' ? VimeoVideo.getID(mediaSource) : mediaSource.source;
+		let videoId =
+			typeof mediaSource === 'string'
+				? VimeoVideo.getID(mediaSource)
+				: mediaSource.source;
 
 		if (Array.isArray(videoId)) {
 			videoId = videoId[0];
@@ -236,54 +241,56 @@ export default class VimeoVideo extends React.Component {
 
 		const args = {
 			api: 1,
-			player_id: id,//eslint-disable-line camelcase
+			player_id: id,
 			//autopause: 0, //we handle this for other videos, but its nice we only have to do this for cross-provider videos.
 			autoplay: autoPlay ? 1 : 0,
 			badge: 0,
 			byline: 0,
 			loop: 0,
 			portrait: 0,
-			title: 0
+			title: 0,
 		};
 
-		return 'https://player.vimeo.com/video/' + videoId + '?' + QueryString.stringify(args);
-	}
-
+		return (
+			'https://player.vimeo.com/video/' +
+			videoId +
+			'?' +
+			QueryString.stringify(args)
+		);
+	};
 
 	updateURL = (props, id, updater = x => this.setState(x)) => {
 		const url = this.buildURL(props, id);
 		updater({
 			scope: url.split('?')[0],
-			playerURL: url
+			playerURL: url,
 		});
-	}
+	};
 
-
-	getPlayerState () {
-		const {playerState} = this.state;
-		const {duration, seconds} = this.playerData || {};
+	getPlayerState() {
+		const { playerState } = this.state;
+		const { duration, seconds } = this.playerData || {};
 
 		return {
 			service: VimeoVideo.service,
 			time: seconds,
 			state: playerState || UNSTARTED,
 			duration: duration,
-			speed: 1
+			speed: 1,
 		};
 	}
 
-
-	render () {
+	render() {
 		if (this.state.resetting) {
 			return null;
 		}
 
 		if (!this.state.playerURL) {
-			return (<div>No source</div>);
+			return <div>No source</div>;
 		}
 
-		const {width, height} = this.props;
-		const {id} = this.state;
+		const { width, height } = this.props;
+		const { id } = this.state;
 
 		return (
 			<iframe
@@ -301,44 +308,48 @@ export default class VimeoVideo extends React.Component {
 		);
 	}
 
-
-	onError = (data) => {
-		logger.error(`Vimeo Error: ${data.name}: ${data.method || ''}: ${data.message}`);
+	onError = data => {
+		logger.error(
+			`Vimeo Error: ${data.name}: ${data.method || ''}: ${data.message}`
+		);
 		//Make the view just hide the poster so the viewer can tap the embedded player's play button.
 		this.onEvent('play', data);
+	};
+
+	onPlaying() {
+		this.setState({ playerState: PLAYING });
 	}
 
-
-	onPlaying () {
-		this.setState({playerState: PLAYING});
-	}
-
-
-	onEnded () {
+	onEnded() {
 		if (isFlag('reset-vimeo-player-on-end')) {
 			const id = uuid();
-			this.setState({resetting: true, id}, () => {
-				this.updateURL({...this.props, autoPlay: false}, id, (state) => {
-					this.setState({
-						...state,
-						resetting: false
-					}, () => this.setupPlayer());
-				});
+			this.setState({ resetting: true, id }, () => {
+				this.updateURL(
+					{ ...this.props, autoPlay: false },
+					id,
+					state => {
+						this.setState(
+							{
+								...state,
+								resetting: false,
+							},
+							() => this.setupPlayer()
+						);
+					}
+				);
 			});
 		}
-		this.setState({playerState: ENDED});
+		this.setState({ playerState: ENDED });
 	}
 
-
-	onPause () {
-		this.setState({playerState: PAUSED});
+	onPause() {
+		this.setState({ playerState: PAUSED });
 	}
-
 
 	play = () => {
 		//ready?
 		logRejection(this.player.play());
-		this.setState({playerState: PLAYING});
+		this.setState({ playerState: PLAYING });
 		//else queue.
 	};
 
@@ -352,7 +363,7 @@ export default class VimeoVideo extends React.Component {
 		logRejection(this.player.setCurrentTime(0));
 	};
 
-	setCurrentTime = (time) => {
+	setCurrentTime = time => {
 		logRejection(this.player.setCurrentTime(time));
 	};
 }

@@ -1,4 +1,4 @@
-@import "~@nti/style-common";
+@import '~@nti/style-common';
 
 .nti-slider {
 	position: relative;
@@ -9,7 +9,7 @@
 	$range-handle-color: #fff;
 	$range-handle-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.19);
 
-	@mixin thumb () {
+	@mixin thumb() {
 		-webkit-appearance: none;
 		width: $range-handle-size;
 		height: $range-handle-size;
@@ -24,11 +24,11 @@
 		}
 	}
 
-	@mixin readOnlyThumb () {
+	@mixin readOnlyThumb() {
 		display: none;
 	}
 
-	@mixin track () {
+	@mixin track() {
 		-webkit-appearance: none;
 		background: transparent;
 		border: none;
@@ -109,7 +109,8 @@
 		padding: rem-calc(6px 0);
 		display: flex;
 
-		.upper, .lower {
+		.upper,
+		.lower {
 			height: 0.25rem;
 		}
 

@@ -5,9 +5,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import Logger from '@nti/util-logger';
-import {Decorators, AddClass} from '@nti/web-commons';
+import { Decorators, AddClass } from '@nti/web-commons';
 
-import {getHandler} from './services';
+import { getHandler } from './services';
 import Fallback from './services/html5';
 
 const emptyFunction = () => {};
@@ -17,16 +17,16 @@ const busEvents = Logger.get('video:bus-events');
 
 const BUS_EVENTS = {
 	BASE_TYPE: 'video-event',
-	PAUSE_OTHERS: 'pause-others'
+	PAUSE_OTHERS: 'pause-others',
 };
 
 class EventBus extends EventEmitter {
-	pauseOthers (sender) {
+	pauseOthers(sender) {
 		this.emit(BUS_EVENTS.BASE_TYPE, {
 			type: BUS_EVENTS.PAUSE_OTHERS,
 			payload: {
-				sender
-			}
+				sender,
+			},
 		});
 	}
 }
@@ -34,10 +34,8 @@ class EventBus extends EventEmitter {
 class Video extends React.Component {
 	static propTypes = {
 		className: PropTypes.string,
-		src: PropTypes.oneOfType([
-			PropTypes.string,
-			PropTypes.object
-		]).isRequired,
+		src: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
+			.isRequired,
 
 		onTimeUpdate: PropTypes.func,
 		onSeeked: PropTypes.func,
@@ -51,34 +49,36 @@ class Video extends React.Component {
 		deferred: PropTypes.bool,
 		startTime: PropTypes.number,
 
-		fullscreenElement: PropTypes.node
-	}
+		fullscreenElement: PropTypes.node,
+	};
 
 	static defaultProps = {
 		onTimeUpdate: emptyFunction,
 		onSeeked: emptyFunction,
 		onPlaying: emptyFunction,
 		onPause: emptyFunction,
-		onEnded: emptyFunction
-	}
+		onEnded: emptyFunction,
+	};
 
-	static eventBus = new EventBus()
+	static eventBus = new EventBus();
 
 	state = {
 		activeIndex: 0,
-		ready: false
-	}
+		ready: false,
+	};
 
-	attachContainer = x => this.container = x
-	attachRef = (x) => this.activeVideo = x
+	attachContainer = x => (this.container = x);
+	attachRef = x => (this.activeVideo = x);
 
-	constructor (props) {
+	constructor(props) {
 		super(props);
 
 		if (!props.ignoreEventBus) {
-			const {eventBus} = this.constructor;
+			const { eventBus } = this.constructor;
 			eventBus.on(BUS_EVENTS.BASE_TYPE, this.handleBusEvent);
-			this.unsubscribe = [() => eventBus.off(BUS_EVENTS.BASE_TYPE, this.handleBusEvent)];
+			this.unsubscribe = [
+				() => eventBus.off(BUS_EVENTS.BASE_TYPE, this.handleBusEvent),
+			];
 
 			eventBus.pauseOthers(this);
 		}
@@ -86,45 +86,41 @@ class Video extends React.Component {
 		this.commandQueue = [];
 	}
 
-	handleBusEvent = ({type, payload}) => {
+	handleBusEvent = ({ type, payload }) => {
 		const handler = this[type];
 		if (handler) {
 			try {
 				handler(payload);
-			}
-			catch (e) {
+			} catch (e) {
 				busEvents.error(e);
 			}
 		}
-	}
+	};
 
-	[BUS_EVENTS.PAUSE_OTHERS] = ({sender} = {}) => {
+	[BUS_EVENTS.PAUSE_OTHERS] = ({ sender } = {}) => {
 		if (this !== sender) {
 			this.pause();
 		}
-	}
+	};
 
-	getPlayerState () {
+	getPlayerState() {
 		return this.activeVideo && this.activeVideo.getPlayerState();
 	}
 
-
-	get isReady () {
+	get isReady() {
 		return this.state.ready;
 	}
 
-
-	componentDidMount () {
+	componentDidMount() {
 		this._setupStartTime();
 		this._setupFullScreen();
 	}
 
-	componentDidUpdate () {
+	componentDidUpdate() {
 		this._setupFullScreen();
 	}
 
-
-	componentWillUnmount () {
+	componentWillUnmount() {
 		(this.unsubscribe || []).forEach(method => method());
 		delete this.unsubscribe;
 
@@ -135,7 +131,7 @@ class Video extends React.Component {
 		}
 	}
 
-	onError = (e) => {
+	onError = e => {
 		let sourceWillChange = false;
 
 		if (e && e.nonRecoverable) {
@@ -143,90 +139,88 @@ class Video extends React.Component {
 		}
 
 		if (this.props.onError) {
-			this.props.onError(Object.assign(e, {sourceWillChange}));
+			this.props.onError(Object.assign(e, { sourceWillChange }));
 		}
-	}
-
+	};
 
 	onNonRecoverableError = () => {
-		const {src: video} = this.props;
-		const {activeIndex: oldIndex} = this.state;
+		const { src: video } = this.props;
+		const { activeIndex: oldIndex } = this.state;
 		const sources = video && video.sources ? video.sources : [];
 		const activeIndex = oldIndex + 1;
 
 		if (activeIndex < sources.length) {
 			this.setState({
-				activeIndex
+				activeIndex,
 			});
 
 			return true;
 		}
-	}
+	};
 
-
-	onTimeUpdate = (event) => {
+	onTimeUpdate = event => {
 		events.debug('timeUpdate %o', event);
 		this.props.onTimeUpdate(event);
-	}
+	};
 
-
-	onSeeked = (event) => {
+	onSeeked = event => {
 		events.debug('seeked %o', event);
 		this.props.onSeeked(event);
-	}
+	};
 
-
-	onPlaying = (event) => {
+	onPlaying = event => {
 		events.debug('played %o', event);
 		this.props.onPlaying(event);
-	}
+	};
 
-
-	onPause = (event) => {
+	onPause = event => {
 		events.debug('pause %o', event);
 		this.props.onPause(event);
-	}
+	};
 
-
-	onEnded = (event) => {
+	onEnded = event => {
 		events.debug('ended %o', event);
 		this.props.onEnded(event);
-	}
+	};
 
-
-	onReady = (event) => {
+	onReady = event => {
 		events.debug('ready %o', event);
 
-		const {onReady} = this.props;
-		const {ready} = this.state;
+		const { onReady } = this.props;
+		const { ready } = this.state;
 
 		//Don't call on ready more than once
-		if (ready) { return; }
+		if (ready) {
+			return;
+		}
 
 		if (onReady) {
 			onReady();
 		}
 
-		this.setState({ready: true}, () => {
+		this.setState({ ready: true }, () => {
 			for (let command of this.commandQueue) {
 				command();
 			}
 
 			this.commandQueue = [];
 		});
+	};
 
-	}
+	_setupFullScreen() {
+		const { container } = this;
+		const { isFullScreen } = this.state;
+		const { fullscreenElement } = this.props;
 
+		const setFullScreen = () =>
+			!isFullScreen && this.setState({ isFullScreen: true });
+		const setNotFullScreen = () =>
+			isFullScreen && this.setState({ isFullScreen: false });
 
-	_setupFullScreen () {
-		const {container} = this;
-		const {isFullScreen} = this.state;
-		const {fullscreenElement} = this.props;
-
-		const setFullScreen = () => !isFullScreen && this.setState({isFullScreen: true});
-		const setNotFullScreen = () => isFullScreen && this.setState({isFullScreen: false});
-
-		const containsFullScreen = container && fullscreenElement && container.contains(fullscreenElement);
+		const containsFullScreen =
+			container &&
+			fullscreenElement &&
+			container.contains(fullscreenElement);
 
 		if (containsFullScreen) {
 			setFullScreen();
@@ -235,11 +229,12 @@ class Video extends React.Component {
 		}
 	}
 
+	_setupStartTime() {
+		const { startTime } = this.props;
 
-	_setupStartTime () {
-		const {startTime} = this.props;
-
-		if (!startTime) { return; }
+		if (!startTime) {
+			return;
+		}
 
 		const setStartTime = () => {
 			//Give the video a change to autoplay
@@ -255,7 +250,6 @@ class Video extends React.Component {
 		}
 	}
 
-
 	play = () => {
 		commands.debug('Play');
 
@@ -266,8 +260,7 @@ class Video extends React.Component {
 		if (this.isReady || this.props.deferred) {
 			this.activeVideo.play();
 		}
-	}
-
+	};
 
 	pause = () => {
 		commands.debug('Pause');
@@ -277,8 +270,7 @@ class Video extends React.Component {
 		} else {
 			this.commandQueue.push(() => this.pause());
 		}
-	}
-
+	};
 
 	stop = () => {
 		commands.debug('Stop');
@@ -288,10 +280,9 @@ class Video extends React.Component {
 		} else {
 			this.commandQueue.push(() => this.stop());
 		}
-	}
+	};
 
-
-	setCurrentTime = (time) => {
+	setCurrentTime = time => {
 		commands.debug('Set CurrentTime %s', time);
 
 		if (this.isReady) {
@@ -299,13 +290,12 @@ class Video extends React.Component {
 		} else {
 			this.commandQueue.push(() => this.setCurrentTime(time));
 		}
-	}
+	};
 
-
-	render () {
-		const {src: video, className} = this.props;
-		const videoProps = {...this.props};
-		const {activeIndex, isFullScreen} = this.state;
+	render() {
+		const { src: video, className } = this.props;
+		const videoProps = { ...this.props };
+		const { activeIndex, isFullScreen } = this.state;
 		const Provider = getHandler(video, activeIndex) || Fallback;
 		const videoSource = video && (video.sources || {})[activeIndex];
 		const tracks = (video && video.transcripts) || [];
@@ -316,10 +306,13 @@ class Video extends React.Component {
 		return (
 			<div
 				ref={this.attachContainer}
-				className={cx('nti-video', Provider.service, className, {fullscreen: isFullScreen})}
+				className={cx('nti-video', Provider.service, className, {
+					fullscreen: isFullScreen,
+				})}
 			>
-				{isFullScreen && (<AddClass className="full-screen-video" />)}
-				<Provider {...videoProps}
+				{isFullScreen && <AddClass className="full-screen-video" />}
+				<Provider
+					{...videoProps}
 					ref={this.attachRef}
 					source={videoSource || video}
 					tracks={tracks}
@@ -335,6 +328,5 @@ class Video extends React.Component {
 		);
 	}
 }
-
 
 export default Decorators.fullScreenMonitor()(Video);

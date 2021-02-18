@@ -1,4 +1,4 @@
-@import "~@nti/style-common";
+@import '~@nti/style-common';
 
 .video-control-scrubber {
 	position: relative;
@@ -34,7 +34,7 @@
 			top: 100%;
 			left: 50%;
 			border: solid transparent;
-			content: " ";
+			content: ' ';
 			height: 0;
 			width: 0;
 			position: absolute;

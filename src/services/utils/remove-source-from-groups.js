@@ -1,8 +1,8 @@
-export default function removeSourceFromGroups (groups, erroredSources) {
+export default function removeSourceFromGroups(groups, erroredSources) {
 	const newGroups = groups.map(group => {
 		return {
 			...group,
-			sources: group.sources.filter(src => !erroredSources[src.src])
+			sources: group.sources.filter(src => !erroredSources[src.src]),
 		};
 	});
 
@@ -14,9 +14,8 @@ export default function removeSourceFromGroups (groups, erroredSources) {
 		let group = newGroups[i];
 		let isEmpty = group.sources.length === 0;
 
-
 		if (!isEmpty) {
-			filteredGroups.push({...group, preferred: false});
+			filteredGroups.push({ ...group, preferred: false });
 
 			if (!lockPreferred) {
 				preferredIndex = filteredGroups.length - 1;

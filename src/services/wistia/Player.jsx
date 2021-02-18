@@ -1,24 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Models} from '@nti/lib-interfaces';
+import { Models } from '@nti/lib-interfaces';
 
-import {
-	UNSTARTED,
-	ENDED,
-	PLAYING,
-	PAUSED
-} from '../../Constants';
+import { UNSTARTED, ENDED, PLAYING, PAUSED } from '../../Constants';
 
 import WistiaPlayer from './WistiaPlayer';
 
-const {Providers} = Models.media || {};
-const {WistiaProvider} = Providers || {};
-
+const { Providers } = Models.media || {};
+const { WistiaProvider } = Providers || {};
 
 export default class WistiaVideoPlayer extends React.Component {
 	static service = 'wistia';
 
-	static getCanonicalURL (...args) {
+	static getCanonicalURL(...args) {
 		return WistiaProvider.getCanonicalURL(...args);
 	}
 
@@ -34,57 +28,58 @@ export default class WistiaVideoPlayer extends React.Component {
 		onRateChange: PropTypes.func,
 		onSeeked: PropTypes.func,
 		onTimeUpdate: PropTypes.func,
-		onReady: PropTypes.func
-	}
+		onReady: PropTypes.func,
+	};
 
 	state = {
-		playerState: UNSTARTED
-	}
+		playerState: UNSTARTED,
+	};
 
-	attachIframe = (iframe) => {
+	attachIframe = iframe => {
 		if (iframe && iframe !== this.iframe) {
 			this.setupPlayer(new WistiaPlayer(iframe));
 		}
 
 		this.iframe = iframe;
-	}
+	};
 
-	componentDidMount () {
+	componentDidMount() {
 		this.setupSource();
 	}
 
-	componentWillUnmount () {
+	componentWillUnmount() {
 		this.tearDownPlayer();
 	}
 
-	componentDidUpdate (prevProps) {
-		const {source} = this.props;
-		const {source: prevSource} = prevProps;
+	componentDidUpdate(prevProps) {
+		const { source } = this.props;
+		const { source: prevSource } = prevProps;
 
 		if (source !== prevSource) {
 			this.setupSource();
 		}
 	}
 
-	setupSource () {
-		const {source, autoPlay} = this.props;
+	setupSource() {
+		const { source, autoPlay } = this.props;
 
 		this.setState({
-			playerURL: WistiaPlayer.getEmbedURL(source, {autoPlay})
+			playerURL: WistiaPlayer.getEmbedURL(source, { autoPlay }),
 		});
 	}
 
-	setupPlayer (player) {
-		if (this.player) { this.tearDownPlayer(); }
+	setupPlayer(player) {
+		if (this.player) {
+			this.tearDownPlayer();
+		}
 
 		this.player = player;
 
-		player.onceReady()
-			.then(() => {
-				if (this.props.onReady) {
-					this.props.onReady();
-				}
-			});
+		player.onceReady().then(() => {
+			if (this.props.onReady) {
+				this.props.onReady();
+			}
+		});
 
 		player.addListener('play', this.onPlay);
 		player.addListener('pause', this.onPause);
@@ -94,8 +89,10 @@ export default class WistiaVideoPlayer extends React.Component {
 		player.addListener('seek', this.onSeek);
 	}
 
-	tearDownPlayer () {
-		if (!this.player) { return; }
+	tearDownPlayer() {
+		if (!this.player) {
+			return;
+		}
 
 		this.player.teardown();
 		this.player.removeListener('play', this.onPlay);
@@ -106,12 +103,14 @@ export default class WistiaVideoPlayer extends React.Component {
 		this.player.removeListener('seek', this.onSeek);
 	}
 
-	render () {
-		const {playerURL} = this.state;
+	render() {
+		const { playerURL } = this.state;
 
-		if (!playerURL) { return null; }
+		if (!playerURL) {
+			return null;
+		}
 
-		const {width, height} = this.props;
+		const { width, height } = this.props;
 
 		return (
 			<iframe
@@ -129,86 +128,81 @@ export default class WistiaVideoPlayer extends React.Component {
 		);
 	}
 
-
-	getPlayerState () {
-		const {playerState} = this.state;
+	getPlayerState() {
+		const { playerState } = this.state;
 		const state = this.player && this.player.getPlayerState();
 
 		return {
 			service: WistiaVideoPlayer.service,
 			state: playerState != null ? playerState : UNSTARTED,
-			...(state || {})
+			...(state || {}),
 		};
 	}
 
-
 	onPlay = () => {
-		this.setState({playerState: PLAYING});
+		this.setState({ playerState: PLAYING });
 
 		if (this.props.onPlaying) {
-			this.props.onPlaying({target: this.player});
+			this.props.onPlaying({ target: this.player });
 		}
-	}
+	};
 
 	onPause = () => {
-		this.setState({playerState: PAUSED});
+		this.setState({ playerState: PAUSED });
 
 		if (this.props.onPause) {
-			this.props.onPause({target: this.player});
+			this.props.onPause({ target: this.player });
 		}
-	}
+	};
 
 	onEnd = () => {
-		this.setState({playerState: ENDED});
+		this.setState({ playerState: ENDED });
 
 		if (this.props.onEnded) {
-			this.props.onEnded({target: this.player});
+			this.props.onEnded({ target: this.player });
 		}
-	}
+	};
 
 	onSeek = () => {
 		if (this.props.onSeeked) {
-			this.props.onSeeked({target: this.player});
+			this.props.onSeeked({ target: this.player });
 		}
-	}
+	};
 
 	onTimeChange = () => {
 		if (this.props.onTimeUpdate) {
-			this.props.onTimeUpdate({target: this.player});
+			this.props.onTimeUpdate({ target: this.player });
 		}
-	}
+	};
 
-	onRateChange = ({oldRate, newRate}) => {
+	onRateChange = ({ oldRate, newRate }) => {
 		if (this.props.onRateChange) {
-			this.props.onRateChange(oldRate, newRate, {target: this.player});
+			this.props.onRateChange(oldRate, newRate, { target: this.player });
 		}
-	}
-
+	};
 
 	pause = () => {
 		if (this.player) {
 			this.player.pause();
 		}
-	}
+	};
 
 	play = () => {
 		if (this.player) {
 			this.player.play();
 		}
-	}
+	};
 
 	stop = () => {
 		if (this.player) {
 			this.player.pause();
 			this.player.setCurrentTime(0);
 		}
-	}
+	};
 
-	setCurrentTime = (time) => {
+	setCurrentTime = time => {
 		if (this.player) {
 			this.player.setCurrentTime(time);
 		}
-	}
-
-
+	};
 }

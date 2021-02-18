@@ -1,4 +1,4 @@
-@import "~@nti/style-common";
+@import '~@nti/style-common';
 
 .manage-video-transcripts-flyout-inner {
 	.flyout-inner {
@@ -24,7 +24,8 @@
 		display: inline-block;
 
 		&.disabled {
-			&, input {
+			&,
+			input {
 				pointer-events: none;
 				cursor: default;
 			}
@@ -35,7 +36,7 @@
 			}
 		}
 
-		input[type=file] {
+		input[type='file'] {
 			position: absolute;
 			cursor: pointer;
 			right: 0;
@@ -77,7 +78,8 @@
 		padding: 10px;
 
 		&.disabled {
-			&, input {
+			&,
+			input {
 				pointer-events: none;
 				cursor: default;
 			}
@@ -88,7 +90,7 @@
 			}
 		}
 
-		input[type=file] {
+		input[type='file'] {
 			position: absolute;
 			cursor: pointer;
 			right: 0;

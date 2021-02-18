@@ -12,25 +12,26 @@ const VIMEO_URLS = [
 	`//vimeo.com/groups/name/videos/${ID}`,
 	`//vimeo.com/album/${ALBUM_ID}/video/${ID}`,
 	`//vimeo.com/${ID}?param=test`,
-	`//player.vimeo.com/video/${ID}`
-].reduce((out, url) => out.concat([
-	//generate the protocol variations:
-	url, //protocol-less
-	`http:${url}`, //insecure
-	`https:${url}` //secure
-]), []);
+	`//player.vimeo.com/video/${ID}`,
+].reduce(
+	(out, url) =>
+		out.concat([
+			//generate the protocol variations:
+			url, //protocol-less
+			`http:${url}`, //insecure
+			`https:${url}`, //secure
+		]),
+	[]
+);
 
-describe('Vimeo tests', ()=> {
-
-	test('should handle all forms of Vimeo URLS', ()=> {
+describe('Vimeo tests', () => {
+	test('should handle all forms of Vimeo URLS', () => {
 		for (let url of VIMEO_URLS) {
 			expect(Vimeo.getID(url)).toBe(ID);
 		}
 	});
 
-
-	test('should handle our crazy ass-backwards custom protocol url', ()=> {
+	test('should handle our crazy ass-backwards custom protocol url', () => {
 		expect(Vimeo.getID(`vimeo://${ID}`)).toBe(ID);
 	});
-
 });

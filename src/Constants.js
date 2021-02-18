@@ -5,7 +5,7 @@ export const EventHandlers = {
 	ended: 'onEnded',
 	seeked: 'onSeeked',
 	timeupdate: 'onTimeUpdate',
-	ready: 'onReady'
+	ready: 'onReady',
 };
 
 export const UNSTARTED = -1;

@@ -1,6 +1,6 @@
 import EventEmitter from 'events';
 
-import {ExternalLibraryManager} from '@nti/web-client';
+import { ExternalLibraryManager } from '@nti/web-client';
 
 const WistiaJS = '//fast.wistia.net/assets/external/E-v1.js';
 
@@ -10,16 +10,18 @@ class Players {
 	#players = new WeakMap();
 	#listeners = new WeakMap();
 
-	async loadScript () {
-		if (this.scriptLoaded) { return; }
+	async loadScript() {
+		if (this.scriptLoaded) {
+			return;
+		}
 
 		this.scriptLoaded = true;
 
 		global._wq = global._wq || [];
 		global._wq.push({
 			id: '_all',
-			onReady: (video) => {
-				const {iframe} = video;
+			onReady: video => {
+				const { iframe } = video;
 
 				this.#players.set(iframe, video);
 
@@ -27,7 +29,7 @@ class Players {
 					this.#listeners.get(iframe)(video);
 					this.#listeners.delete(iframe);
 				}
-			}
+			},
 		});
 
 		try {
@@ -37,28 +39,28 @@ class Players {
 		}
 	}
 
-	getPlayer (iframe) {
-		if (this.#players.has(iframe)) { return Promise.resolve(this.#players.get(iframe)); }
+	getPlayer(iframe) {
+		if (this.#players.has(iframe)) {
+			return Promise.resolve(this.#players.get(iframe));
+		}
 
-		return new Promise((fulfill) => {
+		return new Promise(fulfill => {
 			this.#listeners.set(iframe, video => fulfill(video));
 
 			this.loadScript();
 		});
-
-
 	}
-
-
 }
 
 const PlayerCache = new Players();
 
 export default class WistiaPlayer extends EventEmitter {
-	static getEmbedURL (source, options) {
-		if (typeof source === 'string') { return source; }
+	static getEmbedURL(source, options) {
+		if (typeof source === 'string') {
+			return source;
+		}
 
-		const {source: ids} = source;
+		const { source: ids } = source;
 		const sourceId = Array.isArray(ids) ? ids[0] : ids;
 
 		let url = new URL(`https://fast.wistia.net/embed/iframe/${sourceId}`);
@@ -72,29 +74,34 @@ export default class WistiaPlayer extends EventEmitter {
 
 	#player = null;
 
-	constructor (iframe) {
+	constructor(iframe) {
 		super();
 
 		this.commandQueue = [];
 		this.setupListeners(iframe);
 		this.playbackRate = 1;
 
-		const echo = (event) => (() => this.emit(event));
+		const echo = event => () => this.emit(event);
 
 		this.playEvent = echo('play');
 		this.pauseEvent = echo('pause');
 		this.endEvent = echo('end');
 		this.timeChangeEvent = echo('timechange');
 		this.seekEvent = echo('seek');
-		this.rateChangeEvent = (playbackRate) => {
-			this.emit('ratechange', {oldRate: this.playbackRate, newRate: playbackRate});
+		this.rateChangeEvent = playbackRate => {
+			this.emit('ratechange', {
+				oldRate: this.playbackRate,
+				newRate: playbackRate,
+			});
 			this.playbackRate = playbackRate;
 		};
 	}
 
-	onceReady () {
-		return new Promise((fulfill) => {
-			if (this.#player) { return fulfill(); }
+	onceReady() {
+		return new Promise(fulfill => {
+			if (this.#player) {
+				return fulfill();
+			}
 
 			const onReady = () => {
 				this.removeListener('ready', onReady);
@@ -105,7 +112,7 @@ export default class WistiaPlayer extends EventEmitter {
 		});
 	}
 
-	async setupListeners (iframe) {
+	async setupListeners(iframe) {
 		const player = await PlayerCache.getPlayer(iframe);
 
 		this.#player = player;
@@ -120,8 +127,10 @@ export default class WistiaPlayer extends EventEmitter {
 		this.emit('ready');
 	}
 
-	teardown () {
-		if (!this.#player) { return; }
+	teardown() {
+		if (!this.#player) {
+			return;
+		}
 
 		this.#player.unbind('play', this.playEvent);
 		this.#player.unbind('pause', this.pauseEvent);
@@ -131,7 +140,7 @@ export default class WistiaPlayer extends EventEmitter {
 		this.#player.unbind('seek', this.seekEvent);
 	}
 
-	play () {
+	play() {
 		if (this.#player) {
 			this.#player.play();
 		} else {
@@ -139,7 +148,7 @@ export default class WistiaPlayer extends EventEmitter {
 		}
 	}
 
-	pause () {
+	pause() {
 		if (this.#player) {
 			this.#player.pause();
 		} else {
@@ -147,7 +156,7 @@ export default class WistiaPlayer extends EventEmitter {
 		}
 	}
 
-	setCurrentTime (time) {
+	setCurrentTime(time) {
 		if (this.#player) {
 			this.#player.time(time);
 		} else {
@@ -155,23 +164,23 @@ export default class WistiaPlayer extends EventEmitter {
 		}
 	}
 
-
-	getPlayerState () {
-		if (!this.#player) { return null; }
+	getPlayerState() {
+		if (!this.#player) {
+			return null;
+		}
 
 		return {
 			time: this.#player.time(),
 			duration: this.#player.duration(),
-			speed: this.playbackRate
+			speed: this.playbackRate,
 		};
 	}
 
-
-	get currentTime () {
+	get currentTime() {
 		return this.#player?.time();
 	}
 
-	get duration () {
+	get duration() {
 		return this.#player?.duration();
 	}
 }

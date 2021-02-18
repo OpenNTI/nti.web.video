@@ -10,9 +10,9 @@ import TimeRemaining from './components/TimeRemaining';
 import More from './components/More';
 
 LowerVideoControls.propTypes = {
-	className: PropTypes.string
+	className: PropTypes.string,
 };
-export default function LowerVideoControls ({className, ...otherProps}) {
+export default function LowerVideoControls({ className, ...otherProps }) {
 	return (
 		<div className={cx('lower-video-controls', className)}>
 			<PlayPause {...otherProps} />

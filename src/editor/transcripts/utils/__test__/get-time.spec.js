@@ -3,7 +3,6 @@ import getTime from '../get-time';
 
 describe('Get Time', () => {
 	test('Get time', () => {
-		expect(getTime(1225473123))
-			.toBe('October 31st 2008, 5:12:03 pm');
+		expect(getTime(1225473123)).toBe('October 31st 2008, 5:12:03 pm');
 	});
 });

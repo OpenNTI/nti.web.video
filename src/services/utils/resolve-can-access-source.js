@@ -1,4 +1,4 @@
-export default function resolveCanAccessSource (source) {
+export default function resolveCanAccessSource(source) {
 	let resolve;
 
 	if (!source) {

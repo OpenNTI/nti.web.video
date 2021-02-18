@@ -2,13 +2,13 @@ import './Menu.scss';
 import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
-import {scoped} from '@nti/lib-locale';
+import { scoped } from '@nti/lib-locale';
 
 import Speed from './Speed';
 import Captions from './Captions';
 import Quality from './Quality';
 
-const stop = (e) => {
+const stop = e => {
 	e.stopPropagation();
 	e.preventDefault();
 };
@@ -17,109 +17,131 @@ const DEFAULT_TEXT = {
 	speed: 'Speed',
 	captions: 'Captions',
 	quality: 'Quality',
-	back: 'Back'
+	back: 'Back',
 };
 
 const t = scoped('web-video.controls.more.menu', DEFAULT_TEXT);
 
-
 export default class VideoMoreMenu extends React.Component {
 	static propTypes = {
-		videoState: PropTypes.object
-	}
+		videoState: PropTypes.object,
+	};
 
-	state = {qualityActive: false, speedActive: false, captionsActive: false}
+	state = { qualityActive: false, speedActive: false, captionsActive: false };
 
-
-	setSpeedActive = (e) => {
+	setSpeedActive = e => {
 		stop(e);
 
 		this.setState({
 			qualityActive: false,
 			speedActive: true,
-			captionsActive: false
+			captionsActive: false,
 		});
-	}
+	};
 
-
-	setCaptionsActive = (e) => {
+	setCaptionsActive = e => {
 		stop(e);
 
 		this.setState({
 			qualityActive: false,
 			speedActive: false,
-			captionsActive: true
+			captionsActive: true,
 		});
-	}
+	};
 
-	setQualitiesActive = (e) => {
+	setQualitiesActive = e => {
 		stop(e);
 
 		this.setState({
 			qualityActive: true,
 			speedActive: false,
-			captionsActive: false
+			captionsActive: false,
 		});
-	}
+	};
 
-	setTopLevelActive = (e) => {
+	setTopLevelActive = e => {
 		stop(e);
 
 		this.setState({
 			qualityActive: false,
 			speedActive: false,
-			captionsActive: false
+			captionsActive: false,
 		});
-	}
+	};
 
-
-	render () {
-		const {videoState, ...otherProps} = this.props;
-		const {speedActive, captionsActive, qualityActive} = this.state;
-		const cls = cx('video-more-controls-menu', {speed: speedActive, captions: captionsActive, quality: qualityActive});
+	render() {
+		const { videoState, ...otherProps } = this.props;
+		const { speedActive, captionsActive, qualityActive } = this.state;
+		const cls = cx('video-more-controls-menu', {
+			speed: speedActive,
+			captions: captionsActive,
+			quality: qualityActive,
+		});
 
 		return (
 			<div className={cls}>
-				<div className="top-level">
-					{this.renderTopLevelMenu()}
-				</div>
+				<div className="top-level">{this.renderTopLevelMenu()}</div>
 				<div className="sub-level">
 					<div className="back" onClick={this.setTopLevelActive}>
 						<i className="icon-chevron-left" />
 						<span>{t('back')}</span>
 					</div>
 					<div className="sub-level-container">
-						{speedActive && (<Speed videoState={videoState} {...otherProps} />)}
-						{captionsActive && (<Captions videoState={videoState} {...otherProps} />)}
-						{qualityActive && (<Quality videoState={videoState} {...otherProps} />)}
+						{speedActive && (
+							<Speed videoState={videoState} {...otherProps} />
+						)}
+						{captionsActive && (
+							<Captions videoState={videoState} {...otherProps} />
+						)}
+						{qualityActive && (
+							<Quality videoState={videoState} {...otherProps} />
+						)}
 					</div>
 				</div>
 			</div>
 		);
 	}
 
-
 	renderTopLevelMenu = () => {
-		const {videoState} = this.props;
+		const { videoState } = this.props;
 
 		return (
 			<ul>
 				<li>
-					{this.renderTopLevelMenuItem(t('speed'), Speed.getFormattedPlaybackRate(videoState), true, this.setSpeedActive)}
-					{this.renderTopLevelMenuItem(t('captions'), Captions.getFormattedActiveTrack(videoState), Captions.hasPotentialTracks(videoState), this.setCaptionsActive)}
-					{Quality.shouldShow(videoState) && this.renderTopLevelMenuItem(t('quality'), Quality.getFormattedActiveQuality(videoState), true, this.setQualitiesActive)}
+					{this.renderTopLevelMenuItem(
+						t('speed'),
+						Speed.getFormattedPlaybackRate(videoState),
+						true,
+						this.setSpeedActive
+					)}
+					{this.renderTopLevelMenuItem(
+						t('captions'),
+						Captions.getFormattedActiveTrack(videoState),
+						Captions.hasPotentialTracks(videoState),
+						this.setCaptionsActive
+					)}
+					{Quality.shouldShow(videoState) &&
+						this.renderTopLevelMenuItem(
+							t('quality'),
+							Quality.getFormattedActiveQuality(videoState),
+							true,
+							this.setQualitiesActive
+						)}
 				</li>
 			</ul>
 		);
-	}
+	};
 
 	renderTopLevelMenuItem = (label, value, enabled, onSelect) => {
 		return (
-			<div className={cx('more-control-menu-item', {enabled})} onClick={onSelect}>
+			<div
+				className={cx('more-control-menu-item', { enabled })}
+				onClick={onSelect}
+			>
 				<span className="option-label">{label}</span>
 				<span className="option-value">{value}</span>
 				<i className="icon-chevron-right" />
 			</div>
 		);
-	}
+	};
 }

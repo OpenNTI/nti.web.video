@@ -2,16 +2,18 @@ import './TimeRemaining.scss';
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import {getFormattedTimeRemaining} from '../utils';
+import { getFormattedTimeRemaining } from '../utils';
 
 VideoTimeRemaining.propTypes = {
 	videoState: PropTypes.object,
-	isTouch: PropTypes.bool
+	isTouch: PropTypes.bool,
 };
-export default function VideoTimeRemaining ({videoState, isTouch}) {
+export default function VideoTimeRemaining({ videoState, isTouch }) {
 	return (
 		<div className="video-time-remaining">
-			<span className="remaining">{getFormattedTimeRemaining(videoState)}</span>
+			<span className="remaining">
+				{getFormattedTimeRemaining(videoState)}
+			</span>
 		</div>
 	);
 }

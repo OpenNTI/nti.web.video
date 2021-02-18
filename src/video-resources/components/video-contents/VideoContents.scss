@@ -1,4 +1,4 @@
-@import "~@nti/style-common";
+@import '~@nti/style-common';
 
 .video-resources-video-contents {
 	$gap: ((20 / 974) / 2) * 100%;
@@ -13,7 +13,7 @@
 
 		margin: rem-calc(15px) round($gap) 0;
 		flex: 0 1 $percent;
-		max-width: $percent;//FireFox can't even.
+		max-width: $percent; //FireFox can't even.
 	}
 
 	.empty-contents {

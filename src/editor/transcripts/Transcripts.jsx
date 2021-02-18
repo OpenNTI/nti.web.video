@@ -2,10 +2,10 @@ import './Transcripts.scss';
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import {scoped} from '@nti/lib-locale';
+import { scoped } from '@nti/lib-locale';
 
 // import { areTranscriptsValid } from '../utils/TranscriptUtils';
-import {isValid} from './utils';
+import { isValid } from './utils';
 import TranscriptItem from './TranscriptItem';
 
 const DEFAULT_TEXT = {
@@ -14,15 +14,14 @@ const DEFAULT_TEXT = {
 	errors: {
 		update: 'Could not update transcript',
 		fileType: 'Selected file must be a .vtt file',
-		general: 'Unable to edit transcripts'
-	}
+		general: 'Unable to edit transcripts',
+	},
 };
 
 const t = scoped('video.editor.Transcripts', DEFAULT_TEXT);
 
 const AVAILABLE_LANGS = new Set(['en']);
 const AVAILABLE_PURPOSES = new Set(['normal', 'captions']);
-
 
 //TODO: figure out how to save the changes to the transcript all at once
 //on save
@@ -33,68 +32,72 @@ export default class TranscriptEditor extends React.Component {
 		onError: PropTypes.func,
 		clearError: PropTypes.func,
 		beforeSave: PropTypes.func,
-		afterSave: PropTypes.func
-	}
+		afterSave: PropTypes.func,
+	};
 
-	attachAddLinkRef = x => this.addLink = x
+	attachAddLinkRef = x => (this.addLink = x);
 
-	get transcripts () {
-		const {video} = this.props;
+	get transcripts() {
+		const { video } = this.props;
 
 		return (video && video.transcripts) || [];
 	}
 
-
-	beforeSave () {
-		const {beforeSave} = this.props;
+	beforeSave() {
+		const { beforeSave } = this.props;
 
 		if (beforeSave) {
 			beforeSave();
 		}
 	}
 
-
-	afterSave () {
-		const {afterSave} = this.props;
+	afterSave() {
+		const { afterSave } = this.props;
 
 		if (afterSave) {
 			afterSave();
 		}
 	}
 
-
-	onError (err) {
-		const {onError} = this.props;
+	onError(err) {
+		const { onError } = this.props;
 
 		if (onError) {
 			onError(err);
 		}
 	}
 
-
-	clearError () {
-		const {clearError} = this.props;
+	clearError() {
+		const { clearError } = this.props;
 
 		if (clearError) {
 			clearError();
 		}
 	}
 
-
-	resetAddLink () {
+	resetAddLink() {
 		if (this.addLink) {
 			this.addLink.value = '';
 		}
 	}
 
-
-	onFileSelected = async (e) => {
-		const {target: {files}} = e;
-		const {video, beforeSave, afterSave, onError, clearError} = this.props;
-		const {transcripts} = this;
+	onFileSelected = async e => {
+		const {
+			target: { files },
+		} = e;
+		const {
+			video,
+			beforeSave,
+			afterSave,
+			onError,
+			clearError,
+		} = this.props;
+		const { transcripts } = this;
 
 		//if we don't have a vtt file or a video
-		if (!files || !files.length || !video) { return; }
+		if (!files || !files.length || !video) {
+			return;
+		}
 
 		if (!files[0].name.toLowerCase().endsWith('.vtt')) {
 			if (onError) {
@@ -105,8 +108,9 @@ export default class TranscriptEditor extends React.Component {
 			return;
 		}
 
-
-		if (beforeSave) { beforeSave(); }
+		if (beforeSave) {
+			beforeSave();
+		}
 
 		const availablePurposes = new Set(AVAILABLE_PURPOSES);
 
@@ -125,22 +129,21 @@ export default class TranscriptEditor extends React.Component {
 				onError((err && err.message) || t('errors.update'));
 			}
 		} finally {
-			if (afterSave) { afterSave(); }
+			if (afterSave) {
+				afterSave();
+			}
 
 			this.resetAddLink();
 		}
-	}
+	};
 
-
-	render () {
-		const {transcripts} = this;
+	render() {
+		const { transcripts } = this;
 
 		if (!isValid(transcripts)) {
 			return (
 				<div className="meta">
-					<div className="error">
-						{t('errors.general')}
-					</div>
+					<div className="error">{t('errors.general')}</div>
 				</div>
 			);
 		}
@@ -154,9 +157,8 @@ export default class TranscriptEditor extends React.Component {
 		);
 	}
 
-
-	renderTranscriptList () {
-		const {transcripts} = this;
+	renderTranscriptList() {
+		const { transcripts } = this;
 
 		return (
 			<div className="transcript-list">
@@ -177,9 +179,8 @@ export default class TranscriptEditor extends React.Component {
 		);
 	}
 
-
-	renderAddTranscript () {
-		const {transcripts} = this;
+	renderAddTranscript() {
+		const { transcripts } = this;
 
 		let usedLanguages = new Set();
 		let usedPurposes = new Set();
@@ -190,13 +191,21 @@ export default class TranscriptEditor extends React.Component {
 		}
 
 		//if all combinations are used, can't add a new transcript
-		if (usedLanguages.size === AVAILABLE_LANGS.size && usedPurposes.size === AVAILABLE_PURPOSES.size) {
+		if (
+			usedLanguages.size === AVAILABLE_LANGS.size &&
+			usedPurposes.size === AVAILABLE_PURPOSES.size
+		) {
 			return null;
 		}
 
 		return (
 			<div className="add-transcript">
-				<input type="file" accept=".vtt" onChange={this.onFileSelected} ref={this.attachAddLinkRef} />
+				<input
+					type="file"
+					accept=".vtt"
+					onChange={this.onFileSelected}
+					ref={this.attachAddLinkRef}
+				/>
 				<i className="icon-add" />
 				<span>{t('add')}</span>
 			</div>

@@ -16,9 +16,11 @@
  * @returns {Array}        An array covering all the loaded and unloaded ranges
  */
 export default function (videoState) {
-	const {buffered, duration} = videoState || {};
+	const { buffered, duration } = videoState || {};
 
-	if (!buffered) { return []; }
+	if (!buffered) {
+		return [];
+	}
 
 	let ranges = [];
 	let prev = 0;
@@ -33,14 +35,14 @@ export default function (videoState) {
 			ranges.push({
 				loaded: false,
 				length: start - prev,
-				percentage: ((start - prev) / duration) * 100
+				percentage: ((start - prev) / duration) * 100,
 			});
 		}
 
 		ranges.push({
 			loaded: true,
 			length,
-			percentage
+			percentage,
 		});
 
 		prev = end;

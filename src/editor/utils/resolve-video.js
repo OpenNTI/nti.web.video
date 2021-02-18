@@ -1,7 +1,9 @@
-import {getService} from '@nti/web-client';
+import { getService } from '@nti/web-client';
 
-export default async function resolveVideo (video) {
-	if (typeof video !== 'string') { return video; }
+export default async function resolveVideo(video) {
+	if (typeof video !== 'string') {
+		return video;
+	}
 
 	const service = await getService();
 

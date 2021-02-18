@@ -1,4 +1,4 @@
-@import "~@nti/style-common";
+@import '~@nti/style-common';
 
 .video-editor {
 	position: relative;
@@ -8,7 +8,10 @@
 		width: 704px;
 		height: 390px;
 
-		iframe, object, embed, video {
+		iframe,
+		object,
+		embed,
+		video {
 			height: 100%;
 			width: 100%;
 		}

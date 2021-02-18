@@ -8,11 +8,10 @@ import FullScreen from './components/FullScreen';
 import Scrubber from './components/Scrubber';
 import PlayPause from './components/PlayPause';
 
-
 SmallVideoControls.propTypes = {
-	className: PropTypes.string
+	className: PropTypes.string,
 };
-export default function SmallVideoControls ({className, ...otherProps}) {
+export default function SmallVideoControls({ className, ...otherProps }) {
 	return (
 		<div className={cx('small-video-controls', className)}>
 			<div className={cx('play-layer')}>

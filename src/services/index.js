@@ -1,7 +1,7 @@
 import Url from 'url';
 
-import {getService} from '@nti/web-client';
-import {getModel} from '@nti/lib-interfaces';
+import { getService } from '@nti/web-client';
+import { getModel } from '@nti/lib-interfaces';
 
 import kaltura from './kaltura';
 import vimeo from './vimeo';
@@ -15,15 +15,15 @@ const wistiaRe = /wistia/i;
 
 const serviceMap = { youtube, vimeo, kaltura, wistia };
 const PROTOCOL_LESS = /^\/\//i;
-const ensureProtocol = x => PROTOCOL_LESS.test(x) ? `http:${x}` : x;
+const ensureProtocol = x => (PROTOCOL_LESS.test(x) ? `http:${x}` : x);
 
 const MediaSource = getModel('mediasource');
 
-function getSource (data) {
+function getSource(data) {
 	return data && data.sources ? data.sources[0] : data;
 }
 
-export function getUrl (data) {
+export function getUrl(data) {
 	let src = getSource(data);
 	let url = src && Url.parse(src.source[0]);
 
@@ -39,10 +39,9 @@ export function getUrl (data) {
 	return url;
 }
 
-
-function getHandlerFromUrl (url) {
+function getHandlerFromUrl(url) {
 	let handler = null;
-	
+
 	if (kalturaRe.test(url.protocol) || kalturaRe.test(url.host)) {
 		handler = kaltura;
 	} else if (vimeoRe.test(url.host) || vimeoRe.test(url.protocol)) {
@@ -56,9 +55,9 @@ function getHandlerFromUrl (url) {
 	return handler;
 }
 
-
-export function getHandler (src, srcIndex = 0) {
-	let url = (typeof src === 'string') ? Url.parse(ensureProtocol(src)) : getUrl(src);
+export function getHandler(src, srcIndex = 0) {
+	let url =
+		typeof src === 'string' ? Url.parse(ensureProtocol(src)) : getUrl(src);
 	let service = ((src.sources || [])[srcIndex] || {}).service;
 
 	let handler = serviceMap[service];
@@ -70,8 +69,7 @@ export function getHandler (src, srcIndex = 0) {
 	return handler;
 }
 
-
-export async function createMediaSourceFromUrl (url) {
+export async function createMediaSourceFromUrl(url) {
 	const service = await getService();
 
 	return MediaSource.from(service, url);
@@ -82,22 +80,23 @@ export async function createMediaSourceFromUrl (url) {
  * @param  {string|Object} args - `${service} ${source}` or {service: ..., source: ...}
  * @returns {string} canonical url
  */
-export function getCanonicalUrlFrom (args) {
+export function getCanonicalUrlFrom(args) {
 	const stringToObjectForm = str => {
 		const parts = str.split(' ');
-		return parts.length === 2 && {
-			service: parts[0],
-			source: parts[1]
-		};
+		return (
+			parts.length === 2 && {
+				service: parts[0],
+				source: parts[1],
+			}
+		);
 	};
 
-	const normalForm = typeof args === 'object'
-		? args
-		: stringToObjectForm(args);
+	const normalForm =
+		typeof args === 'object' ? args : stringToObjectForm(args);
 
 	const handler = getHandlerFromUrl({
 		host: normalForm.service,
-		protocol: normalForm.service
+		protocol: normalForm.service,
 	});
 
 	// For Kaltura

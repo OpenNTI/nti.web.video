@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
-import {scoped} from '@nti/lib-locale';
+import { scoped } from '@nti/lib-locale';
 
 const HANDLERS = new WeakMap();
 
@@ -11,7 +11,7 @@ const DISABLED = 'disabled';
 // const SHOWING = 'showing';
 
 const DEFAULT_TEXT = {
-	none: 'None'
+	none: 'None',
 };
 
 const t = scoped('video.controls.more.Captions', DEFAULT_TEXT);
@@ -19,10 +19,10 @@ const t = scoped('video.controls.more.Captions', DEFAULT_TEXT);
 const formatLang = l => l.toUpperCase();
 
 export default class VideoMoreControlCaptions extends React.Component {
-	static getFormattedActiveTrack (videoState) {
-		const {textTracks} = videoState || {};
+	static getFormattedActiveTrack(videoState) {
+		const { textTracks } = videoState || {};
 
-		for (let i = 0; i < textTracks.length; i++ ) {
+		for (let i = 0; i < textTracks.length; i++) {
 			let track = textTracks[i];
 
 			if (track.kind === CAPTIONS && track.mode !== DISABLED) {
@@ -33,13 +33,15 @@ export default class VideoMoreControlCaptions extends React.Component {
 		return t('none');
 	}
 
-	static hasPotentialTracks (videoState) {
-		const {textTracks} = videoState || {};
+	static hasPotentialTracks(videoState) {
+		const { textTracks } = videoState || {};
 
 		for (let i = 0; i < textTracks.length; i++) {
 			let track = textTracks;
 
-			if (track.kind === CAPTIONS) { return true; }
+			if (track.kind === CAPTIONS) {
+				return true;
+			}
 		}
 
 		return true;
@@ -47,23 +49,21 @@ export default class VideoMoreControlCaptions extends React.Component {
 
 	static propTypes = {
 		videoState: PropTypes.shape({
-			textTracks: PropTypes.object
+			textTracks: PropTypes.object,
 		}),
 		selectTrack: PropTypes.func,
-		unselectAllTracks: PropTypes.func
-	}
+		unselectAllTracks: PropTypes.func,
+	};
 
-
-	get textTracks () {
-		const {videoState} = this.props;
-		const {textTracks} = videoState || {};
+	get textTracks() {
+		const { videoState } = this.props;
+		const { textTracks } = videoState || {};
 
 		return Array.from(textTracks) || [];
 	}
 
-
-	get selectedTrack () {
-		const {textTracks} = this;
+	get selectedTrack() {
+		const { textTracks } = this;
 
 		for (let i = 0; i < textTracks.length; i++) {
 			let track = textTracks[i];
@@ -80,53 +80,61 @@ export default class VideoMoreControlCaptions extends React.Component {
 		e.stopPropagation();
 		e.preventDefault();
 
-		const {selectTrack} = this.props;
+		const { selectTrack } = this.props;
 
 		if (selectTrack) {
 			selectTrack(track);
 		}
-	}
+	};
 
-	unselectAll = (e) => {
+	unselectAll = e => {
 		e.stopPropagation();
 		e.preventDefault();
 
-		const {unselectAllTracks} = this.props;
+		const { unselectAllTracks } = this.props;
 
 		if (unselectAllTracks) {
 			unselectAllTracks();
 		}
-	}
+	};
 
-
-	render () {
-		const {textTracks, selectedTrack} = this;
+	render() {
+		const { textTracks, selectedTrack } = this;
 
 		return (
 			<ul className="video-more-control-captions">
-				<li onClick={this.unselectAll} className={cx({selected: !selectedTrack})}>
-					{!selectedTrack && (<i className="icon-check" />)}
+				<li
+					onClick={this.unselectAll}
+					className={cx({ selected: !selectedTrack })}
+				>
+					{!selectedTrack && <i className="icon-check" />}
 					<span className="caption-label">{t('none')}</span>
 				</li>
-				{textTracks.filter(x => x.kind === CAPTIONS).map((track, index) => {
-					const selected = track === selectedTrack;
+				{textTracks
+					.filter(x => x.kind === CAPTIONS)
+					.map((track, index) => {
+						const selected = track === selectedTrack;
 
-					//TODO: Figure out if this is a memory leak
-					const handler = HANDLERS.has(track) ? HANDLERS.get(track) : (e) => this.selectTrack(track, e);
+						//TODO: Figure out if this is a memory leak
+						const handler = HANDLERS.has(track)
+							? HANDLERS.get(track)
+							: e => this.selectTrack(track, e);
 
-					HANDLERS.set(track, handler);
+						HANDLERS.set(track, handler);
 
-					return (
-						<li
-							key={index}
-							className={cx({selected})}
-							onClick={handler}
-						>
-							{selected && (<i className="icon-check"/>)}
-							<span className="caption-label">{formatLang(track.language)}</span>
-						</li>
-					);
-				})}
+						return (
+							<li
+								key={index}
+								className={cx({ selected })}
+								onClick={handler}
+							>
+								{selected && <i className="icon-check" />}
+								<span className="caption-label">
+									{formatLang(track.language)}
+								</span>
+							</li>
+						);
+					})}
 			</ul>
 		);
 	}

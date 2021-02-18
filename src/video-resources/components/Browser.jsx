@@ -1,7 +1,7 @@
 import './Browser.scss';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Panels, Search, Button }  from '@nti/web-commons';
+import { Panels, Search, Button } from '@nti/web-commons';
 
 import VideoContents from './video-contents/VideoContents';
 import EditVideo from './EditVideo';
@@ -20,12 +20,12 @@ class Browser extends Component {
 		onDelete: PropTypes.func.isRequired,
 		onVideoDeleted: PropTypes.func.isRequired,
 		onSelect: PropTypes.func.isRequired,
-	}
+	};
 
-	constructor (props) {
+	constructor(props) {
 		super(props);
 
-		const {videos} = props;
+		const { videos } = props;
 
 		this.state = {
 			search: '',
@@ -33,57 +33,70 @@ class Browser extends Component {
 			videos: videos ? [...props.videos] : null,
 			selected: null,
 			video: null,
-			isEditing: false
+			isEditing: false,
 		};
 	}
 
-	componentDidUpdate (prevProps) {
+	componentDidUpdate(prevProps) {
 		const { search } = this.state;
 		const { videos } = this.props;
 
 		if (videos !== prevProps.videos) {
 			this.setState({
-				videos,
-				videoContents: search === '' ? videos : videos.filter(video => this.itemMatchesSearch(video, search))
+				videos: videos,
+				videoContents:
+					search === ''
+						? videos
+						: videos.filter(video =>
+								this.itemMatchesSearch(video, search)
+						  ),
 			});
 		}
 	}
 
-	onSearch = (search) => {
+	onSearch = search => {
 		const { videos } = this.state;
 		this.setState({
-			videoContents: videos.filter(video => this.itemMatchesSearch(video, search)),
-			search
+			videoContents: videos?.filter(video =>
+				this.itemMatchesSearch(video, search)
+			),
+			search,
 		});
-	}
+	};
 
 	onDelete = () => {
 		const { selected } = this.state;
 		const { onDelete } = this.props;
 		onDelete(selected);
 		this.setState({ selected: false });
-	}
+	};
 
-	onVideoDelete = (video) => {
+	onVideoDelete = video => {
 		const { onVideoDeleted } = this.props;
 
 		onVideoDeleted(video);
 
 		this.setState({ selected: false });
-	}
+	};
 
-	onSelectChange = (selected) => {
+	onSelectChange = selected => {
 		const { selected: oldSelected } = this.state;
 		const { onSelect } = this.props;
-		this.setState({
-			selected: oldSelected && oldSelected.getID() === selected.getID() ? false : selected,
-		}, () => {
-			const { selected: currerntSelected } = this.state;
-			onSelect(currerntSelected);
-		});
-	}
+		this.setState(
+			{
+				selected:
+					oldSelected && oldSelected.getID() === selected.getID()
+						? false
+						: selected,
+			},
+			() => {
+				const { selected: currerntSelected } = this.state;
+				onSelect(currerntSelected);
+			}
+		);
+	};
 
-	itemMatchesSearch (video, searchTerm) {
+	itemMatchesSearch(video, searchTerm) {
 		const title = video.title || '';
 		const ntiid = video.NTIID || '';
 		const sources = video.sources || [];
@@ -105,47 +118,62 @@ class Browser extends Component {
 		return matches;
 	}
 
-	onEditClick = ({ target: { name }}) => {
+	onEditClick = ({ target: { name } }) => {
 		const { selected } = this.state;
 		const { videos, setEditing } = this.props;
 		setEditing(true);
 		this.setState({
-			video: name === 'create' ? null : videos.find(v => v.getID() === selected.getID()),
-			isEditing: true
+			video:
+				name === 'create'
+					? null
+					: videos.find(v => v.getID() === selected.getID()),
+			isEditing: true,
 		});
-	}
+	};
 
 	onEditCancel = () => {
 		const { setEditing } = this.props;
-		this.setState({
-			video: null,
-			isEditing: false
-		}, () => {
-			setEditing(false);
-		});
-	}
+		this.setState(
+			{
+				video: null,
+				isEditing: false,
+			},
+			() => {
+				setEditing(false);
+			}
+		);
+	};
 
-	onEditSave = (video) => {
+	onEditSave = video => {
 		const { onEdit } = this.props;
 
-		this.setState({
-			video: null,
-			isEditing: false
-		}, () => {
-			onEdit(video);
-		});
-	}
+		this.setState(
+			{
+				video: null,
+				isEditing: false,
+			},
+			() => {
+				onEdit(video);
+			}
+		);
+	};
 
-	onCreate = (video) => {
+	onCreate = video => {
 		this.setState({
 			video,
-			selected: video
+			selected: video,
 		});
-	}
+	};
 
-	render () {
+	render() {
 		const { onClose, course } = this.props;
-		const { search, selected, videoContents, isEditing, video } = this.state;
+		const {
+			search,
+			selected,
+			videoContents,
+			isEditing,
+			video,
+		} = this.state;
 		return (
 			<div className="video-resource-browser">
 				<Header onClose={onClose}>
@@ -155,22 +183,45 @@ class Browser extends Component {
 						<HeaderSpacer />
 					</div>
 					<Toolbar>
-						{	!isEditing
-							? <Button className="create-video-button" rounded name="create" onClick={this.onEditClick}>Add Video</Button>
-							:	<Button className="back-button" rounded name="back" onClick={this.onEditCancel}>Back to Videos</Button>
-						}
+						{!isEditing ? (
+							<Button
+								className="create-video-button"
+								rounded
+								name="create"
+								onClick={this.onEditClick}
+							>
+								Add Video
+							</Button>
+						) : (
+							<Button
+								className="back-button"
+								rounded
+								name="back"
+								onClick={this.onEditCancel}
+							>
+								Back to Videos
+							</Button>
+						)}
 						<ToolbarButton
 							icon="edit"
 							label="Edit"
 							name="edit"
 							onClick={this.onEditClick}
-							available={selected && selected.hasLink('edit') && !isEditing}
+							available={
+								selected &&
+								selected.hasLink('edit') &&
+								!isEditing
+							}
 						/>
 						<ToolbarButton
 							icon="delete"
 							label="Delete"
 							onClick={this.onDelete}
-							available={selected && selected.hasLink('delete') && !isEditing}
+							available={
+								selected &&
+								selected.hasLink('delete') &&
+								!isEditing
+							}
 						/>
 						<ToolbarSpacer />
 						<Search

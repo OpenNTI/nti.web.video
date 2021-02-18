@@ -1,4 +1,4 @@
-export default function canEdit (transcript) {
+export default function canEdit(transcript) {
 	const links = (transcript && transcript.Links) || [];
 
 	for (let link of links) {

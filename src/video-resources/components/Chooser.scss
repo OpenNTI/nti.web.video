@@ -12,7 +12,9 @@
 .modal-mask.video-resource-chooser-dialog {
 	background: rgba(255, 255, 255, 0.7);
 
-	& > .icon-close { display: none; }
+	& > .icon-close {
+		display: none;
+	}
 
 	.modal-content {
 		border: 1px solid #e2e2e2;

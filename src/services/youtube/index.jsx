@@ -2,13 +2,17 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import invariant from 'invariant';
 import Logger from '@nti/util-logger';
-import {v4 as uuid} from 'uuid';
+import { v4 as uuid } from 'uuid';
 import QueryString from 'query-string';
 
-import {EventHandlers} from '../../Constants';
+import { EventHandlers } from '../../Constants';
 import MESSAGES from '../WindowMessageListener';
 import Task from '../Task';
-import {resolveCanAccessSource, createNonRecoverableError, parseJSON} from '../utils';
+import {
+	resolveCanAccessSource,
+	createNonRecoverableError,
+	parseJSON,
+} from '../utils';
 
 const logger = Logger.get('video:youtube');
 
@@ -37,19 +41,17 @@ const YOU_TUBE_STATES = {
 //1) Youtube is blocked
 //2) The video doesn't exist
 
-
 const YT_STATE_TO_EVENTS = {
 	0: 'ended',
 	1: 'playing',
-	2: 'pause'
+	2: 'pause',
 	//There is no seek event for YT
 };
 
-
 export default class YouTubeVideo extends React.Component {
-	static service = 'youtube'
+	static service = 'youtube';
 
-	static getID (url) {
+	static getID(url) {
 		const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
 		const match = url.match(regExp);
 		if (match && match[2].length === 11) {
@@ -58,7 +60,7 @@ export default class YouTubeVideo extends React.Component {
 		return null;
 	}
 
-	static getCanonicalURL (url, videoId) {
+	static getCanonicalURL(url, videoId) {
 		const id = videoId || this.getID(url);
 		return `${YOU_TUBE}/embed/${id}`;
 	}
@@ -77,45 +79,42 @@ export default class YouTubeVideo extends React.Component {
 		onSeeked: PropTypes.func,
 		onTimeUpdate: PropTypes.func,
 		onReady: PropTypes.func,
-	}
+	};
 
+	attachRef = x => {
+		this.iframe = x;
+	};
 
-	attachRef = (x) => { this.iframe = x; }
-
-
-	constructor (props) {
+	constructor(props) {
 		super(props);
 		this.state = {
 			id: uuid(),
 			scope: YOU_TUBE,
 			playerState: -1,
-			initTask: new Task(this.sendListening, 250)
+			initTask: new Task(this.sendListening, 250),
 		};
 
 		this.updateURL(props, x => Object.assign(this.state, x));
 	}
 
-
-	componentDidMount () {
+	componentDidMount() {
 		this.ensureAccess();
 		this.updateURL();
 		MESSAGES.add(this.onMessage);
 	}
 
-
-	componentWillUnmount () {
+	componentWillUnmount() {
 		this.state.initTask.stop();
 		MESSAGES.remove(this.onMessage);
 	}
 
-
-	componentDidUpdate (prevProps, prevState) {
-		const {state} = this;
-		const {initTask} = state;
+	componentDidUpdate(prevProps, prevState) {
+		const { state } = this;
+		const { initTask } = state;
 		const prevInitTask = prevState.initTask;
 
 		invariant(
-			(initTask && (initTask === prevInitTask || !prevInitTask)),
+			initTask && (initTask === prevInitTask || !prevInitTask),
 			'Something changed the initTask!'
 		);
 
@@ -137,12 +136,13 @@ export default class YouTubeVideo extends React.Component {
 		}
 	}
 
-
-	async ensureAccess (props = this.props) {
-		const {source, onError} = props;
+	async ensureAccess(props = this.props) {
+		const { source, onError } = props;
 
 		const onNoAccess = () => {
-			const error = createNonRecoverableError('Unable to access youtube video');
+			const error = createNonRecoverableError(
+				'Unable to access youtube video'
+			);
 
 			if (onError) {
 				onError(error);
@@ -152,34 +152,35 @@ export default class YouTubeVideo extends React.Component {
 		try {
 			const canAccess = await resolveCanAccessSource(source);
 
-			if (!canAccess) { onNoAccess(); }
+			if (!canAccess) {
+				onNoAccess();
+			}
 		} catch (e) {
 			onNoAccess(e);
 		}
 	}
 
-
-	getPlayerState () {
-		const {playerState, currentTime, duration, playbackRate} = this.state;
+	getPlayerState() {
+		const { playerState, currentTime, duration, playbackRate } = this.state;
 
 		return {
 			service: YouTubeVideo.service,
 			time: currentTime,
 			state: playerState,
 			duration,
-			speed: playbackRate
+			speed: playbackRate,
 		};
 	}
 
+	buildURL = props => {
+		const unwrap = x => (Array.isArray(x) ? x[0] : x);
+		const { deferred, source: mediaSource } = props;
+		const { location } = global;
 
-	buildURL = (props) => {
-		const unwrap = x => Array.isArray(x) ? x[0] : x;
-		const {deferred, source: mediaSource} = props;
-		const {location} = global;
-
-		const videoId = typeof mediaSource === 'string'
-			? YouTubeVideo.getID(mediaSource)
-			: unwrap(mediaSource.source);
+		const videoId =
+			typeof mediaSource === 'string'
+				? YouTubeVideo.getID(mediaSource)
+				: unwrap(mediaSource.source);
 
 		const args = {
 			enablejsapi: 1,
@@ -190,28 +191,28 @@ export default class YouTubeVideo extends React.Component {
 			rel: 0,
 			showinfo: 0,
 			playsinline: 1,
-			autoplay: (props.autoPlay || ((this.state || {}).autoPlay && deferred)) ? 1 : 0,
-			origin: location.protocol + '//' + location.host
+			autoplay:
+				props.autoPlay || ((this.state || {}).autoPlay && deferred)
+					? 1
+					: 0,
+			origin: location.protocol + '//' + location.host,
 		};
 
 		return `${YOU_TUBE}/embed/${videoId}?${QueryString.stringify(args)}`;
-	}
-
+	};
 
 	updateURL = (props = this.props, update = x => this.setState(x)) => {
-		update({playerURL: this.buildURL(props)});
-	}
-
+		update({ playerURL: this.buildURL(props) });
+	};
 
 	getPlayerContext = () => {
-		const {iframe} = this;
+		const { iframe } = this;
 		return iframe && (iframe.contentWindow || window.frames[iframe.name]);
-	}
+	};
 
-
-	render () {
-		const {autoPlay, id} = this.state;
-		const {source, deferred, width, height} = this.props;
+	render() {
+		const { autoPlay, id } = this.state;
+		const { source, deferred, width, height } = this.props;
 
 		if (!id) {
 			logger.error('No ID');
@@ -219,7 +220,7 @@ export default class YouTubeVideo extends React.Component {
 		}
 
 		if (!source) {
-			return (<div>No source</div>);
+			return <div>No source</div>;
 		}
 
 		const render = !deferred || autoPlay;
@@ -240,23 +241,20 @@ export default class YouTubeVideo extends React.Component {
 		);
 	}
 
-
 	sendListening = () => {
 		if (this.getPlayerContext()) {
 			this.postMessage();
 		}
-	}
-
+	};
 
 	finishInitialization = () => {
-		this.setState({initialized: true});
+		this.setState({ initialized: true });
 		this.postMessage('addEventListener', ['onReady']);
 		this.postMessage('addEventListener', ['onStateChange']);
 		this.postMessage('addEventListener', ['onError']);
-	}
+	};
 
-
-	onMessage = (event) => {
+	onMessage = event => {
 		const unwrap = x => {
 			if (Array.isArray(x)) {
 				if (x.length !== 1) {
@@ -266,10 +264,11 @@ export default class YouTubeVideo extends React.Component {
 			}
 			return x;
 		};
-		const getData = x => typeof x === 'string' ? parseJSON(x) : x;
+		const getData = x => (typeof x === 'string' ? parseJSON(x) : x);
 		const data = getData(event.data);
 		const eventName = unwrap(data && data.event) || '';
-		const handlerName = 'handle' + eventName.charAt(0).toUpperCase() + eventName.substr(1);
+		const handlerName =
+			'handle' + eventName.charAt(0).toUpperCase() + eventName.substr(1);
 		const implemented = !!this[handlerName];
 
 		//event.source === this.getPlayerContext()
@@ -278,7 +277,6 @@ export default class YouTubeVideo extends React.Component {
 		const idMismatch = (data && data.id) !== this.state.id;
 
 		if (originMismatch || idMismatch) {
-
 			// logger.debug('[YouTube] Ignoring Event (because origin mismatch: %o %o %o, or id mismatch %o, %o) %o',
 			// 	originMismatch, event.origin, this.state.scope,
 			// 	idMismatch, data.id || data,
@@ -287,7 +285,12 @@ export default class YouTubeVideo extends React.Component {
 		}
 
 		if (window.debugYT || !implemented) {
-			logger[implemented ? 'debug' : 'warn']('[YouTube] Event: %s %s %o', data.id, data.event, data);
+			logger[implemented ? 'debug' : 'warn'](
+				'[YouTube] Event: %s %s %o',
+				data.id,
+				data.event,
+				data
+			);
 		}
 
 		if (!this.state.initialized) {
@@ -297,8 +300,7 @@ export default class YouTubeVideo extends React.Component {
 		if (implemented) {
 			this[handlerName](data.info);
 		}
-	}
-
+	};
 
 	postMessage = (method, ...params) => {
 		const context = this.getPlayerContext();
@@ -309,28 +311,32 @@ export default class YouTubeVideo extends React.Component {
 
 		const data = method
 			? {
-				event: 'command',
-				func: method,
-				args: params,
-				id: this.state.id
-			} : {
-				event: 'listening',
-				id: this.state.id
-			};
+					event: 'command',
+					func: method,
+					args: params,
+					id: this.state.id,
+			  }
+			: {
+					event: 'listening',
+					id: this.state.id,
+			  };
 
 		if (window.debugYT) {
-			logger.debug('[YouTube] Sending: %s %o', method || 'listening', data);
+			logger.debug(
+				'[YouTube] Sending: %s %o',
+				method || 'listening',
+				data
+			);
 		}
 		context.postMessage(JSON.stringify(data), this.state.scope);
-	}
+	};
 
-
-	handleInfoDelivery = (info) => {
-		const {onRateChange} = this.props;
-		const {playbackRate:oldRate = 1} = this.state;
+	handleInfoDelivery = info => {
+		const { onRateChange } = this.props;
+		const { playbackRate: oldRate = 1 } = this.state;
 
 		this.setState(info, () => {
-			const {playbackRate:newRate} = this.state;
+			const { playbackRate: newRate } = this.state;
 
 			if (onRateChange && oldRate !== newRate) {
 				onRateChange(oldRate, newRate, {
@@ -340,23 +346,22 @@ export default class YouTubeVideo extends React.Component {
 						duration: info.duration,
 						playbackRate: newRate,
 					},
-					type: 'ratechange'
+					type: 'ratechange',
 				});
 			}
 		});
 
-		if (Object.prototype.hasOwnProperty.call(info,'currentTime')) {
+		if (Object.prototype.hasOwnProperty.call(info, 'currentTime')) {
 			this.fireEvent('timeupdate');
 		}
-	}
+	};
 
-
-	handleInitialDelivery = (info) => {
+	handleInitialDelivery = info => {
 		this.setState(info);
 
-		const {onError} = this.props;
-		const {videoData} = info || {};
-		const {video_id:videoId} = videoData || {};
+		const { onError } = this.props;
+		const { videoData } = info || {};
+		const { video_id: videoId } = videoData || {};
 
 		if (!videoId) {
 			const error = new Error('Missing Video');
@@ -367,36 +372,31 @@ export default class YouTubeVideo extends React.Component {
 				onError(error);
 			}
 		}
-	}
+	};
 
-
-	handleApiInfoDelivery = () => {}
-
+	handleApiInfoDelivery = () => {};
 
 	handleOnReady = () => {
-		const {onReady} = this.props;
+		const { onReady } = this.props;
 
 		if (onReady) {
 			onReady();
 		}
-	}//nothing to do
+	}; //nothing to do
 
-
-	handleOnStateChange = (state) => {
+	handleOnStateChange = state => {
 		if (this.state.playerState !== state) {
-			this.setState({playerState: state});
+			this.setState({ playerState: state });
 		}
 
 		const event = YT_STATE_TO_EVENTS[state];
 		if (event) {
 			this.fireEvent(event);
 		}
-	}
+	};
 
-
-	fireEvent = (event) => {
+	fireEvent = event => {
 		if (this.props[EventHandlers[event]]) {
-
 			this.props[EventHandlers[event]]({
 				timeStamp: Date.now(),
 				target: {
@@ -404,19 +404,18 @@ export default class YouTubeVideo extends React.Component {
 					duration: this.state.duration,
 					playbackRate: this.state.playbackRate,
 				},
-				type: event
+				type: event,
 			});
 		}
-	}
-
+	};
 
 	play = () => {
 		if (this.props.deferred) {
 			if (!this.state.autoPlay) {
-				this.setState({autoPlay: true}, ()=> {
-					setTimeout(()=> {
+				this.setState({ autoPlay: true }, () => {
+					setTimeout(() => {
 						if (this.state.playerState !== PLAYING) {
-							this.fireEvent('playing');//force event, triggers poster to hide.
+							this.fireEvent('playing'); //force event, triggers poster to hide.
 						}
 					}, 1000);
 				});
@@ -426,20 +425,17 @@ export default class YouTubeVideo extends React.Component {
 		}
 
 		this.postMessage('playVideo');
-	}
-
+	};
 
 	pause = () => {
 		this.postMessage('pauseVideo');
-	}
-
+	};
 
 	stop = () => {
 		this.postMessage('stopVideo');
-	}
+	};
 
-
-	setCurrentTime = (time) => {
+	setCurrentTime = time => {
 		this.postMessage('seekTo', time);
-	}
+	};
 }

@@ -7,9 +7,9 @@ import Volume from './components/Volume';
 import FullScreen from './components/FullScreen';
 
 UpperVideoControls.propTypes = {
-	className: PropTypes.string
+	className: PropTypes.string,
 };
-export default function UpperVideoControls ({className, ...otherProps}) {
+export default function UpperVideoControls({ className, ...otherProps }) {
 	return (
 		<div className={cx('upper-video-controls', className)}>
 			<Volume {...otherProps} />

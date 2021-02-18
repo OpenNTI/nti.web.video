@@ -6,9 +6,14 @@ import Logger from '@nti/util-logger';
 import isTouch from '@nti/util-detection-touch';
 import HLS from 'hls.js';
 
-import {createNonRecoverableError, getSourceGroups, removeSourcesFromGroups, HLS_TYPE} from '../utils';
-import {Overlay as ControlsOverlay} from '../../controls';
-import {UNSTARTED, PLAYING, PAUSED, ENDED} from '../../Constants';
+import {
+	createNonRecoverableError,
+	getSourceGroups,
+	removeSourcesFromGroups,
+	HLS_TYPE,
+} from '../utils';
+import { Overlay as ControlsOverlay } from '../../controls';
+import { UNSTARTED, PLAYING, PAUSED, ENDED } from '../../Constants';
 
 const commands = Logger.get('video:html5:commands');
 const events = Logger.get('video:html5:events');
@@ -18,14 +23,14 @@ const fullscreenEvents = [
 	'fullscreenchange',
 	'webkitfullscreenchange',
 	'mozfullscreenchange',
-	'MSFullscreenChange'
+	'MSFullscreenChange',
 ];
 
 const MediaSourcePropType = PropTypes.shape({
 	source: PropTypes.any,
 	width: PropTypes.number,
 	height: PropTypes.number,
-	type: PropTypes.string
+	type: PropTypes.string,
 });
 
 const initialState = {
@@ -33,12 +38,11 @@ const initialState = {
 	interacted: false,
 	videoState: {},
 	sourceGroups: [],
-	tracks: []
+	tracks: [],
 };
 
-
 export default class HTML5Video extends React.Component {
-	static service = 'html5'
+	static service = 'html5';
 
 	static propTypes = {
 		/**
@@ -46,15 +50,9 @@ export default class HTML5Video extends React.Component {
 		 *
 		 * @type {string|MediaSource}
 		 */
-		source: PropTypes.oneOfType([
-			PropTypes.string,
-			MediaSourcePropType
-		]),
+		source: PropTypes.oneOfType([PropTypes.string, MediaSourcePropType]),
 		sources: PropTypes.arrayOf(
-			PropTypes.oneOfType([
-				PropTypes.string,
-				MediaSourcePropType
-			])
+			PropTypes.oneOfType([PropTypes.string, MediaSourcePropType])
 		),
 
 		tracks: PropTypes.any,
@@ -75,18 +73,14 @@ export default class HTML5Video extends React.Component {
 		onTimeUpdate: PropTypes.func,
 		onError: PropTypes.func,
 		onVolumeChange: PropTypes.func,
-		onRateChange: PropTypes.func
-	}
+		onRateChange: PropTypes.func,
+	};
 
+	state = { ...initialState };
 
-	state = {...initialState}
+	attachContainerRef = x => (this.container = x);
 
-
-
-	attachContainerRef = x => this.container = x
-
-
-	attachRef = (video) => {
+	attachRef = video => {
 		if (this.hls && this.video !== video) {
 			this.detachHLSPolyfill();
 		}
@@ -98,17 +92,17 @@ export default class HTML5Video extends React.Component {
 			video.setAttribute('webkit-playsinline', true);
 
 			if (this.props.autoPlay) {
-				this.play()
-					.catch(() => {
-						events.debug('Failed to start, resetting state to "UNSTARTED"');
-						this.setState({playerState: UNSTARTED});
-					});
+				this.play().catch(() => {
+					events.debug(
+						'Failed to start, resetting state to "UNSTARTED"'
+					);
+					this.setState({ playerState: UNSTARTED });
+				});
 			}
 		}
-	}
+	};
 
-
-	componentWillUnmount () {
+	componentWillUnmount() {
 		this.isUnmounted = true;
 
 		for (let event of fullscreenEvents) {
@@ -116,20 +110,18 @@ export default class HTML5Video extends React.Component {
 		}
 	}
 
-
-	componentDidMount () {
+	componentDidMount() {
 		this.setupSource(this.props);
 		for (let event of fullscreenEvents) {
 			document.addEventListener(event, this.onFullScreenChange);
 		}
 	}
 
-
-	componentDidUpdate ({source}) {
+	componentDidUpdate({ source }) {
 		if (source !== this.props.source) {
-			this.setState({...initialState});
+			this.setState({ ...initialState });
 			this.setupSource(this.props, () => {
-				let {video} = this;
+				let { video } = this;
 				if (video) {
 					video.load();
 				}
@@ -137,33 +129,30 @@ export default class HTML5Video extends React.Component {
 		}
 	}
 
-
 	onFullScreenChange = () => {
 		this.onVideoStateUpdate();
-	}
+	};
 
-
-	getPlayerState () {
-		const {video} = this;
-		const {playerState} = this.state;
+	getPlayerState() {
+		const { video } = this;
+		const { playerState } = this.state;
 		const videoState = getStateForVideo(video);
 
-		return  {
+		return {
 			service: HTML5Video.service,
 			state: playerState != null ? playerState : UNSTARTED,
-			...videoState
+			...videoState,
 		};
 	}
 
-
-	async polyfillHLS (src) {
+	async polyfillHLS(src) {
 		if (!HLS.isSupported()) {
 			return;
 		}
 
 		const ready = HLS.Events.MANIFEST_PARSED;
 		const error = HLS.Events.ERROR;
-		let {hls} = this;
+		let { hls } = this;
 		if (!hls) {
 			hls = this.hls = new HLS();
 			this.detachHLSPolyfill = () => {
@@ -189,7 +178,6 @@ export default class HTML5Video extends React.Component {
 		});
 	}
 
-
 	onManifestParsed = () => {
 		// const {tracks} = this.state;
 		// const newTracks = this.hls.subtitleTracks.filter(x => tracks.includes(x));
@@ -203,14 +191,16 @@ export default class HTML5Video extends React.Component {
 		// 	]
 		// });
 		// this.onCanPlay();
-		const {state} = this.getVideoState();
+		const { state } = this.getVideoState();
 		if (state === PLAYING) {
 			this.play();
 		}
-	}
+	};
 
-
-	setupSource ({source, sources, tracks, allowNormalTranscripts} = this.props, callback) {
+	setupSource(
+		{ source, sources, tracks, allowNormalTranscripts } = this.props,
+		callback
+	) {
 		const sourceGroups = getSourceGroups(sources || source);
 		const preferredGroup = sourceGroups.find(group => group.preferred);
 
@@ -220,34 +210,36 @@ export default class HTML5Video extends React.Component {
 			//filter out the tracks that are meant to be used
 			//for the transcript in the media viewer if they aren't
 			//allowed
-			tracks = allowNormalTranscripts && noCaptions ?
-				tracks :
-				tracks.filter(x => x.purpose !== 'normal');
+			tracks =
+				allowNormalTranscripts && noCaptions
+					? tracks
+					: tracks.filter(x => x.purpose !== 'normal');
 		} else {
 			tracks = [];
 		}
 
 		events.debug('Setting source: entryId: %s, partnerId: %s', source);
-		this.setState({
-			sourceGroups,
-			activeSourceGroup: preferredGroup && preferredGroup.name,
-			tracks
-		}, callback);
+		this.setState(
+			{
+				sourceGroups,
+				activeSourceGroup: preferredGroup && preferredGroup.name,
+				tracks,
+			},
+			callback
+		);
 
 		if (this.state.error) {
 			this.onError();
 		}
 	}
 
-
-	shouldUseNativeControls () {
+	shouldUseNativeControls() {
 		const maybe = isTouch && !isIE;
 		return this.props.shouldUseNativeControls || maybe;
 	}
 
-
-	getVideoState () {
-		const {video, container} = this;
+	getVideoState() {
+		const { video, container } = this;
 		const {
 			playerState,
 			userSetTime,
@@ -257,12 +249,14 @@ export default class HTML5Video extends React.Component {
 			activeSourceGroup,
 		} = this.state;
 
-		const get = (name, defaultValue = null) => video ? video[name] : defaultValue;
+		const get = (name, defaultValue = null) =>
+			video ? video[name] : defaultValue;
 
 		return {
 			state: playerState != null ? playerState : UNSTARTED,
 			duration: get('duration', 0),
-			currentTime: userSetTime != null ? userSetTime : get('currentTime', 0),
+			currentTime:
+				userSetTime != null ? userSetTime : get('currentTime', 0),
 			currentSrc: get('currentSrc'),
 			buffered: get('buffered'),
 			controls: get('controls', true),
@@ -276,14 +270,13 @@ export default class HTML5Video extends React.Component {
 			canGoFullScreen: canGoFullScreen(),
 			canPlay,
 			sourceGroups,
-			activeSourceGroup
+			activeSourceGroup,
 		};
 	}
 
-
-	getReloadFn () {
-		const {video} = this;
-		const {currentTime, state} = this.getVideoState();
+	getReloadFn() {
+		const { video } = this;
+		const { currentTime, state } = this.getVideoState();
 
 		return () => {
 			if (video) {
@@ -296,29 +289,31 @@ export default class HTML5Video extends React.Component {
 				this.timeToSetOnLoad = currentTime;
 				video.currentTime = currentTime;
 			}
-
 		};
 	}
 
-
 	onVideoStateUpdate = () => {
 		this.forceUpdate();
-	}
+	};
 
-
-	render () {
-		const {deferred, poster, ...otherProps} = this.props;
-		const {error, interacted} = this.state;
+	render() {
+		const { deferred, poster, ...otherProps } = this.props;
+		const { error, interacted } = this.state;
 		const videoState = this.getVideoState();
-		const {isFullScreen:fullscreen} = videoState;
+		const { isFullScreen: fullscreen } = videoState;
 		const shouldUseNativeControls = this.shouldUseNativeControls();
-		const loadVideo = !deferred || interacted;//if we have an error or we are deferred and we haven't been interacted with
-		const cls = cx('video-wrapper', 'html5-video-wrapper', {error, loaded: loadVideo, interacted, fullscreen});
+		const loadVideo = !deferred || interacted; //if we have an error or we are deferred and we haven't been interacted with
+		const cls = cx('video-wrapper', 'html5-video-wrapper', {
+			error,
+			loaded: loadVideo,
+			interacted,
+			fullscreen,
+		});
 
 		const videoProps = {
 			...otherProps,
 			controls: shouldUseNativeControls,
-			onClick: this.onClick
+			onClick: this.onClick,
 		};
 
 		delete videoProps.autoPlay;
@@ -371,52 +366,63 @@ export default class HTML5Video extends React.Component {
 		);
 	}
 
+	renderSources() {
+		const { sourceGroups, activeSourceGroup } = this.state;
+		const { sources } =
+			sourceGroups.find(x => x.name === activeSourceGroup) || {};
 
-	renderSources () {
-		const {sourceGroups, activeSourceGroup} = this.state;
-		const {sources} = sourceGroups.find(x => x.name === activeSourceGroup) || {};
+		return (sources || []).map((source, index) => {
+			const { src, type } = source;
 
-		return (sources || [])
-			.map((source, index) => {
-				const {src, type} = source;
+			if (typeof src !== 'string') {
+				events.debug('Invalid Source: %o', src);
+				return null;
+			}
 
-				if (typeof src !== 'string') {
-					events.debug('Invalid Source: %o', src);
-					return null;
-				}
-
-				return (
-					<source key={index} src={src} type={type} onError={this.onSourceError} data-raw-src={src} />
-				);
-			});
+			return (
+				<source
+					key={index}
+					src={src}
+					type={type}
+					onError={this.onSourceError}
+					data-raw-src={src}
+				/>
+			);
+		});
 	}
 
+	renderTracks() {
+		const { tracks } = this.state;
 
-	renderTracks () {
-		const {tracks} = this.state;
+		return tracks.map((track, index) => {
+			const src = track.src ? track.src : track;
+			const lang = track.lang ? track.lang : 'en';
+			const purpose =
+				track.purpose && track.purpose !== 'normal'
+					? track.purpose
+					: 'captions';
 
-		return tracks
-			.map((track, index) => {
-				const src = track.src ? track.src : track;
-				const lang = track.lang ? track.lang : 'en';
-				const purpose = track.purpose && track.purpose !== 'normal' ? track.purpose : 'captions';
+			if (typeof src !== 'string') {
+				events.debug('Invalid Track: %o', src);
+				return null;
+			}
 
-				if (typeof src !== 'string') {
-					events.debug('Invalid Track: %o', src);
-					return null;
-				}
-
-				return (
-					<track key={index} src={src} srcLang={lang} kind={purpose} label={`${purpose}:${lang}`} />
-				);
-			});
+			return (
+				<track
+					key={index}
+					src={src}
+					srcLang={lang}
+					kind={purpose}
+					label={`${purpose}:${lang}`}
+				/>
+			);
+		});
 	}
-
 
 	onCanPlay = () => {
-		const {video} = this;
-		const {onReady} = this.props;
-		const {playbackRate} = this.getVideoState();
+		const { video } = this;
+		const { onReady } = this.props;
+		const { playbackRate } = this.getVideoState();
 
 		if (onReady) {
 			onReady();
@@ -427,119 +433,128 @@ export default class HTML5Video extends React.Component {
 			delete this.timeToSetOnLoad;
 		}
 
-		this.setState({
-			canPlay: true,
-			playbackRate
-		}, () => {
-			if (this.playWhenAble) {
-				this.play();
+		this.setState(
+			{
+				canPlay: true,
+				playbackRate,
+			},
+			() => {
+				if (this.playWhenAble) {
+					this.play();
+				}
 			}
-		});
-	}
-
+		);
+	};
 
 	onWaiting = () => {
 		this.setState({
-			canPlay: false
+			canPlay: false,
 		});
-	}
+	};
 
-
-	onPlaying = (e) => {
+	onPlaying = e => {
 		events.debug('playing %o', e);
 
-		const {props: {onPlaying}} = this;
+		const {
+			props: { onPlaying },
+		} = this;
 
-		this.setState({playerState: PLAYING});
+		this.setState({ playerState: PLAYING });
 
 		if (onPlaying) {
 			onPlaying(e);
 		}
-	}
+	};
 
-
-	onPause = (e) => {
+	onPause = e => {
 		events.debug('pause %o', e);
 
-		const {props: {onPause}} = this;
+		const {
+			props: { onPause },
+		} = this;
 
 		this.setState(state => ({
-			playerState: state.playerState === UNSTARTED ? UNSTARTED : PAUSED
+			playerState: state.playerState === UNSTARTED ? UNSTARTED : PAUSED,
 		}));
 
 		if (onPause) {
 			onPause(e);
 		}
-	}
+	};
 
-
-	onEnded = (e) => {
+	onEnded = e => {
 		events.debug('ended %o', e);
 
-		const {props: {onEnded}} = this;
+		const {
+			props: { onEnded },
+		} = this;
 
-		this.setState({playerState: ENDED});
+		this.setState({ playerState: ENDED });
 
-		this.setState({interacted: false}, () => {
-
+		this.setState({ interacted: false }, () => {
 			this.setCurrentTime(0);
 			this.stop();
-
 		});
 
 		if (onEnded) {
 			onEnded(e);
 		}
-	}
+	};
 
-
-	onSeeked = (e) => {
+	onSeeked = e => {
 		events.debug('seeked %o', e);
 
-		const {props: {onSeeked}} = this;
+		const {
+			props: { onSeeked },
+		} = this;
 		if (onSeeked) {
 			onSeeked(e);
 		}
-	}
+	};
 
-
-	onTimeUpdate = (e) => {
+	onTimeUpdate = e => {
 		events.debug('timeUpdate %o', e);
 
-		const {target: video} = e;
-		const {props: {onTimeUpdate}, state: {interacted, playerState, userSetTime}} = this;
+		const { target: video } = e;
+		const {
+			props: { onTimeUpdate },
+			state: { interacted, playerState, userSetTime },
+		} = this;
 
 		if (playerState === PLAYING && userSetTime != null) {
 			this.setState({
-				userSetTime: null
+				userSetTime: null,
 			});
 		}
 
 		this.onVideoStateUpdate();
 
 		if (!interacted && !video.paused && video.currentTime > 0.05) {
-			this.setState({interacted: true});
+			this.setState({ interacted: true });
 		}
 
 		if (onTimeUpdate) {
 			onTimeUpdate(e);
 		}
-	}
+	};
 
-
-	onProgress = (e) => {
+	onProgress = e => {
 		events.debug('progressUpdate %o', e);
 
-		this.forceUpdate();//Force the controls to redraw
-	}
+		this.forceUpdate(); //Force the controls to redraw
+	};
 
-
-	removeErroredSources () {
+	removeErroredSources() {
 		const reload = this.getReloadFn();
 		const { onError } = this.props;
 		const { sourceGroups } = this.state;
-		const updatedSourceGroups = removeSourcesFromGroups(sourceGroups, this.sourceErrors);
-		const preferredGroup = updatedSourceGroups.find(group => group.preferred);
+		const updatedSourceGroups = removeSourcesFromGroups(
+			sourceGroups,
+			this.sourceErrors
+		);
+		const preferredGroup = updatedSourceGroups.find(
+			group => group.preferred
+		);
 
 		if (!updatedSourceGroups.length && onError) {
 			onError(createNonRecoverableError('Unable to load html5 video.'));
@@ -548,7 +563,7 @@ export default class HTML5Video extends React.Component {
 		this.setState(
 			{
 				sourceGroups: updatedSourceGroups,
-				activeSourceGroup: preferredGroup && preferredGroup.name
+				activeSourceGroup: preferredGroup && preferredGroup.name,
 			},
 			() => {
 				reload();
@@ -556,8 +571,8 @@ export default class HTML5Video extends React.Component {
 		);
 	}
 
-	onHLSError = (e) => {
-		const {sourceGroups} = this.state;
+	onHLSError = e => {
+		const { sourceGroups } = this.state;
 
 		if (this.detachHLSPolyfill) {
 			this.detachHLSPolyfill();
@@ -574,13 +589,17 @@ export default class HTML5Video extends React.Component {
 		}
 
 		this.removeErroredSources();
-	}
+	};
 
-	onSourceError = (e) => {
+	onSourceError = e => {
 		e.stopPropagation();
 
 		if (HLS.isSupported() && e.target.type === HLS_TYPE && !this.hls) {
-			events.debug('HLS Supported, got error for HLS source: %o\nEvent: %o', e.target, e.nativeEvent);
+			events.debug(
+				'HLS Supported, got error for HLS source: %o\nEvent: %o',
+				e.target,
+				e.nativeEvent
+			);
 			this.polyfillHLS(e.target.src);
 			return;
 		}
@@ -589,21 +608,23 @@ export default class HTML5Video extends React.Component {
 		this.sourceErrors[e.target.getAttribute('data-raw-src')] = true;
 
 		this.removeErroredSources();
-	}
+	};
 
-	onError = (e) => {
+	onError = e => {
 		events.debug('error %o', e);
 
 		this.setState({
-			error: 'Could not play video. Network or Browser error.'
+			error: 'Could not play video. Network or Browser error.',
 		});
 
 		if (this.props.onError) {
-			this.props.onError(createNonRecoverableError('Unable to load html5 video.'));
+			this.props.onError(
+				createNonRecoverableError('Unable to load html5 video.')
+			);
 		}
-	}
+	};
 
-	onVolumeChange = (e) => {
+	onVolumeChange = e => {
 		events.debug('volumechange %o', e);
 
 		this.onVideoStateUpdate();
@@ -611,37 +632,36 @@ export default class HTML5Video extends React.Component {
 		if (this.props.onVolumeChange) {
 			this.props.onVolumeChange(e);
 		}
-	}
+	};
 
-
-	onRateChange = (e) => {
+	onRateChange = e => {
 		events.debug('ratechange %o', e);
 
-		const {onRateChange = ()=>0} = this.props;
-		const {playbackRate:oldRate = 1} = this.state;
-		const {playbackRate:newRate} = this.getVideoState();
+		const { onRateChange = () => 0 } = this.props;
+		const { playbackRate: oldRate = 1 } = this.state;
+		const { playbackRate: newRate } = this.getVideoState();
 
 		this.onVideoStateUpdate();
 
 		this.setState({
-			playbackRate:newRate
+			playbackRate: newRate,
 		});
 
 		onRateChange(oldRate, newRate, e);
-	}
-
+	};
 
 	play = async () => {
-		const {video} = this;
+		const { video } = this;
 
-		this.setState({interacted: true});
+		this.setState({ interacted: true });
 
 		commands.debug('play');
 
 		if (video && !this.isUnmounted) {
 			if (video.play) {
 				try {
-					return await video.play()
+					return await video
+						.play()
 						.then(x => (delete this.playWhenAble, x));
 				} catch (e) {
 					this.playWhenAble = true;
@@ -651,40 +671,39 @@ export default class HTML5Video extends React.Component {
 		}
 
 		return Promise.reject('Could not play.');
-	}
-
+	};
 
 	pause = () => {
-		const {video} = this;
+		const { video } = this;
 
 		commands.debug('pause');
 
 		if (video) {
-			if (video.pause) { video.pause(); }
+			if (video.pause) {
+				video.pause();
+			}
 		}
-	}
-
+	};
 
 	stop = () => {
-		const {video} = this;
+		const { video } = this;
 
 		commands.debug('stop');
 
 		if (video && video.stop) {
 			video.stop();
 		}
-	}
+	};
 
-
-	setCurrentTime = (time) => {
-		const {video} = this;
-		const {playerState} = this.state;
+	setCurrentTime = time => {
+		const { video } = this;
+		const { playerState } = this.state;
 
 		this.pause();
 
 		//Keep track of the userSetTime to get rid of some lag
 		this.setState({
-			userSetTime: time
+			userSetTime: time,
 		});
 
 		commands.debug('set currentTime = %s', time);
@@ -696,25 +715,22 @@ export default class HTML5Video extends React.Component {
 		if (playerState === PLAYING) {
 			this.play();
 		}
-	}
-
+	};
 
 	mute = () => {
 		commands.debug('mute');
 
-		const {video} = this;
+		const { video } = this;
 
 		if (video) {
 			video.muted = true;
 		}
-
-	}
-
+	};
 
 	unmute = () => {
 		commands.debug('unmute');
 
-		const {video} = this;
+		const { video } = this;
 
 		if (video) {
 			video.muted = false;
@@ -723,26 +739,25 @@ export default class HTML5Video extends React.Component {
 				video.volume = 1;
 			}
 		}
-	}
+	};
 
-
-	setVolume = (volume) => {
+	setVolume = volume => {
 		commands.debug('set volume = %s', volume);
 
 		//Keep track of the userSetVolume to prevent lag
 		this.setState({
-			userSetVolume: volume
+			userSetVolume: volume,
 		});
 
 		clearTimeout(this.clearUserSetVolume);
 
 		this.clearUserSetVolume = setTimeout(() => {
 			this.setState({
-				userSetVolume: null
+				userSetVolume: null,
 			});
 		}, 1);
 
-		const {video} = this;
+		const { video } = this;
 
 		if (video) {
 			video.volume = volume;
@@ -751,24 +766,24 @@ export default class HTML5Video extends React.Component {
 				video.muted = false;
 			}
 		}
-	}
+	};
 
-
-	setPlaybackRate = (rate) => {
+	setPlaybackRate = rate => {
 		commands.debug('set playback rate = %s', rate);
 
-		const {video} = this;
+		const { video } = this;
 
 		if (video) {
 			video.playbackRate = rate;
 		}
-	}
+	};
 
+	selectSourceGroup = group => {
+		const { activeSourceGroup } = this.state;
 
-	selectSourceGroup = (group) => {
-		const {activeSourceGroup} = this.state;
-
-		if (!group || !group.name || activeSourceGroup === group.name) { return; }
+		if (!group || !group.name || activeSourceGroup === group.name) {
+			return;
+		}
 
 		if (this.detachHLSPolyfill) {
 			this.detachHLSPolyfill();
@@ -777,10 +792,9 @@ export default class HTML5Video extends React.Component {
 		const reload = this.getReloadFn();
 
 		this.setState({ activeSourceGroup: group.name }, reload);
-	}
+	};
 
-
-	selectTrack = (track) => {
+	selectTrack = track => {
 		commands.debug('set track = %o', track);
 
 		if (track) {
@@ -788,14 +802,13 @@ export default class HTML5Video extends React.Component {
 		}
 
 		this.onVideoStateUpdate();
-	}
-
+	};
 
 	unselectAllTracks = () => {
 		commands.debug('unselect all tracks');
 
-		const {video} = this;
-		const {textTracks} = video || {};
+		const { video } = this;
+		const { textTracks } = video || {};
 		const tracks = textTracks || [];
 
 		for (let i = 0; i < tracks.length; i++) {
@@ -805,76 +818,75 @@ export default class HTML5Video extends React.Component {
 		}
 
 		this.onVideoStateUpdate();
-	}
-
+	};
 
 	goFullScreen = () => {
 		commands.debug('go full screen');
 
 		//If we are already full screen there's nothing to do
-		if (isFullScreen()) { return; }
+		if (isFullScreen()) {
+			return;
+		}
 
-		const {container, video} = this;
+		const { container, video } = this;
 
 		if (container) {
 			requestFullScreen(container, video);
 			this.onVideoStateUpdate();
 		}
-	}
-
+	};
 
 	exitFullScreen = () => {
 		commands.debug('exit full screen');
 
-		const {container, video} = this;
+		const { container, video } = this;
 
 		//if we aren't full screen there's nothing to do
-		if (!isFullScreen(container)) { return; }
+		if (!isFullScreen(container)) {
+			return;
+		}
 
 		if (container) {
 			exitFullScreen(container, video);
 			this.onVideoStateUpdate();
 		}
-	}
-}
-
-
-
-export function getStateForVideo (video) {
-	return {
-		time: video ? video.currentTime : 0,
-		duration: video ? video.duration : 0,
-		speed: video ? video.playbackRate : 1
 	};
 }
 
+export function getStateForVideo(video) {
+	return {
+		time: video ? video.currentTime : 0,
+		duration: video ? video.duration : 0,
+		speed: video ? video.playbackRate : 1,
+	};
+}
 
 /*
 https://developer.mozilla.org/en-US/Apps/Fundamentals/Audio_and_video_delivery/cross_browser_video_player#Fullscreen
  */
-function isFullScreen (elem) {
-	const fullscreenElem = document.fullscreenElement
-		|| document.mozFullScreenElement
-		|| document.webkitFullscreenElement
-		|| document.msFullscreenElement;
+function isFullScreen(elem) {
+	const fullscreenElem =
+		document.fullscreenElement ||
+		document.mozFullScreenElement ||
+		document.webkitFullscreenElement ||
+		document.msFullscreenElement;
 
 	return elem && elem === fullscreenElem;
 }
 
-
-function canGoFullScreen () {
-	return !!(document.fullscreenEnabled
-		|| document.mozFullScreenEnabled
-		|| document.msFullscreenEnabled
-		|| document.webkitSupportsFullscreen
-		|| document.webkitFullscreenEnabled
-		|| document.createElement('video').webkitRequestFullScreen
-		|| document.createElement('video').webkitEnterFullscreen
+function canGoFullScreen() {
+	return !!(
+		document.fullscreenEnabled ||
+		document.mozFullScreenEnabled ||
+		document.msFullscreenEnabled ||
+		document.webkitSupportsFullscreen ||
+		document.webkitFullscreenEnabled ||
+		document.createElement('video').webkitRequestFullScreen ||
+		document.createElement('video').webkitEnterFullscreen
 	);
 }
 
-
-function requestFullScreen (container, video) {
+function requestFullScreen(container, video) {
 	const elems = [container, video];
 	const fns = [
 		'requestFullscreen',
@@ -893,8 +905,7 @@ function requestFullScreen (container, video) {
 	}
 }
 
-
-function exitFullScreen (container, video) {
+function exitFullScreen(container, video) {
 	const elems = [document, container, video];
 	const fns = [
 		'exitFullscreen',

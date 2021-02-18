@@ -19,11 +19,8 @@ export default class extends React.Component {
 		 * The Video source. Either a URL or a Video model.
 		 * @type {String|Video}
 		 */
-		src: PropTypes.oneOfType([
-			PropTypes.string,
-			PropTypes.object
-		]).isRequired,
-
+		src: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
+			.isRequired,
 
 		/**
 		 * @callback onTimeUpdate
@@ -42,20 +39,17 @@ export default class extends React.Component {
 		onEnded: PropTypes.func,
 		onRateChange: PropTypes.func,
 
-
 		deferred: PropTypes.bool,
 
 		/**
 		 * An object of properties to send into the analytics events
 		 */
-		analyticsData: PropTypes.object
-	}
-
+		analyticsData: PropTypes.object,
+	};
 
 	static contextTypes = {
-		analyticsManager: PropTypes.object
-	}
-
+		analyticsManager: PropTypes.object,
+	};
 
 	static defaultProps = {
 		onTimeUpdate: emptyFunction,
@@ -64,27 +58,34 @@ export default class extends React.Component {
 		onPause: emptyFunction,
 		onEnded: emptyFunction,
 		onRateChange: emptyFunction,
-	}
+	};
 
+	attachRef = x => (this.activeVideo = x);
 
-	attachRef = (x) => this.activeVideo = x
-
-	getCurrentVideoTarget () {
+	getCurrentVideoTarget() {
 		const state = this.activeVideo && this.activeVideo.getPlayerState();
 
-		return state ? {currentTime: state.time, duration: state.duration, playbackRate: state.speed} : this.videoTarget;
+		return state
+			? {
+					currentTime: state.time,
+					duration: state.duration,
+					playbackRate: state.speed,
+			  }
+			: this.videoTarget;
 	}
 
-
-	componentDidMount () {
+	componentDidMount() {
 		this.mounted = true;
 	}
 
-	getSnapshotBeforeUpdate (prevProps) {
-		const {analyticsData:data} = this.props;
-		const {analyticsData:prevData} = prevProps;
+	getSnapshotBeforeUpdate(prevProps) {
+		const { analyticsData: data } = this.props;
+		const { analyticsData: prevData } = prevProps;
 
-		if (Boolean(data) !== Boolean(prevData) || data.resourceId !== prevData.resourceId) {
+		if (
+			Boolean(data) !== Boolean(prevData) ||
+			data.resourceId !== prevData.resourceId
+		) {
 			return true;
 		}
 
@@ -94,35 +95,46 @@ export default class extends React.Component {
 	// Keep warning from printing...
 	// React Warning: getSnapshotBeforeUpdate() should be used with componentDidUpdate(). This component defines getSnapshotBeforeUpdate() only.
 	// React wants the getSnapshotBeforeUpdate() to return null or a value... so lets use it.
-	componentDidUpdate (prevProps, prevState, snapshot) {
+	componentDidUpdate(prevProps, prevState, snapshot) {
 		if (snapshot) {
 			this.resetAnalytics(this.props, prevProps);
 		}
 	}
 
-
-	componentWillUnmount () {
+	componentWillUnmount() {
 		this.mounted = false;
 		if (this.isStarted) {
 			const target = this.getCurrentVideoTarget();
 			this.isStarted = false;
-			this.sendAnalyticsEvent({target, type: 'stop'}, 'VideoWatch', 'stop');
+			this.sendAnalyticsEvent(
+				{ target, type: 'stop' },
+				'VideoWatch',
+				'stop'
+			);
 		}
 		logger.debug('Unmounted');
 	}
 
-
-	resetAnalytics (current, prev) {
+	resetAnalytics(current, prev) {
 		if (this.isStarted) {
 			const target = this.getCurrentVideoTarget();
 			this.isStarted = false;
-			this.sendAnalyticsEvent({target, type: 'stop'}, 'VideoWatch', 'stop', void 0, prev);
+			this.sendAnalyticsEvent(
+				{ target, type: 'stop' },
+				'VideoWatch',
+				'stop',
+				void 0,
+				prev
+			);
 		}
 	}
 
-
-	getAnalyticsEventData (action, event, {context = [], ...data} = {}) {
-		const {currentTime: videoTime, duration, playbackRate: playSpeed} = event.target;
+	getAnalyticsEventData(action, event, { context = [], ...data } = {}) {
+		const {
+			currentTime: videoTime,
+			duration,
+			playbackRate: playSpeed,
+		} = event.target;
 		return {
 			type: event.type,
 			context: toAnalyticsPath(context, data.resourceId),
@@ -130,15 +142,20 @@ export default class extends React.Component {
 			duration,
 			playSpeed,
 			videoTime,
-			...(action === 'start' ? {videoStartTime: videoTime} : {}),
-			...(action === 'stop'  ? {videoEndTime: videoTime} : {}),
+			...(action === 'start' ? { videoStartTime: videoTime } : {}),
+			...(action === 'stop' ? { videoEndTime: videoTime } : {}),
 		};
 	}
 
-
-	sendAnalyticsEvent (domEvent, eventName, action, additionalData = {}, props = this.props) {
-		const {analyticsManager:Manager} = this.context;
-		const {analyticsData: data = {}} = props;
+	sendAnalyticsEvent(
+		domEvent,
+		eventName,
+		action,
+		additionalData = {},
+		props = this.props
+	) {
+		const { analyticsManager: Manager } = this.context;
+		const { analyticsData: data = {} } = props;
 
 		if (!data.resourceId) {
 			logger.warn('Missing resourceId!');
@@ -152,7 +169,7 @@ export default class extends React.Component {
 				// optimizations cannot be performed anyways...
 				Manager[eventName][action](data.resourceId, {
 					...this.getAnalyticsEventData(action, domEvent, data),
-					...additionalData
+					...additionalData,
 				});
 			} catch (e) {
 				logger.error(e.stack || e.message || e);
@@ -165,12 +182,11 @@ export default class extends React.Component {
 		}
 	}
 
-
-	onTimeUpdate = (event) => {
-		const {target:video} = event;
+	onTimeUpdate = event => {
+		const { target: video } = event;
 		const previousTime = this.previousTime;
 		const currentTime = video.currentTime ?? 0;
-		const diff = previousTime != null ? (currentTime - previousTime) : 0;
+		const diff = previousTime != null ? currentTime - previousTime : 0;
 
 		this.previousTime = currentTime;
 
@@ -183,8 +199,8 @@ export default class extends React.Component {
 						target: {
 							currentTime: previousTime,
 							duration: video.duration,
-							playbackRate: video.playbackRate
-						}
+							playbackRate: video.playbackRate,
+						},
 					},
 					'VideoWatch',
 					'stop'
@@ -198,72 +214,63 @@ export default class extends React.Component {
 		}
 
 		this.props.onTimeUpdate(event);
-	}
+	};
 
-
-	onSeeked = (event) => {
+	onSeeked = event => {
 		this.sendAnalyticsEvent(event, 'VideoSkip', 'send');
 		this.props.onSeeked(event);
-	}
+	};
 
-
-	onPlaying = (event) => {
+	onPlaying = event => {
 		this.sendAnalyticsEvent(event, 'VideoWatch', 'start');
 		this.isStarted = true;
 		this.videoTarget = event.target;
 		this.previousTime = event.target?.currentTime ?? 0;
 		this.props.onPlaying(event);
-	}
+	};
 
-
-	onPause = (event) => {
+	onPause = event => {
 		this.sendAnalyticsEvent(event, 'VideoWatch', 'stop');
 		this.isStarted = false;
 		this.props.onPause(event);
-	}
+	};
 
-
-	onEnded = (event) => {
+	onEnded = event => {
 		this.sendAnalyticsEvent(event, 'VideoWatch', 'stop');
 		this.isStarted = false;
 		this.props.onEnded(event);
-	}
-
+	};
 
 	onRateChange = (oldRate, newRate, event) => {
 		this.sendAnalyticsEvent(event, 'VideoSpeedChange', 'send', {
 			oldPlaySpeed: oldRate,
-			newPlaySpeed: newRate
+			newPlaySpeed: newRate,
 		});
 		this.props.onRateChange(oldRate, newRate, event);
-	}
+	};
 
-
-	play () {
+	play() {
 		this.activeVideo.play();
 	}
 
-
-	pause () {
+	pause() {
 		this.activeVideo.pause();
 	}
 
-
-	stop () {
+	stop() {
 		this.activeVideo.stop();
 	}
 
-
-	setCurrentTime (time) {
+	setCurrentTime(time) {
 		this.activeVideo.setCurrentTime(time);
 	}
 
-
-	render () {
-		const {...props} = this.props;
+	render() {
+		const { ...props } = this.props;
 		delete props.analyticsData;
 		return (
-			<Video {...props}
+			<Video
+				{...props}
 				ref={this.attachRef}
 				onTimeUpdate={this.onTimeUpdate}
 				onSeeked={this.onSeeked}

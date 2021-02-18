@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import cx from 'classnames';
 import isTouch from '@nti/util-detection-touch';
 
-import {hasInteractedWithVideo, isPlaying, isEnded} from './utils';
+import { hasInteractedWithVideo, isPlaying, isEnded } from './utils';
 import LowerControls from './LowerControls';
 import Mask from './Mask';
 import SmallControls from './SmallControls';
@@ -21,69 +21,62 @@ export default class VideoControlsOverlay extends React.Component {
 		videoState: PropTypes.object,
 		onPlay: PropTypes.func,
 		onPause: PropTypes.func,
-		shouldUseNativeControls: PropTypes.bool
-	}
+		shouldUseNativeControls: PropTypes.bool,
+	};
 
 	state = {
-		showControls: false
-	}
+		showControls: false,
+	};
 
-	attachRef = x => this.node = x
+	attachRef = x => (this.node = x);
 
-
-	componentWillUnmount () {
+	componentWillUnmount() {
 		this.unmounted = true;
 		this.setState = () => {};
 		this.stopHideTimer();
 	}
 
-
-	get interacted () {
-		const {videoState} = this.props;
+	get interacted() {
+		const { videoState } = this.props;
 
 		return hasInteractedWithVideo(videoState);
 	}
 
-	get canPlay () {
-		const {videoState, shouldUseNativeControls} = this.props;
+	get canPlay() {
+		const { videoState, shouldUseNativeControls } = this.props;
 
 		return videoState.canPlay || shouldUseNativeControls;
 	}
 
-
-	get ended () {
-		const {videoState} = this.props;
+	get ended() {
+		const { videoState } = this.props;
 
 		return isEnded(videoState);
 	}
 
-
-	get hasSources () {
-		const {videoState} = this.props;
-		const {sourceGroups} = videoState || {};
+	get hasSources() {
+		const { videoState } = this.props;
+		const { sourceGroups } = videoState || {};
 
 		return sourceGroups && sourceGroups.length > 0;
 	}
 
-
-	startHideTimer (timeout) {
+	startHideTimer(timeout) {
 		this.stopHideTimer();
 
 		this.hideControlsTimeout = setTimeout(() => {
 			this.setState({
-				showControls: false
+				showControls: false,
 			});
 		}, timeout);
 	}
 
-
-	stopHideTimer () {
+	stopHideTimer() {
 		clearTimeout(this.hideControlsTimeout);
 	}
 
-
-	togglePlayPause () {
-		const {videoState, onPlay, onPause} = this.props;
+	togglePlayPause() {
+		const { videoState, onPlay, onPause } = this.props;
 		const playing = isPlaying(videoState);
 
 		if (playing && onPause) {
@@ -93,72 +86,78 @@ export default class VideoControlsOverlay extends React.Component {
 		}
 	}
 
-
-	onTouch = (e) => {
+	onTouch = e => {
 		e.stopPropagation();
 		e.preventDefault();
 
-		const {interacted} = this;
-		const {showControls} = this.state;
+		const { interacted } = this;
+		const { showControls } = this.state;
 
 		this.stopHideTimer();
 
-		this.setState({showControls: true}, () => {
+		this.setState({ showControls: true }, () => {
 			this.startHideTimer(HIDE_ON_INACTIVE);
 		});
 
 		if (showControls || !interacted) {
 			this.togglePlayPause();
 		}
-	}
+	};
 
-
-	onClick = (e) => {
+	onClick = e => {
 		e.stopPropagation();
 		e.preventDefault();
 
 		this.togglePlayPause();
-	}
+	};
 
 	onMouseOver = () => {
 		this.stopHideTimer();
 
-		this.setState({showControls: true});
-	}
-
+		this.setState({ showControls: true });
+	};
 
 	onMouseOut = () => {
 		this.startHideTimer(HIDE_ON_LEAVE);
-	}
-
+	};
 
 	onMouseMove = () => {
 		this.stopHideTimer();
 
-		this.setState({showControls: true}, () => {
+		this.setState({ showControls: true }, () => {
 			this.startHideTimer(HIDE_ON_INACTIVE);
 		});
-	}
+	};
 
-	render () {
-		const {interacted, canPlay, hasSources, ended} = this;
-		const {videoState, className, shouldUseNativeControls, ...otherProps} = this.props;
-		const {showControls} = this.state;
+	render() {
+		const { interacted, canPlay, hasSources, ended } = this;
+		const {
+			videoState,
+			className,
+			shouldUseNativeControls,
+			...otherProps
+		} = this.props;
+		const { showControls } = this.state;
 		const showMask = !interacted || !canPlay || !hasSources || ended;
-		const useSmallControls = this.node && this.node.clientWidth < SMALL_CONTROL_CUTOFF;
-
+		const useSmallControls =
+			this.node && this.node.clientWidth < SMALL_CONTROL_CUTOFF;
 
 		const cls = cx('video-controls-overlay', className, {
 			'show-controls': showControls && interacted,
 			'is-touch': isTouch,
 			'can-play': canPlay,
 			'native-controls': shouldUseNativeControls,
-			'masked': showMask
+			masked: showMask,
 		});
 
-		const listeners = isTouch ?
-			{onClick: this.onTouch} :
-			{onClick: this.onClick, onMouseOver: this.onMouseOver, onMouseOut: this.onMouseOut, onMouseMove: this.onMouseMove};
+		const listeners = isTouch
+			? { onClick: this.onTouch }
+			: {
+					onClick: this.onClick,
+					onMouseOver: this.onMouseOver,
+					onMouseOut: this.onMouseOut,
+					onMouseMove: this.onMouseMove,
+			  };
 
 		return (
 			<div className={cls} {...listeners} ref={this.attachRef}>

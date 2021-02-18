@@ -1,10 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {scoped} from '@nti/lib-locale';
-import {Flyout, Prompt, HOC} from '@nti/web-commons';
+import { scoped } from '@nti/lib-locale';
+import { Flyout, Prompt, HOC } from '@nti/web-commons';
 
 // import { isTranscriptEditable, getTime, getTranscriptName } from './utils/TranscriptUtils';
-import {getName, canEdit, getTime} from './utils';
+import { getName, canEdit, getTime } from './utils';
 
 const DEFAULT_TEXT = {
 	edit: 'Edit',
@@ -14,20 +14,20 @@ const DEFAULT_TEXT = {
 		remove: 'Could not remove transcript',
 		replace: 'Could not replace transcript',
 		update: 'Could not update transcript',
-		conflict: 'Cannot save transcript change.  This conflicts with an existing legacy transcript',
+		conflict:
+			'Cannot save transcript change.  This conflicts with an existing legacy transcript',
 		fileType: 'Selected file must be a .vtt file',
-		general: 'Unable to edit transcripts'
+		general: 'Unable to edit transcripts',
 	},
 	captionsLabel: 'Captions',
 	transcriptLabel: 'Transcript',
 	enLabel: 'EN',
 	confirmReplace: 'Changing this will replace %(name)s',
-	modifiedOn: 'Modified on %(time)s'
+	modifiedOn: 'Modified on %(time)s',
 };
 
 const t = scoped('video.editor.Transcripts', DEFAULT_TEXT);
 const swallow = () => {};
-
 
 export default class TranscriptItem extends React.Component {
 	static propTypes = {
@@ -36,62 +36,55 @@ export default class TranscriptItem extends React.Component {
 		beforeSave: PropTypes.func,
 		afterSave: PropTypes.func,
 		onError: PropTypes.func,
-		clearError: PropTypes.func
-	}
+		clearError: PropTypes.func,
+	};
 
+	attachFlyoutRef = x => (this.flyout = x);
 
-	attachFlyoutRef = x => this.flyout = x
-
-	dismissFlyout () {
+	dismissFlyout() {
 		if (this.flyout) {
 			this.flyout.dismiss();
 		}
 	}
 
-
-	beforeSave () {
-		const {beforeSave} = this.props;
+	beforeSave() {
+		const { beforeSave } = this.props;
 
 		if (beforeSave) {
 			beforeSave();
 		}
 	}
 
-
-	afterSave () {
-		const {afterSave} = this.props;
+	afterSave() {
+		const { afterSave } = this.props;
 
 		if (afterSave) {
 			afterSave();
 		}
 	}
 
-
-	onError (err) {
-		const {onError} = this.props;
+	onError(err) {
+		const { onError } = this.props;
 
 		if (onError) {
 			onError(err);
 		}
 	}
 
-
-	clearError () {
-		const {clearError} = this.props;
+	clearError() {
+		const { clearError } = this.props;
 
 		if (clearError) {
 			clearError();
 		}
 	}
 
-
 	onLangChange = () => {
 		//TODO: implement more languages in the future
-	}
+	};
 
-
-	async replaceTranscriptWithPurpose (existing, purpose) {
-		const {transcript, video} = this.props;
+	async replaceTranscriptWithPurpose(existing, purpose) {
+		const { transcript, video } = this.props;
 
 		if (!canEdit(existing)) {
 			this.onError(t('errors.conflict'));
@@ -101,7 +94,9 @@ export default class TranscriptItem extends React.Component {
 		this.beforeSave();
 
 		try {
-			await Prompt.areYouSure(t('confirmReplace', {name: getName(existing)}));
+			await Prompt.areYouSure(
+				t('confirmReplace', { name: getName(existing) })
+			);
 
 			try {
 				await video.replaceTranscript(transcript, existing);
@@ -117,9 +112,8 @@ export default class TranscriptItem extends React.Component {
 		}
 	}
 
-
-	onPurposeChange = async (e) => {
-		const {transcript, video} = this.props;
+	onPurposeChange = async e => {
+		const { transcript, video } = this.props;
 		const purpose = e.target.value;
 		const existing = video.getTranscriptFor(purpose, transcript.lang);
 
@@ -139,16 +133,19 @@ export default class TranscriptItem extends React.Component {
 		} finally {
 			this.afterSave();
 		}
-	}
+	};
 
-
-	onFileSelected = async (e) => {
-		const {target: {files}} = e;
-		const {transcript} = this.props;
+	onFileSelected = async e => {
+		const {
+			target: { files },
+		} = e;
+		const { transcript } = this.props;
 
 		this.dismissFlyout();
 
-		if (!files || !files.length) { return; }
+		if (!files || !files.length) {
+			return;
+		}
 
 		if (!files[0].name.toLowerCase().endsWith('.vtt')) {
 			this.onError(t('errors.fileType'));
@@ -165,11 +162,10 @@ export default class TranscriptItem extends React.Component {
 		} finally {
 			this.afterSave();
 		}
-	}
-
+	};
 
 	onRemove = async () => {
-		const {video, transcript} = this.props;
+		const { video, transcript } = this.props;
 
 		this.dismissFlyout();
 
@@ -183,16 +179,14 @@ export default class TranscriptItem extends React.Component {
 		} finally {
 			this.afterSave();
 		}
-	}
-
+	};
 
 	onTranscriptUpdate = () => {
 		this.forceUpdate();
-	}
+	};
 
-
-	render () {
-		const {transcript} = this.props;
+	render() {
+		const { transcript } = this.props;
 
 		const isLangEditable = false; //For now, EN is the only option so always disable
 		const isPurposeEditable = transcript && canEdit(transcript);
@@ -200,15 +194,32 @@ export default class TranscriptItem extends React.Component {
 		const modified = transcript['Last Modified'];
 
 		return (
-			<HOC.ItemChanges item={transcript} onItemChange={this.onTranscriptUpdate}>
+			<HOC.ItemChanges
+				item={transcript}
+				onItemChange={this.onTranscriptUpdate}
+			>
 				<div className="transcript-item">
 					<div>
-						<select defaultValue="en" onChange={this.onLangChange} disabled={!isLangEditable}>
-							<option value="en" label={t('enLabel')}>{t('enLabel')}</option>
+						<select
+							defaultValue="en"
+							onChange={this.onLangChange}
+							disabled={!isLangEditable}
+						>
+							<option value="en" label={t('enLabel')}>
+								{t('enLabel')}
+							</option>
 						</select>
-						<select defaultValue={transcript.purpose} onChange={this.onPurposeChange} disabled={!isPurposeEditable}>
-							<option value="captions" label={t('captionsLabel')}>{t('captionsLabel')}</option>
-							<option value="normal" label={t('transcriptLabel')}>{t('transcriptLabel')}</option>
+						<select
+							defaultValue={transcript.purpose}
+							onChange={this.onPurposeChange}
+							disabled={!isPurposeEditable}
+						>
+							<option value="captions" label={t('captionsLabel')}>
+								{t('captionsLabel')}
+							</option>
+							<option value="normal" label={t('transcriptLabel')}>
+								{t('transcriptLabel')}
+							</option>
 						</select>
 						<span className="transcript-file-name">
 							{getName(transcript)}
@@ -217,7 +228,9 @@ export default class TranscriptItem extends React.Component {
 					</div>
 					{modified && (
 						<div className="modified-date">
-							{t('modifiedOn', {time: getTime(transcript['Last Modified'])})}
+							{t('modifiedOn', {
+								time: getTime(transcript['Last Modified']),
+							})}
 						</div>
 					)}
 				</div>
@@ -225,13 +238,14 @@ export default class TranscriptItem extends React.Component {
 		);
 	}
 
+	renderEdit() {
+		const { transcript } = this.props;
 
-	renderEdit () {
-		const {transcript} = this.props;
+		if (!canEdit(transcript)) {
+			return null;
+		}
 
-		if (!canEdit(transcript)) { return null; }
-
-		const editButton = (<span className="edit-link">{t('edit')}</span>);
+		const editButton = <span className="edit-link">{t('edit')}</span>;
 
 		return (
 			<Flyout.Triggered
@@ -243,7 +257,11 @@ export default class TranscriptItem extends React.Component {
 			>
 				<div>
 					<div className="change-transcript">
-						<input type="file" accept=".vtt" onChange={this.onFileSelected} />
+						<input
+							type="file"
+							accept=".vtt"
+							onChange={this.onFileSelected}
+						/>
 						<span>{t('changeFile')}</span>
 					</div>
 					<div className="remove-transcript" onClick={this.onRemove}>
