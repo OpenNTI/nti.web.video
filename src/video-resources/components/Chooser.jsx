@@ -161,6 +161,7 @@ class Chooser extends Component {
 		const videoIndex = newVideos.findIndex(
 			v => v.getID() === video.getID()
 		);
+
 		if (~videoIndex) {
 			newVideos.splice(videoIndex, 1);
 
@@ -168,9 +169,9 @@ class Chooser extends Component {
 				videos: newVideos,
 				selected: false,
 			});
-		}
 
-		onVideoDelete?.(video.getID());
+			onVideoDelete?.(video.getID());
+		}
 	};
 
 	render() {
