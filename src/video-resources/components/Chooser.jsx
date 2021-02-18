@@ -42,11 +42,13 @@ class Chooser extends Component {
 		const { course } = this.props;
 		course
 			.getAssets('application/vnd.nextthought.ntivideo')
+			.catch(() => [])
 			.then(videos => {
 				this.setState({
-					videos: videos.sort((a, b) =>
-						(a.title || '').localeCompare(b.title || '')
-					),
+					videos:
+						videos?.sort((a, b) =>
+							(a.title || '').localeCompare(b.title || '')
+						) || [],
 				});
 			});
 	}
@@ -119,9 +121,9 @@ class Chooser extends Component {
 	};
 
 	onEdit = video => {
-		const { videos } = this.state;
-		const newVideos = videos.slice();
-		const found = videos.findIndex(v => v.getID() === video.getID());
+		const { videos = [] } = this.state;
+		const newVideos = videos?.slice() || [];
+		const found = videos?.findIndex(v => v.getID() === video.getID());
 
 		if (found > -1) {
 			newVideos[found] = video;
@@ -142,29 +144,33 @@ class Chooser extends Component {
 		});
 	};
 
-	doDelete = video => {
-		video
-			.delete()
-			.then(() => {
-				this.onVideoDeleted(video);
-			})
-			.catch(error => {
-				console.error(error); //eslint-disable-line
-			});
+	doDelete = async video => {
+		try {
+			await video.delete();
+			this.onVideoDeleted(video);
+		} catch (error) {
+			//eslint-disable-next-line no-console
+			console.error(error);
+		}
 	};
 
 	onVideoDeleted = video => {
 		const { videos } = this.state;
 		const { onVideoDelete } = this.props;
-		const newVideos = videos.slice();
-		const videoIndex = videos.findIndex(v => v.getID() === video.getID());
-		newVideos.splice(videoIndex, 1);
-		this.setState({
-			videos: newVideos,
-			selected: false,
-		});
+		const newVideos = videos?.slice() || [];
+		const videoIndex = newVideos.findIndex(
+			v => v.getID() === video.getID()
+		);
+		if (~videoIndex) {
+			newVideos.splice(videoIndex, 1);
 
-		onVideoDelete && onVideoDelete(video.getID());
+			this.setState({
+				videos: newVideos,
+				selected: false,
+			});
+		}
+
+		onVideoDelete?.(video.getID());
 	};
 
 	render() {
