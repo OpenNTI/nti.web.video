@@ -42,12 +42,13 @@ class Browser extends Component {
 		const { videos } = this.props;
 
 		if (videos !== prevProps.videos) {
+			const localVideos = [...(videos || [])];
 			this.setState({
-				videos: videos,
+				videos: localVideos,
 				videoContents:
 					search === ''
-						? videos
-						: videos.filter(video =>
+						? localVideos
+						: localVideos.filter(video =>
 								this.itemMatchesSearch(video, search)
 						  ),
 			});
@@ -57,9 +58,10 @@ class Browser extends Component {
 	onSearch = search => {
 		const { videos } = this.state;
 		this.setState({
-			videoContents: videos?.filter(video =>
-				this.itemMatchesSearch(video, search)
-			),
+			videoContents:
+				videos?.filter(video =>
+					this.itemMatchesSearch(video, search)
+				) || [],
 			search,
 		});
 	};
@@ -90,8 +92,8 @@ class Browser extends Component {
 						: selected,
 			},
 			() => {
-				const { selected: currerntSelected } = this.state;
-				onSelect(currerntSelected);
+				const { selected: currentSelected } = this.state;
+				onSelect(currentSelected);
 			}
 		);
 	};
