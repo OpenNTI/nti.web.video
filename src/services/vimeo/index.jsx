@@ -1,9 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Logger from '@nti/util-logger';
 import Player from '@vimeo/player';
 import { v4 as uuid } from 'uuid';
 import QueryString from 'query-string';
+
+import Logger from '@nti/util-logger';
 import { isFlag } from '@nti/web-client';
 
 import {

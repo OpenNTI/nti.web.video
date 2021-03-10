@@ -2,6 +2,7 @@ import './Overlay.scss';
 import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
+
 import isTouch from '@nti/util-detection-touch';
 
 import { hasInteractedWithVideo, isPlaying, isEnded } from './utils';

@@ -1,8 +1,9 @@
 import './Video.scss';
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Checkbox } from '@nti/web-commons';
 import cx from 'classnames';
+
+import { Checkbox } from '@nti/web-commons';
 import { scoped } from '@nti/lib-locale';
 
 const DEFAULT_TEXT = {
