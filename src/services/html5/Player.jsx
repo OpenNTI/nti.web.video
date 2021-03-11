@@ -671,7 +671,7 @@ export default class HTML5Video extends React.Component {
 			}
 		}
 
-		return Promise.reject('Could not play.');
+		throw new Error('Could not play.');
 	};
 
 	pause = () => {
