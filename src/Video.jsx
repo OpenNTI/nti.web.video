@@ -160,22 +160,25 @@ class Video extends React.Component {
 	};
 
 	onTimeUpdate = event => {
-		events.debug('timeUpdate %o', event);
+		events.trace('timeUpdate %o', event);
 		this.props.onTimeUpdate(event);
 	};
 
 	onSeeked = event => {
-		events.debug('seeked %o', event);
+		events.debug('seeked', this.props.src);
+		events.trace('seeked %o', event);
 		this.props.onSeeked(event);
 	};
 
 	onPlaying = event => {
-		events.debug('played %o', event);
+		events.debug('played', this.props.src);
+		events.trace('played %o', event);
 		this.props.onPlaying(event);
 	};
 
 	onPause = event => {
-		events.debug('pause %o', event);
+		events.debug('pause', this.props.src);
+		events.trace('pause %o', event);
 		this.props.onPause(event);
 	};
 
@@ -185,7 +188,8 @@ class Video extends React.Component {
 	};
 
 	onReady = event => {
-		events.debug('ready %o', event);
+		events.debug('ready', this.props.src);
+		events.trace('ready %o', event);
 
 		const { onReady } = this.props;
 		const { ready } = this.state;

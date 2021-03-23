@@ -454,7 +454,8 @@ export default class HTML5Video extends React.Component {
 	};
 
 	onPlaying = e => {
-		events.debug('playing %o', e);
+		events.debug('playing', this.state);
+		events.trace('playing %o', e);
 
 		const {
 			props: { onPlaying },
@@ -468,7 +469,8 @@ export default class HTML5Video extends React.Component {
 	};
 
 	onPause = e => {
-		events.debug('pause %o', e);
+		events.debug('pause', this.state);
+		events.trace('pause %o', e);
 
 		const {
 			props: { onPause },
@@ -484,7 +486,8 @@ export default class HTML5Video extends React.Component {
 	};
 
 	onEnded = e => {
-		events.debug('ended %o', e);
+		events.debug('ended', this.state);
+		events.trace('ended %o', e);
 
 		const {
 			props: { onEnded },
@@ -503,7 +506,8 @@ export default class HTML5Video extends React.Component {
 	};
 
 	onSeeked = e => {
-		events.debug('seeked %o', e);
+		events.debug('seeked', this.state);
+		events.trace('seeked %o', e);
 
 		const {
 			props: { onSeeked },
@@ -514,7 +518,7 @@ export default class HTML5Video extends React.Component {
 	};
 
 	onTimeUpdate = e => {
-		events.debug('timeUpdate %o', e);
+		events.trace('timeUpdate %o', e);
 
 		const { target: video } = e;
 		const {
@@ -540,7 +544,7 @@ export default class HTML5Video extends React.Component {
 	};
 
 	onProgress = e => {
-		events.debug('progressUpdate %o', e);
+		events.trace('progressUpdate %o', e);
 
 		this.forceUpdate(); //Force the controls to redraw
 	};
