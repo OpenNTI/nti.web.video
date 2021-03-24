@@ -185,7 +185,7 @@ export default class KalturaVideo extends React.Component {
 			[partnerId, entryId] = parsed;
 		}
 
-		events.debug(
+		events.trace(
 			'Setting source: entryId: %s, partnerId: %s',
 			entryId,
 			partnerId
@@ -219,7 +219,7 @@ export default class KalturaVideo extends React.Component {
 
 			await throwIfLate();
 
-			events.debug('Resolved Sources: %o', resolved);
+			events.trace('Resolved Sources: %o', resolved);
 			this.setSources(resolved);
 		} catch (error) {
 			if (error === LATE) {
@@ -233,7 +233,7 @@ export default class KalturaVideo extends React.Component {
 	}
 
 	setSources(data) {
-		events.debug('Selected sources: %o', data.sources);
+		events.trace('Selected sources: %o', data.sources);
 
 		this.setState({
 			duration: data.duration,

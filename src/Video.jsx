@@ -112,6 +112,10 @@ class Video extends React.Component {
 		return this.state.ready;
 	}
 
+	get srcString() {
+		return `${this.props.src}`;
+	}
+
 	componentDidMount() {
 		this._setupStartTime();
 		this._setupFullScreen();
@@ -165,30 +169,31 @@ class Video extends React.Component {
 	};
 
 	onSeeked = event => {
-		events.debug('seeked', this.props.src);
+		events.debug('seeked', this.srcString);
 		events.trace('seeked %o', event);
 		this.props.onSeeked(event);
 	};
 
 	onPlaying = event => {
-		events.debug('played', this.props.src);
+		events.debug('played', this.srcString);
 		events.trace('played %o', event);
 		this.props.onPlaying(event);
 	};
 
 	onPause = event => {
-		events.debug('pause', this.props.src);
+		events.debug('pause', this.srcString);
 		events.trace('pause %o', event);
 		this.props.onPause(event);
 	};
 
 	onEnded = event => {
-		events.debug('ended %o', event);
+		events.debug('ended', this.srcString);
+		events.trace('ended %o', event);
 		this.props.onEnded(event);
 	};
 
 	onReady = event => {
-		events.debug('ready', this.props.src);
+		events.debug('ready', this.srcString);
 		events.trace('ready %o', event);
 
 		const { onReady } = this.props;

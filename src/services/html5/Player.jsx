@@ -219,11 +219,11 @@ export default class HTML5Video extends React.Component {
 			tracks = [];
 		}
 
-		events.debug('Setting source: entryId: %s, partnerId: %s', source);
+		events.trace('Setting source groups: ', sourceGroups);
 		this.setState(
 			{
 				sourceGroups,
-				activeSourceGroup: preferredGroup && preferredGroup.name,
+				activeSourceGroup: preferredGroup?.name,
 				tracks,
 			},
 			callback
@@ -600,7 +600,7 @@ export default class HTML5Video extends React.Component {
 		e.stopPropagation();
 
 		if (HLS.isSupported() && e.target.type === HLS_TYPE && !this.hls) {
-			events.debug(
+			events.trace(
 				'HLS Supported, got error for HLS source: %o\nEvent: %o',
 				e.target,
 				e.nativeEvent
