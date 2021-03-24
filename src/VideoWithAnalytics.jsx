@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { reportError } from '@nti/web-client';
 import { toAnalyticsPath } from '@nti/lib-analytics';
 import Logger from '@nti/util-logger';
 
@@ -106,7 +107,6 @@ export default class extends React.Component {
 		this.mounted = false;
 		if (this.isStarted) {
 			const target = this.getCurrentVideoTarget();
-			this.isStarted = false;
 			this.sendAnalyticsEvent(
 				{ target, type: 'stop' },
 				'VideoWatch',
@@ -119,7 +119,6 @@ export default class extends React.Component {
 	resetAnalytics(current, prev) {
 		if (this.isStarted) {
 			const target = this.getCurrentVideoTarget();
-			this.isStarted = false;
 			this.sendAnalyticsEvent(
 				{ target, type: 'stop' },
 				'VideoWatch',
@@ -165,6 +164,26 @@ export default class extends React.Component {
 
 		if (Manager) {
 			try {
+				// I've moved the responsibility of managing the state of "isStarted" to this central location.
+				// This allows for extraneous edge cases to request a stop/start for their needs but if it was
+				// already transitioned to that state, it simply ignores the request.
+				if (eventName === 'VideoWatch') {
+					switch (action) {
+						case 'start':
+							if (this.isStarted) {
+								return;
+							}
+							this.isStarted = true;
+							break;
+						case 'stop':
+							if (!this.isStarted) {
+								return;
+							}
+							this.isStarted = false;
+							break;
+					}
+				}
+
 				// This isn't a pattern to replicate blindly. Normaly repeating yourself is better
 				// than using string hashes into objects but we don't control the object here so the
 				// optimizations cannot be performed anyways...
@@ -173,7 +192,7 @@ export default class extends React.Component {
 					...additionalData,
 				});
 			} catch (e) {
-				logger.error(e.stack || e.message || e);
+				reportError(e);
 			}
 		} else {
 			if (!this.warnedMissing) {
@@ -219,12 +238,12 @@ export default class extends React.Component {
 
 	onSeeked = event => {
 		this.sendAnalyticsEvent(event, 'VideoSkip', 'send');
+		this.sendAnalyticsEvent(event, 'VideoWatch', 'stop');
 		this.props.onSeeked(event);
 	};
 
 	onPlaying = event => {
 		this.sendAnalyticsEvent(event, 'VideoWatch', 'start');
-		this.isStarted = true;
 		this.videoTarget = event.target;
 		this.previousTime = event.target?.currentTime ?? 0;
 		this.props.onPlaying(event);
@@ -232,13 +251,11 @@ export default class extends React.Component {
 
 	onPause = event => {
 		this.sendAnalyticsEvent(event, 'VideoWatch', 'stop');
-		this.isStarted = false;
 		this.props.onPause(event);
 	};
 
 	onEnded = event => {
 		this.sendAnalyticsEvent(event, 'VideoWatch', 'stop');
-		this.isStarted = false;
 		this.props.onEnded(event);
 	};
 
