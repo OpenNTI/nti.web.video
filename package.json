@@ -41,7 +41,7 @@
     "@nti/web-client": "NextThought/nti.web.client",
     "@nti/web-commons": "NextThought/nti.web.commons",
     "@vimeo/player": "^2.8.2",
-    "hls.js": "0.x.x",
+    "hls.js": "1.x.x",
     "invariant": "^2.1.1",
     "query-string": "^7.0.0",
     "uuid": "^8.3.0"
