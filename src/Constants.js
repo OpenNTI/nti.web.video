@@ -14,3 +14,7 @@ export const PLAYING = 1;
 export const PAUSED = 2;
 export const BUFFERING = 3;
 export const CUED = 5;
+
+export const SetupPlayerContext = Symbol('Set Player Context');
+export const TeardownPlayerContext = Symbol('Teardown Player Context');
+
