@@ -13,8 +13,9 @@ import {
 	removeSourcesFromGroups,
 	HLS_TYPE,
 } from '../utils';
-import { Overlay as ControlsOverlay } from '../../controls';
 import { UNSTARTED, PLAYING, PAUSED, ENDED } from '../../Constants';
+
+import { Overlay as ControlsOverlay } from './controls';
 
 const commands = Logger.get('video:html5:commands');
 const events = Logger.get('video:html5:events');
