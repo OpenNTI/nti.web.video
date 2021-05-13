@@ -4,19 +4,18 @@ import React from 'react';
 
 import {Hooks} from '@nti/web-commons';
 
-import {SetupPlayerContext, TeardownPlayerContext} from './Constants';
-
-const Context = React.createContext();
+import {Context} from './Constants';
 
 class ContextObject extends EventEmitter {
-	#player = null;
+	#players = [];
 
-	get player () { return this.#player; }
+	get activePlayer () { return this.#players[0]; }
 
-	[SetupPlayerContext] (player) {
-		if (this.#player) { throw new Error('Cannot have multiple videos in one context'); }
+	setupPlayerContext (player) {
+		//TODO?: handle multiple players at once... If we need to. We might not..
+		if (this.#players.length > 0) { throw new Error('Cannot have multiple videos in one context'); }
 
-		this.#player = player;
+		this.#players.push(player);
 		this.emit('set-player', player);
 
 		return {
@@ -26,15 +25,18 @@ class ContextObject extends EventEmitter {
 			onPause (...args) { this.emit('paused', ...args); },
 			onEnded (...args) { this.emit('ended', ...args); },
 			onError (...args) { this.emit('error', ...args); },
-			onReady (...args) { this.emit('ready', ...args); }
-		};
-	}
+			onReady (...args) { this.emit('ready', ...args); },
 
-	[TeardownPlayerContext] (player) {
-		if (this.#player === player) {
-			this.#player = null;
-			this.emit('set-player', player);
-		}
+			teardown: () => {
+				const isActive = this.activePlayer === player;
+
+				this.#players = this.#players.filter(p => p !== player);
+
+				if (isActive) {
+					this.emit('set-player', null);
+				}
+			}
+		};
 	}
 
 	subscribe (event, fn) {
@@ -52,10 +54,20 @@ export function VideoContext (props) {
 	);
 }
 
-export const useContext = () => React.useContext(Context);
+const useContext = () => React.useContext(Context);
+const useEvent = (event, fn) => {
+	const context = useContext();
+
+	React.useEffect(() => (
+		context && event && fn ?
+			context.subscribe(event, fn) :
+			null
+	), [context, event, fn]);
+};
+
 export const usePlayer = () => {
 	const forceUpdate = Hooks.useForceUpdate();
-	const context = VideoContext.useContext();
+	const context = useContext();
 
 	React.useEffect(() => (
 		context ?
@@ -63,17 +75,7 @@ export const usePlayer = () => {
 			null
 	), [context]);
 
-	return context?.player || null;
-};
-
-const useEvent = (event, fn) => {
-	const context = VideoContext.useContext();
-
-	React.useEffect(() => (
-		context && event && fn ?
-			context.subscribe(event, fn) :
-			null
-	), [context, event, fn]);
+	return context?.activePlayer || null;
 };
 
 export const useTimeUpdate = (fn) => useEvent('time-update', fn);

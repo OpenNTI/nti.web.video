@@ -8,8 +8,7 @@ import cx from 'classnames';
 import Logger from '@nti/util-logger';
 import { Decorators, AddClass } from '@nti/web-commons';
 
-import { SetupPlayerContext, TeardownPlayerContext } from './Constants';
-import { useContext } from './Context';
+import { Context } from './Constants';
 import { getHandler } from './services';
 import Fallback from './services/html5';
 
@@ -124,7 +123,7 @@ class Video extends React.Component {
 		this._setupStartTime();
 		this._setupFullScreen();
 
-		this.playerContext = this.props.videoContext?.[SetupPlayerContext](this);
+		this.playerContext = this.props.videoContext?.setupPlayerContext(this);
 	}
 
 	componentDidUpdate() {
@@ -132,7 +131,7 @@ class Video extends React.Component {
 	}
 
 	componentWillUnmount() {
-		this.props.videoContext?.[TeardownPlayerContext](this);
+		this.playerContext?.teardown();
 		delete this.playerContext;
 
 		(this.unsubscribe || []).forEach(method => method());
@@ -357,7 +356,7 @@ class Video extends React.Component {
 }
 
 function VideoWrapper (props) {
-	const context = useContext();
+	const context = React.useContext(Context);
 
 	return (<Video {...props} videoContext={context} />);
 }
