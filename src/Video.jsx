@@ -123,7 +123,7 @@ class Video extends React.Component {
 		this._setupStartTime();
 		this._setupFullScreen();
 
-		this.playerContext = this.props.videoContext?.setupPlayerContext(this);
+		this.playerContext = this.context?.setupPlayerContext(this);
 	}
 
 	componentDidUpdate() {
