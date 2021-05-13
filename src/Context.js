@@ -48,7 +48,7 @@ export function VideoContext (props) {
 	const context = React.useRef(() => new ContextObject());
 
 	return (
-		<Context.Provider value={context} />
+		<Context.Provider value={context} {...props} />
 	);
 }
 
