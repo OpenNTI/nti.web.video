@@ -65,7 +65,7 @@ class ContextObject extends EventEmitter {
 };
 
 export function VideoContext (props) {
-	const context = React.useRef(() => new ContextObject());
+	const [context] = React.useState(() => new ContextObject());
 
 	return (
 		<Context.Provider value={context} {...props} />
@@ -92,11 +92,12 @@ export const usePlayer = () => {
 	const forceUpdate = Hooks.useForceUpdate();
 	const context = useContext();
 
-	React.useEffect(() => (
-		context ?
-			context.subscribe('set-player', forceUpdate) :
-			null
-	), [context]);
+	React.useEffect(() => {
+		if (!context) { return null; }
+		if (context.activePlayer) { forceUpdate(); }
+
+		return context.subscribe('set-player', forceUpdate);
+	}, [context]);
 
 	return context?.activePlayer || null;
 };
