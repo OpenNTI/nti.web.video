@@ -19,13 +19,13 @@ class ContextObject extends EventEmitter {
 		this.emit('set-player', player);
 
 		return {
-			onTimeUpdate (...args) { this.emit('time-update', ...args); },
-			onSeeked (...args) { this.emit('seeked', ...args); },
-			onPlaying (...args) { this.emit('playing', ...args); },
-			onPause (...args) { this.emit('paused', ...args); },
-			onEnded (...args) { this.emit('ended', ...args); },
-			onError (...args) { this.emit('error', ...args); },
-			onReady (...args) { this.emit('ready', ...args); },
+			onTimeUpdate: this.emit.bind(this, 'time-update'),
+			onSeeked: this.emit.bind(this, 'seeked'),
+			onPlaying: this.emit.bind(this, 'playing'),
+			onPause: this.emit.bind(this, 'paused'),
+			onEnded: this.emit.bind(this, 'ended'),
+			onError: this.emit.bind(this, 'error'),
+			onReady: this.emit.bind(this, 'ready'),
 
 			teardown: () => {
 				const isActive = this.activePlayer === player;
