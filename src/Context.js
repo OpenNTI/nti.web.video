@@ -1,3 +1,8 @@
+/** @typedef {import('@nti/web-video').Component} Video */
+/** @typedef {(...x: any[]) => void} Emitter */
+/** @typedef {() => void} Invalidator */
+/** @typedef {{teardown: Invalidator, onTimeUpdate: Emitter, onSeeked: Emitter, onPlaying: Emitter, onPause: Emitter, onEnded: Emitter, onError: Emitter, onReady: Emitter}} PlayerContext */
+
 import EventEmitter from 'events';
 
 import React from 'react';
@@ -11,6 +16,12 @@ class ContextObject extends EventEmitter {
 
 	get activePlayer () { return this.#players[0]; }
 
+	/**
+	 * Setup context for a give player
+	 *
+	 * @param {Video} player
+	 * @returns {PlayerContext}
+	 */
 	setupPlayerContext (player) {
 		//TODO?: handle multiple players at once... If we need to. We might not..
 		if (this.#players.length > 0) { throw new Error('Cannot have multiple videos in one context'); }
@@ -39,6 +50,13 @@ class ContextObject extends EventEmitter {
 		};
 	}
 
+	/**
+	 * Add a listener to the player context
+	 *
+	 * @param {string} event what to listen for
+	 * @param {Function} fn callback when event is fired
+	 * @returns {Function} method to remove the listener
+	 */
 	subscribe (event, fn) {
 		this.addListener(event, fn);
 
@@ -65,6 +83,11 @@ const useEvent = (event, fn) => {
 	), [context, event, fn]);
 };
 
+/**
+ * Use the active player in the current context
+ *
+ * @returns {Video}
+ */
 export const usePlayer = () => {
 	const forceUpdate = Hooks.useForceUpdate();
 	const context = useContext();
@@ -78,10 +101,58 @@ export const usePlayer = () => {
 	return context?.activePlayer || null;
 };
 
+/**
+ * Listen for timeupdate events on the active player in the current context
+ *
+ * @param {Function} fn
+ * @returns {void}
+ */
 export const useTimeUpdate = (fn) => useEvent('time-update', fn);
+
+/**
+ * Listen for seeked events on the active player in the current context
+ *
+ * @param {Function} fn
+ * @returns {void}
+ */
 export const useSeekedEvent = (fn) => useEvent('seeked', fn);
+
+/**
+ * Listen for play events on the active player in the current context
+ *
+ * @param {Function} fn
+ * @returns {void}
+ */
 export const usePlayingEvent = (fn) => useEvent('playing', fn);
+
+/**
+ * Listen for pause events on the active player in the current context
+ *
+ * @param {Function} fn
+ * @returns {void}
+ */
 export const usePauseEvent = (fn) => useEvent('paused', fn);
+
+/**
+ * Listen for end events on the active player in the current context
+ *
+ * @param {Function} fn
+ * @returns {void}
+ */
 export const useEndedEvent = (fn) => useEvent('ended', fn);
+
+/**
+ * Listen for error events on the active player in the current context
+ *
+ * @param {Function} fn
+ * @returns {void}
+ */
 export const useErrorEvent = (fn) => useEvent('error', fn);
+
+/**
+ * Listen for ready events on the active player in the current context
+ *
+ * @param {Function} fn
+ * @returns {void}
+ */
 export const useReadyEvent = (fn) => useEvent('ready', fn);
