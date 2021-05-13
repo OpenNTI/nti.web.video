@@ -51,10 +51,10 @@ class Video extends React.Component {
 		deferred: PropTypes.bool,
 		startTime: PropTypes.number,
 
-		fullscreenElement: PropTypes.node,
-
-		videoContext: PropTypes.object
+		fullscreenElement: PropTypes.node
 	};
+
+	static contextType = Context;
 
 	static defaultProps = {
 		onTimeUpdate: emptyFunction,
@@ -355,10 +355,4 @@ class Video extends React.Component {
 	}
 }
 
-function VideoWrapper (props) {
-	const context = React.useContext(Context);
-
-	return (<Video {...props} videoContext={context} />);
-}
-
-export default Decorators.fullScreenMonitor()(VideoWrapper);
+export default Decorators.fullScreenMonitor()(Video);
