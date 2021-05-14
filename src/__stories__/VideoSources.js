@@ -15,3 +15,13 @@ export const Player = (props) => (
 		<Video {...props} />
 	</Container>
 );
+
+export const argTypes = {
+	onTimeUpdate: { action: 'timeupdate' },
+	onSeeked: { action: 'seeked' },
+	onPlaying: { action: 'playing' },
+	onPause: { action: 'paused' },
+	onEnded: { action: 'ended' },
+	onError: { action: 'error' },
+	onReady: { action: 'ready' }
+};

@@ -11,15 +11,18 @@ import {usePlayer} from '../Context';
 /**
  * Render a button that seeks the current player in the VideoContext to the given time.
  *
- * @param {*} props
+ * @param {Props} props
  * @returns {*}
  */
 export default function SeekTo ({time, onClick:onClickProp, ...otherProps}) {
 	const player = usePlayer();
 
 	const onClick = React.useCallback((e) => {
-		player?.setCurrentTime(time);
 		onClickProp?.(e);
+
+		if (!e.defaultPrevented) {
+			player?.setCurrentTime(time);
+		}
 	}, [player, time, onClickProp]);
 
 	return (

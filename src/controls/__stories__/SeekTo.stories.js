@@ -2,20 +2,11 @@ import React from 'react';
 
 import SeekTo from '../SeekTo';
 import { VideoContext } from '../../Context';
-import {YoutubeSrc, Player} from '../../__stories__/VideoSources';
+import {YoutubeSrc, Player, argTypes} from '../../__stories__/VideoSources';
 
 export default {
 	title: 'Controls/SeekTo',
-	component: SeekTo,
-	argTypes: {
-		onTimeUpdate: { action: 'timeupdate' },
-		onSeeked: { action: 'seeked' },
-		onPlaying: { action: 'playing' },
-		onPause: { action: 'paused' },
-		onEnded: { action: 'ended' },
-		onError: { action: 'error' },
-		onReady: { action: 'ready' }
-	}
+	component: SeekTo
 };
 
 export const Base = (props) => (
@@ -24,3 +15,5 @@ export const Base = (props) => (
 		<SeekTo time={10}>10 Seconds</SeekTo>, <SeekTo time={20}>20 Seconds</SeekTo>, <SeekTo time={30}>30 Seconds</SeekTo>
 	</VideoContext>
 );
+
+Base.argTypes = argTypes;
