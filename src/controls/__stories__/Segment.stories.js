@@ -8,8 +8,6 @@ const active = css`
 	text-decoration: underline;
 `;
 
-debugger;
-
 export default {
 	title: 'Controls/Segment',
 	component: Segment
