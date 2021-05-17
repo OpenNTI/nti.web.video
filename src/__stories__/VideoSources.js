@@ -1,6 +1,6 @@
 import Video from '../Video';
 
-export const YoutubeSrc = 'https://www.youtu.be/dQw4w9WgXcQ';
+export const YouTubeSrc = 'https://www.youtu.be/dQw4w9WgXcQ';
 export const VimeoSrc = 'https://vimeo.com/137531269';
 export const KalturaSrc = 'kaltura://1500101/0_nmii7y4j/';
 

@@ -2,8 +2,7 @@ import React from 'react';
 
 import Video from '../Video';
 
-import {YoutubeSrc, VimeoSrc, KalturaSrc, Player} from './VideoSources';
-
+import { YouTubeSrc, VimeoSrc, KalturaSrc, Player } from './VideoSources';
 
 export default {
 	title: 'Player',
@@ -19,6 +18,6 @@ export default {
 	}
 };
 
-export const Youtube = (props) => (<Player src={YoutubeSrc} {...props} />);
+export const YouTube = (props) => (<Player src={YouTubeSrc} {...props} />);
 export const Vimeo = (props) => (<Player src={VimeoSrc} {...props} />);
 export const Kaltura = (props) => (<Player src={KalturaSrc} {...props} />);
