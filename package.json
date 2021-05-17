@@ -11,12 +11,12 @@
     "*.scss"
   ],
   "scripts": {
-    "fix": "cmp-scripts fix",
     "test": "cmp-scripts test",
-    "start": "cmp-scripts start",
     "clean": "cmp-scripts clean",
     "check": "cmp-scripts check",
-    "release": "cmp-scripts release"
+    "legacy-test-app": "cmp-scripts start",
+    "release": "cmp-scripts release",
+    "start": "start-storybook -p 6006"
   },
   "repository": {
     "type": "git",
