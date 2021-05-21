@@ -7,14 +7,16 @@ import EventEmitter from 'events';
 
 import React from 'react';
 
-import {Hooks} from '@nti/web-commons';
+import { Hooks } from '@nti/web-commons';
 
-import {Context} from './Constants';
+import { Context } from './Constants';
 
 class ContextObject extends EventEmitter {
 	#players = [];
 
-	get activePlayer () { return this.#players[0]; }
+	get activePlayer() {
+		return this.#players[0];
+	}
 
 	/**
 	 * Setup context for a give player
@@ -22,9 +24,11 @@ class ContextObject extends EventEmitter {
 	 * @param {Video} player
 	 * @returns {PlayerContext}
 	 */
-	setupPlayerContext (player) {
-		//TODO?: handle multiple players at once... If we need to. We might not..
-		if (this.#players.length > 0) { throw new Error('Cannot have multiple videos in one context'); }
+	setupPlayerContext(player) {
+		//TODO? handle multiple players at once... If we need to. We might not..
+		if (this.#players.length > 0) {
+			throw new Error('Cannot have multiple videos in one context');
+		}
 
 		this.#players.push(player);
 		this.emit('set-player', player);
@@ -46,7 +50,7 @@ class ContextObject extends EventEmitter {
 				if (isActive) {
 					this.emit('set-player', null);
 				}
-			}
+			},
 		};
 	}
 
@@ -57,30 +61,27 @@ class ContextObject extends EventEmitter {
 	 * @param {Function} fn callback when event is fired
 	 * @returns {Function} method to remove the listener
 	 */
-	subscribe (event, fn) {
+	subscribe(event, fn) {
 		this.addListener(event, fn);
 
 		return () => this.removeListener(event, fn);
 	}
-};
+}
 
-export function VideoContext (props) {
+export function VideoContext(props) {
 	const [context] = React.useState(() => new ContextObject());
 
-	return (
-		<Context.Provider value={context} {...props} />
-	);
+	return <Context.Provider value={context} {...props} />;
 }
 
 const useContext = () => React.useContext(Context);
 const useEvent = (event, fn) => {
 	const context = useContext();
 
-	React.useEffect(() => (
-		context && event && fn ?
-			context.subscribe(event, fn) :
-			null
-	), [context, event, fn]);
+	React.useEffect(
+		() => (context && event && fn ? context.subscribe(event, fn) : null),
+		[context, event, fn]
+	);
 };
 
 /**
@@ -93,8 +94,12 @@ export const usePlayer = () => {
 	const context = useContext();
 
 	React.useEffect(() => {
-		if (!context) { return null; }
-		if (context.activePlayer) { forceUpdate(); }
+		if (!context) {
+			return null;
+		}
+		if (context.activePlayer) {
+			forceUpdate();
+		}
 
 		return context.subscribe('set-player', forceUpdate);
 	}, [context]);
@@ -108,7 +113,7 @@ export const usePlayer = () => {
  * @param {Function} fn
  * @returns {void}
  */
-export const useTimeUpdate = (fn) => useEvent('time-update', fn);
+export const useTimeUpdate = fn => useEvent('time-update', fn);
 
 /**
  * Listen for seeked events on the active player in the current context
@@ -116,7 +121,7 @@ export const useTimeUpdate = (fn) => useEvent('time-update', fn);
  * @param {Function} fn
  * @returns {void}
  */
-export const useSeekedEvent = (fn) => useEvent('seeked', fn);
+export const useSeekedEvent = fn => useEvent('seeked', fn);
 
 /**
  * Listen for play events on the active player in the current context
@@ -124,7 +129,7 @@ export const useSeekedEvent = (fn) => useEvent('seeked', fn);
  * @param {Function} fn
  * @returns {void}
  */
-export const usePlayingEvent = (fn) => useEvent('playing', fn);
+export const usePlayingEvent = fn => useEvent('playing', fn);
 
 /**
  * Listen for pause events on the active player in the current context
@@ -132,7 +137,7 @@ export const usePlayingEvent = (fn) => useEvent('playing', fn);
  * @param {Function} fn
  * @returns {void}
  */
-export const usePauseEvent = (fn) => useEvent('paused', fn);
+export const usePauseEvent = fn => useEvent('paused', fn);
 
 /**
  * Listen for end events on the active player in the current context
@@ -140,7 +145,7 @@ export const usePauseEvent = (fn) => useEvent('paused', fn);
  * @param {Function} fn
  * @returns {void}
  */
-export const useEndedEvent = (fn) => useEvent('ended', fn);
+export const useEndedEvent = fn => useEvent('ended', fn);
 
 /**
  * Listen for error events on the active player in the current context
@@ -148,7 +153,7 @@ export const useEndedEvent = (fn) => useEvent('ended', fn);
  * @param {Function} fn
  * @returns {void}
  */
-export const useErrorEvent = (fn) => useEvent('error', fn);
+export const useErrorEvent = fn => useEvent('error', fn);
 
 /**
  * Listen for ready events on the active player in the current context
@@ -156,4 +161,4 @@ export const useErrorEvent = (fn) => useEvent('error', fn);
  * @param {Function} fn
  * @returns {void}
  */
-export const useReadyEvent = (fn) => useEvent('ready', fn);
+export const useReadyEvent = fn => useEvent('ready', fn);
