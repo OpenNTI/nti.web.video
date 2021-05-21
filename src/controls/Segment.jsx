@@ -6,7 +6,7 @@ import {Button} from '@nti/web-commons';
 
 import { usePlayer, useTimeUpdate } from '../Context';
 
-export default function Segment ({start, end, onClick:onClickProp, classNames, className, ...otherProps}) {
+export function Segment ({start, end, onClick:onClickProp, classNames, className, ...otherProps}) {
 	const player = usePlayer();
 	const [active, setActive] = React.useState(false);
 	const updateActive = React.useCallback(({target}) => {

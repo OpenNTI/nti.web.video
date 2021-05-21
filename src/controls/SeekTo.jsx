@@ -18,7 +18,8 @@ import {usePlayer} from '../Context';
  * @param {SeekToProps} props
  * @returns {React.ReactElement}
  */
-export default function SeekTo ({time, onClick:onClickProp, ...otherProps}) {
+export function SeekTo ({time, onClick:onClickProp, as:tag, ...otherProps}) {
+	const Cmp = tag || Button;
 	const player = usePlayer();
 
 	const onClick = React.useCallback((e) => {
@@ -30,8 +31,7 @@ export default function SeekTo ({time, onClick:onClickProp, ...otherProps}) {
 	}, [player, time, onClickProp]);
 
 	return (
-		<Button
-			plain
+		<Cmp
 			onClick={onClick}
 			disabled={!player}
 			{...otherProps}
@@ -42,5 +42,6 @@ export default function SeekTo ({time, onClick:onClickProp, ...otherProps}) {
 SeekTo.propTypes = {
 	/**Time to seek to in seconds */
 	time: PropTypes.number,
-	onClick: PropTypes.func
+	onClick: PropTypes.func,
+	as: PropTypes.any
 };

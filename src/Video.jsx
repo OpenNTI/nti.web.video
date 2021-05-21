@@ -119,6 +119,10 @@ class Video extends React.Component {
 		return `${this.props.src}`;
 	}
 
+	get video () {
+		return this.props.src;
+	}
+
 	componentDidMount() {
 		this._setupStartTime();
 		this._setupFullScreen();

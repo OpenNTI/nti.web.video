@@ -1,6 +1,6 @@
 import React from 'react';
 
-import Segment from '../Segment';
+import { Segment } from '../Segment';
 import { VideoContext } from '../../Context';
 import { YouTubeSrc, Player, argTypes } from '../../__stories__/VideoSources';
 

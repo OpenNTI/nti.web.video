@@ -1,6 +1,6 @@
 import React from 'react';
 
-import SeekTo from '../SeekTo';
+import { SeekTo } from '../SeekTo';
 import { VideoContext } from '../../Context';
 import { YouTubeSrc, Player, argTypes } from '../../__stories__/VideoSources';
 
