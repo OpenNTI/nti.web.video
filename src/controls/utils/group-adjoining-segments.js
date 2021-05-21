@@ -18,7 +18,6 @@ const last = arr => arr[arr.length - 1];
  * @returns {[Segment]}
  */
 export default function groupAdjoiningSegments(segments) {
-	debugger;
 	return segments
 		.sort((a, b) =>
 			start(a) === start(b) ? end(a) - end(b) : start(a) - start(b)
