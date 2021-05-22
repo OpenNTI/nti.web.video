@@ -2,33 +2,46 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 
-import {Button} from '@nti/web-commons';
+import { Button } from '@nti/web-commons';
 
 import { usePlayer, useTimeUpdate } from '../Context';
 
-export function Segment ({start, end, onClick:onClickProp, classNames, className, ...otherProps}) {
-	const player = usePlayer();
+import { useSeekHandler } from './SeekTo';
+
+const useIsActiveTime = (start, end, silent) => {
 	const [active, setActive] = React.useState(false);
-	const updateActive = React.useCallback(({target}) => {
-		const {currentTime} = target ?? {};
-		const isActive = currentTime != null && currentTime >= start && currentTime <= end;
 
-		if (isActive !== active) {
-			setActive(isActive);
-		}
-	}, [active, setActive]);
+	const updateActive = React.useCallback(
+		({ target }) => {
+			const { currentTime } = target ?? {};
+			const isActive =
+				currentTime != null &&
+				currentTime >= start &&
+				currentTime <= end;
 
-	useTimeUpdate(
-		classNames?.active ? updateActive : null
+			if (isActive !== active) {
+				setActive(isActive);
+			}
+		},
+		[active, setActive]
 	);
 
-	const onClick = React.useCallback((e) => {
-		onClickProp?.(e);
+	useTimeUpdate(silent ? null : updateActive);
 
-		if (!e.defaultPrevented) {
-			player?.setCurrentTime(start);
-		}
-	}, [player, start, onClickProp]);
+	return active;
+};
+
+export function Segment({
+	start,
+	end,
+	onClick: onClickProp,
+	classNames,
+	className,
+	...otherProps
+}) {
+	const player = usePlayer();
+	const active = useIsActiveTime(start, end, !classNames?.active);
+	const onClick = useSeekHandler(start, onClickProp);
 
 	const stateClasses = {};
 
@@ -54,6 +67,6 @@ Segment.propTypes = {
 	end: PropTypes.number.isRequired,
 	onClick: PropTypes.func,
 	classNames: PropTypes.shape({
-		active: PropTypes.string
-	})
-}
+		active: PropTypes.string,
+	}),
+};

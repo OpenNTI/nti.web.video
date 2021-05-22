@@ -37,12 +37,12 @@ const getSegmentStyle = (seg, player) => {
 	};
 };
 
-export function WatchedSegments({ segments: segmentsProp, ...otherProps }) {
+const useWatchedSegments = segments => {
 	const player = usePlayer();
 
 	const resolver = useResolver(async () => {
-		if (segmentsProp) {
-			return segmentsProp;
+		if (segments) {
+			return groupAdjoiningSegments(segments);
 		}
 
 		const video = player?.video;
@@ -54,11 +54,18 @@ export function WatchedSegments({ segments: segmentsProp, ...otherProps }) {
 		const resp = await video.fetchLink('watched_segments');
 
 		return groupAdjoiningSegments(resp.WatchedSegments);
-	}, [player, segmentsProp]);
+	}, [player, segments]);
 
-	const loading = isPending(resolver);
-	const error = isErrored(resolver) ? resolver : null;
-	const segments = isResolved(resolver) ? resolver : null;
+	return {
+		loading: isPending(resolver),
+		error: isErrored(resolver) ? resolver : null,
+		segments: isResolved(resolver) ? resolver : null,
+	};
+};
+
+export function WatchedSegments({ segments: segmentsProp, ...otherProps }) {
+	const player = usePlayer();
+	const { loading, error, segments } = useWatchedSegments(segmentsProp);
 
 	return (
 		<div {...otherProps}>

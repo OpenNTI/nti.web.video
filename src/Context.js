@@ -2,6 +2,7 @@
 /** @typedef {(...x: any[]) => void} Emitter */
 /** @typedef {() => void} Invalidator */
 /** @typedef {{teardown: Invalidator, onTimeUpdate: Emitter, onSeeked: Emitter, onPlaying: Emitter, onPause: Emitter, onEnded: Emitter, onError: Emitter, onReady: Emitter}} PlayerContext */
+/** @typedef {(event: Event) => void} EventHandler */
 
 import EventEmitter from 'events';
 
@@ -58,8 +59,8 @@ class ContextObject extends EventEmitter {
 	 * Add a listener to the player context
 	 *
 	 * @param {string} event what to listen for
-	 * @param {Function} fn callback when event is fired
-	 * @returns {Function} method to remove the listener
+	 * @param {EventHandler} fn callback when event is fired
+	 * @returns {Invalidator} method to remove the listener
 	 */
 	subscribe(event, fn) {
 		this.addListener(event, fn);
@@ -110,7 +111,7 @@ export const usePlayer = () => {
 /**
  * Listen for timeupdate events on the active player in the current context
  *
- * @param {Function} fn
+ * @param {EventHandler} fn
  * @returns {void}
  */
 export const useTimeUpdate = fn => useEvent('time-update', fn);
@@ -118,7 +119,7 @@ export const useTimeUpdate = fn => useEvent('time-update', fn);
 /**
  * Listen for seeked events on the active player in the current context
  *
- * @param {Function} fn
+ * @param {EventHandler} fn
  * @returns {void}
  */
 export const useSeekedEvent = fn => useEvent('seeked', fn);
@@ -126,7 +127,7 @@ export const useSeekedEvent = fn => useEvent('seeked', fn);
 /**
  * Listen for play events on the active player in the current context
  *
- * @param {Function} fn
+ * @param {EventHandler} fn
  * @returns {void}
  */
 export const usePlayingEvent = fn => useEvent('playing', fn);
@@ -134,7 +135,7 @@ export const usePlayingEvent = fn => useEvent('playing', fn);
 /**
  * Listen for pause events on the active player in the current context
  *
- * @param {Function} fn
+ * @param {EventHandler} fn
  * @returns {void}
  */
 export const usePauseEvent = fn => useEvent('paused', fn);
@@ -142,7 +143,7 @@ export const usePauseEvent = fn => useEvent('paused', fn);
 /**
  * Listen for end events on the active player in the current context
  *
- * @param {Function} fn
+ * @param {EventHandler} fn
  * @returns {void}
  */
 export const useEndedEvent = fn => useEvent('ended', fn);
@@ -150,7 +151,7 @@ export const useEndedEvent = fn => useEvent('ended', fn);
 /**
  * Listen for error events on the active player in the current context
  *
- * @param {Function} fn
+ * @param {EventHandler} fn
  * @returns {void}
  */
 export const useErrorEvent = fn => useEvent('error', fn);
@@ -158,7 +159,7 @@ export const useErrorEvent = fn => useEvent('error', fn);
 /**
  * Listen for ready events on the active player in the current context
  *
- * @param {Function} fn
+ * @param {EventHandler} fn
  * @returns {void}
  */
 export const useReadyEvent = fn => useEvent('ready', fn);
