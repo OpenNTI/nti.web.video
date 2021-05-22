@@ -4,19 +4,22 @@
   "author": "nextthought",
   "description": "A Video component for ReactJS",
   "license": "UNLICENSED",
-  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js",
+    "./controls": "./src/controls/index.js"
+  },
   "module": "src/index.js",
   "sideEffects": [
     "*.css",
     "*.scss"
   ],
   "scripts": {
-    "fix": "cmp-scripts fix",
     "test": "cmp-scripts test",
-    "start": "cmp-scripts start",
     "clean": "cmp-scripts clean",
     "check": "cmp-scripts check",
-    "release": "cmp-scripts release"
+    "legacy-test-app": "cmp-scripts start",
+    "release": "cmp-scripts release",
+    "start": "start-storybook -p 6006"
   },
   "repository": {
     "type": "git",

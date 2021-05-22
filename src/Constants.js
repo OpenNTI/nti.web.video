@@ -1,3 +1,5 @@
+import React from 'react';
+
 export const EventHandlers = {
 	playing: 'onPlaying',
 	ratechange: 'onRateChange',
@@ -14,3 +16,5 @@ export const PLAYING = 1;
 export const PAUSED = 2;
 export const BUFFERING = 3;
 export const CUED = 5;
+
+export const Context = React.createContext();

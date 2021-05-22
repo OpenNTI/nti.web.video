@@ -8,6 +8,7 @@ import cx from 'classnames';
 import Logger from '@nti/util-logger';
 import { Decorators, AddClass } from '@nti/web-commons';
 
+import { Context } from './Constants';
 import { getHandler } from './services';
 import Fallback from './services/html5';
 
@@ -50,8 +51,10 @@ class Video extends React.Component {
 		deferred: PropTypes.bool,
 		startTime: PropTypes.number,
 
-		fullscreenElement: PropTypes.node,
+		fullscreenElement: PropTypes.node
 	};
+
+	static contextType = Context;
 
 	static defaultProps = {
 		onTimeUpdate: emptyFunction,
@@ -116,9 +119,15 @@ class Video extends React.Component {
 		return `${this.props.src}`;
 	}
 
+	get video () {
+		return this.props.src;
+	}
+
 	componentDidMount() {
 		this._setupStartTime();
 		this._setupFullScreen();
+
+		this.playerContext = this.context?.setupPlayerContext(this);
 	}
 
 	componentDidUpdate() {
@@ -126,6 +135,9 @@ class Video extends React.Component {
 	}
 
 	componentWillUnmount() {
+		this.playerContext?.teardown();
+		delete this.playerContext;
+
 		(this.unsubscribe || []).forEach(method => method());
 		delete this.unsubscribe;
 
@@ -143,9 +155,10 @@ class Video extends React.Component {
 			sourceWillChange = this.onNonRecoverableError(e);
 		}
 
-		if (this.props.onError) {
-			this.props.onError(Object.assign(e, { sourceWillChange }));
-		}
+		const error = Object.assign(e, { sourceWillChange });
+
+		this.props.onError?.(error);
+		this.playerContext?.onError(error);
 	};
 
 	onNonRecoverableError = () => {
@@ -166,30 +179,35 @@ class Video extends React.Component {
 	onTimeUpdate = event => {
 		events.trace('timeUpdate %o', event);
 		this.props.onTimeUpdate(event);
+		this.playerContext?.onTimeUpdate(event);
 	};
 
 	onSeeked = event => {
 		events.debug('seeked', this.srcString);
 		events.trace('seeked %o', event);
 		this.props.onSeeked(event);
+		this.playerContext?.onSeeked(event);
 	};
 
 	onPlaying = event => {
 		events.debug('played', this.srcString);
 		events.trace('played %o', event);
 		this.props.onPlaying(event);
+		this.playerContext?.onPlaying(event);
 	};
 
 	onPause = event => {
 		events.debug('pause', this.srcString);
 		events.trace('pause %o', event);
 		this.props.onPause(event);
+		this.playerContext?.onPause(event);
 	};
 
 	onEnded = event => {
 		events.debug('ended', this.srcString);
 		events.trace('ended %o', event);
 		this.props.onEnded(event);
+		this.playerContext?.onEnded(event);
 	};
 
 	onReady = event => {
@@ -207,6 +225,8 @@ class Video extends React.Component {
 		if (onReady) {
 			onReady();
 		}
+
+		this.playerContext?.onReady();
 
 		this.setState({ ready: true }, () => {
 			for (let command of this.commandQueue) {

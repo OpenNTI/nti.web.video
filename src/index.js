@@ -21,6 +21,8 @@ import {
 
 export default ComponentRaw;
 
+export * from './Context';
+
 export {
 	getHandler,
 	getUrl,

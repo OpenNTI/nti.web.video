@@ -1,1 +1,4 @@
-export { default as Overlay } from './Overlay';
+export * from './Resume';
+export * from './SeekTo';
+export * from './Segment';
+export * from './WatchedSegments';
