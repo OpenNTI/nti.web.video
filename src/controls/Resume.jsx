@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { scoped } from '@nti/lib-locale';
-import { Hooks, Text } from '@nti/web-commons';
+import { Hooks, Text, Icons } from '@nti/web-commons';
 
 import { usePlayer } from '../Context';
 
@@ -60,6 +60,7 @@ export function Resume({ time, ...otherProps }) {
 			loading={loading}
 			error={error}
 		>
+			<Icons.VideoResume />
 			<Labels localeKey="label" />
 		</ResumeButton>
 	);
