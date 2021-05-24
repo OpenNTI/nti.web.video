@@ -1,3 +1,11 @@
+/** @typedef {number} Duration - Length of Video in seconds */
+/** @typedef {number} Time - Current playhead of the player */
+/** @typedef {number} Speed - Speed of the player */
+
+/** @typedef {{duration:Duration, time:Time, speed:Speed}} PlayerState */
+/** @typedef {() => PlayerState} PlayerStateGetter */
+/** @typedef {{getPlayerState:PlayerStateGetter}} Player */
+
 import './Video.scss';
 import EventEmitter from 'events';
 
@@ -51,7 +59,7 @@ class Video extends React.Component {
 		deferred: PropTypes.bool,
 		startTime: PropTypes.number,
 
-		fullscreenElement: PropTypes.node
+		fullscreenElement: PropTypes.node,
 	};
 
 	static contextType = Context;
@@ -119,7 +127,7 @@ class Video extends React.Component {
 		return `${this.props.src}`;
 	}
 
-	get video () {
+	get video() {
 		return this.props.src;
 	}
 
