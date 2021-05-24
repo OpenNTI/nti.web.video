@@ -20,6 +20,15 @@ const Bar = styled.div`
 	position: relative;
 	height: 4px;
 	background: #d8d8d8;
+
+	&.loading {
+		opacity: 0.7;
+	}
+
+	&.error {
+		background: var(--secondary-red);
+		opacity: 0.7;
+	}
 `;
 
 const Segment = styled.div`
