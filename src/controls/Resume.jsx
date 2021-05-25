@@ -67,10 +67,12 @@ const useResumeTime = time => {
 };
 
 export function Resume({ time, ...otherProps }) {
+	const [clicked, setClicked] = React.useState(false);
+	const onClick = React.useCallback(() => setClicked(true), [setClicked]);
+
 	const [width, setWidth] = React.useState(null);
 
 	const buttonRef = React.useRef();
-
 	React.useLayoutEffect(() => {
 		const node = buttonRef.current?.getDOMNode?.() ?? buttonRef.current;
 		const maxWidth = node?.clientWidth ? node.clientWidth + 10 : null;
@@ -83,13 +85,14 @@ export function Resume({ time, ...otherProps }) {
 	const { loading, error, resumeTime } = useResumeTime(time);
 
 	const hidden = width === null;
-	const collapsed = !hidden && (loading || error);
+	const collapsed = clicked || (!hidden && (loading || error));
 
 	return (
 		<ResumeButton
 			{...otherProps}
 			ref={buttonRef}
 			time={resumeTime}
+			onClick={onClick}
 			style={width ? { '--button-width': `${width}px` } : null}
 			hidden={hidden}
 			collapsed={collapsed}
