@@ -33,18 +33,36 @@ export const useSeekHandler = (time, onClick) => {
  * @param {SeekToProps} props
  * @returns {React.ReactElement}
  */
-export function SeekTo({ time, onClick: onClickProp, as: tag, ...otherProps }) {
+function SeekToCmp({
+	time,
+	onClick: onClickProp,
+	as: tag,
+	innerRef,
+	...otherProps
+}) {
 	const Cmp = tag || Button;
 	const player = usePlayer();
 
 	const onClick = useSeekHandler(time, onClickProp);
 
-	return <Cmp onClick={onClick} disabled={!player} {...otherProps} />;
+	return (
+		<Cmp
+			onClick={onClick}
+			disabled={!player}
+			ref={innerRef}
+			{...otherProps}
+		/>
+	);
 }
 
-SeekTo.propTypes = {
+SeekToCmp.propTypes = {
 	/**Time to seek to in seconds */
 	time: PropTypes.number,
 	onClick: PropTypes.func,
 	as: PropTypes.any,
+	innerRef: PropTypes.any,
 };
+
+export const SeekTo = React.forwardRef((props, ref) => (
+	<SeekToCmp {...props} innerRef={ref} />
+));

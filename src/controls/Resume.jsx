@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { scoped } from '@nti/lib-locale';
+import { wait } from '@nti/lib-commons';
 import { Hooks, Text, Icons } from '@nti/web-commons';
 
 import { usePlayer } from '../Context';
@@ -16,8 +17,21 @@ const { useResolver } = Hooks;
 const { isPending, isErrored, isResolved } = useResolver;
 
 const ResumeButton = styled(SeekTo)`
-	&.loading {
-		display: none;
+	transition: max-width 0.5s, opacity 0.5s;
+	max-width: var(--button-width);
+	opacity: 1;
+	white-space: nowrap;
+
+	&.hidden {
+		position: fixed;
+		visibility: hidden;
+		opacity: 0;
+	}
+
+	&.collapsed {
+		opacity: 0;
+		max-width: 0;
+		padding: 0;
 	}
 `;
 
@@ -37,7 +51,10 @@ const useResumeTime = time => {
 			return null;
 		}
 
+		const delay = wait.min(wait.SHORT);
 		const info = await video.fetchLink('resume_info');
+
+		await delay();
 
 		return info.ResumeSeconds;
 	}, [player, time]);
@@ -50,15 +67,32 @@ const useResumeTime = time => {
 };
 
 export function Resume({ time, ...otherProps }) {
+	const [width, setWidth] = React.useState(null);
+
+	const buttonRef = React.useRef();
+
+	React.useLayoutEffect(() => {
+		const node = buttonRef.current?.getDOMNode?.() ?? buttonRef.current;
+		const maxWidth = node?.clientWidth ? node.clientWidth + 10 : null;
+
+		if (width !== maxWidth) {
+			setWidth(maxWidth);
+		}
+	}, []);
+
 	const { loading, error, resumeTime } = useResumeTime(time);
+
+	const hidden = width === null;
+	const collapsed = !hidden && (loading || error);
 
 	return (
 		<ResumeButton
 			{...otherProps}
+			ref={buttonRef}
 			time={resumeTime}
-			disabled={error || loading}
-			loading={loading}
-			error={error}
+			style={width ? { '--button-width': `${width}px` } : null}
+			hidden={hidden}
+			collapsed={collapsed}
 		>
 			<Icons.VideoResume />
 			<Labels localeKey="label" />

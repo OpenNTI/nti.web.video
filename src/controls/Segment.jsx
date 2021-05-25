@@ -31,12 +31,13 @@ const useIsActiveTime = (start, end, silent) => {
 	return active;
 };
 
-export function Segment({
+function SegmentCmp({
 	start,
 	end,
 	onClick: onClickProp,
 	classNames,
 	className,
+	innerRef,
 	...otherProps
 }) {
 	const player = usePlayer();
@@ -55,18 +56,27 @@ export function Segment({
 			className={cx(className, stateClasses)}
 			onClick={onClick}
 			disabled={!player}
+			innerRef={innerRef}
 			{...otherProps}
 		/>
 	);
 }
 
-Segment.propTypes = {
+SegmentCmp.propTypes = {
 	/** Start of the segment (in seconds) */
 	start: PropTypes.number.isRequired,
 	/** End of the segment (in seconds) */
 	end: PropTypes.number.isRequired,
+
 	onClick: PropTypes.func,
+
 	classNames: PropTypes.shape({
 		active: PropTypes.string,
 	}),
+
+	innerRef: PropTypes.any,
 };
+
+export const Segment = React.forwardRef((props, ref) => (
+	<SegmentCmp {...props} innerRef={ref} />
+));
