@@ -4,6 +4,7 @@
   "author": "nextthought",
   "description": "A Video component for ReactJS",
   "license": "UNLICENSED",
+  "main": "./src/index.js",
   "exports": {
     ".": "./src/index.js",
     "./controls": "./src/controls/index.js"
