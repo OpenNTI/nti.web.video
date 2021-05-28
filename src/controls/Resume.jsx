@@ -32,6 +32,7 @@ const ResumeButton = styled(SeekTo)`
 		opacity: 0;
 		max-width: 0;
 		padding: 0;
+		margin: 0;
 	}
 `;
 
