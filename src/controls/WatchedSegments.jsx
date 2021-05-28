@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { Hooks, Text } from '@nti/web-commons';
+import { scoped } from '@nti/lib-locale';
+import { Hooks, Text, Button, Icons } from '@nti/web-commons';
 
 import { usePlayer } from '../Context';
 
@@ -11,6 +12,10 @@ import groupAdjoiningSegments from './utils/group-adjoining-segments';
 
 const { useResolver } = Hooks;
 const { isPending, isErrored, isResolved } = useResolver;
+
+const t = scoped('nti-video.controls.WatchedSegments', {
+	trigger: 'Watch History',
+});
 
 const Container = styled.div`
 	cursor: pointer;
@@ -167,6 +172,28 @@ export function WatchedSegments({
 		</Container>
 	);
 }
+
+const TriggerIcon = styled(Icons.Chevron.Down)`
+	border: 1px solid currentColor;
+	border-radius: 50%;
+
+	[aria-expanded='true'] & {
+		transform: rotate(180deg);
+	}
+`;
+
+WatchedSegments.Trigger = ({ children, ...props }) => (
+	<Button {...props}>
+		{React.Children.count(children) > 0 ? (
+			children
+		) : (
+			<>
+				<Text.Base>{t('trigger')}</Text.Base>
+				<TriggerIcon />
+			</>
+		)}
+	</Button>
+);
 
 WatchedSegments.propTypes = {
 	segments: PropTypes.arrayOf([
