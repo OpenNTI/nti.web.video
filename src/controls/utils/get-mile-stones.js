@@ -26,7 +26,7 @@ export default function getMileStones(player) {
 	const { duration } = player?.getPlayerState?.() ?? {};
 
 	if (!duration) {
-		return null;
+		return [];
 	}
 
 	return [0, duration * 0.25, duration * 0.5, duration * 0.75, duration].map(
