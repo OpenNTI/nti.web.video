@@ -2,7 +2,6 @@
 /** @typedef {{video_start_time:Time, video_end_time: Time}} Segment */
 
 import React from 'react';
-import PropTypes from 'prop-types';
 
 import { scoped } from '@nti/lib-locale';
 import { Hooks, Text, Button, Icons } from '@nti/web-commons';
