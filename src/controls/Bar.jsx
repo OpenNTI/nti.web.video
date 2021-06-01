@@ -10,7 +10,7 @@ const { Slot } = Layouts;
 
 const styles = stylesheet`
 	.dark-button:global(.nti-button) {
-		background-color: rgba(35,35,35,0.75);
+		background-color: rgba(var(--secondary-background-rgb),0.75);
 		box-shadow: 0 0 0 1px var(--primary-blue);
 		color: var(--primary-blue);
 
@@ -22,7 +22,7 @@ const styles = stylesheet`
 
 	.light-button:global(.nti-button) {
 		&.selected {
-			background-color: #F5F6F8;
+			background-color: var(--quad-grey);
 			box-shadow: none;
 		}
 	}
@@ -43,11 +43,11 @@ const Bar = styled.div`
 const WatchedContainer = styled.div`
 	margin-top: 1rem;
 	padding: 1.125rem 1.25rem 0.875rem;
-	background: #f5f6f8;
+	background: var(--quad-grey);
 	border-radius: 4px;
 
 	&.dark {
-		background: #232323;
+		background: var(--secondary-background);
 	}
 `;
 
