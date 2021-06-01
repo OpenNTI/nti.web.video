@@ -1,3 +1,6 @@
+/** @typedef {number} Time - video timestamp in seconds */
+/** @typedef {{video_start_time:Time, video_end_time: Time}} Segment */
+
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -34,6 +37,10 @@ const Bar = styled.div`
 		background: var(--secondary-red);
 		opacity: 0.7;
 	}
+
+	&.dark {
+		background: var(--primary-grey);
+	}
 `;
 
 const Segment = styled.div`
@@ -55,6 +62,11 @@ const Milestone = styled(Text.Base)`
 	position: absolute;
 	top: 0;
 	transform: translateX(-50%);
+	color: var(--primary-grey);
+
+	&.dark {
+		color: white;
+	}
 
 	&:first-child {
 		transform: none;
@@ -144,9 +156,16 @@ const useSeekHandler = onClick => {
 	};
 };
 
+/**
+ * Render the watched segments of the video in a trackbar
+ *
+ * @param {{segments:[Segment], onClick:(event:Event) => void, dark:boolean}} props
+ * @returns {JSX.Element}
+ */
 export function WatchedSegments({
 	segments: segmentsProp,
 	onClick: onClickProp,
+	dark,
 	...otherProps
 }) {
 	const milestones = useMileStones();
@@ -155,7 +174,7 @@ export function WatchedSegments({
 
 	return (
 		<Container {...otherProps} onClick={onClick} ref={ref}>
-			<Bar loading={loading} error={error}>
+			<Bar loading={loading} error={error} dark={dark}>
 				{(segments ?? []).map((seg, key) => (
 					<Segment key={key} {...seg} />
 				))}
@@ -163,7 +182,11 @@ export function WatchedSegments({
 			{milestones && (
 				<Milestones>
 					{milestones.map((milestone, key) => (
-						<Milestone key={key} style={milestone.style}>
+						<Milestone
+							key={key}
+							style={milestone.style}
+							dark={dark}
+						>
 							{milestone.label}
 						</Milestone>
 					))}
@@ -194,13 +217,3 @@ WatchedSegments.Trigger = ({ children, ...props }) => (
 		)}
 	</Button>
 );
-
-WatchedSegments.propTypes = {
-	segments: PropTypes.arrayOf([
-		PropTypes.shape({
-			video_start_time: PropTypes.number,
-			video_end_time: PropTypes.number,
-		}),
-	]),
-	onClick: PropTypes.func,
-};

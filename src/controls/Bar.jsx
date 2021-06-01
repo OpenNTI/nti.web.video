@@ -44,6 +44,11 @@ const WatchedContainer = styled.div`
 	margin-top: 1rem;
 	padding: 1.125rem 1.25rem 0.875rem;
 	background: #f5f6f8;
+	border-radius: 4px;
+
+	&.dark {
+		background: #232323;
+	}
 `;
 
 /**
@@ -101,8 +106,8 @@ export function ControlBar({ children, dark, ...props }) {
 			{Slot.exists(WatchedSegments.Trigger, children) && (
 				<div id={watchedId}>
 					{showWatched && (
-						<WatchedContainer>
-							<WatchedSegments />
+						<WatchedContainer dark={dark}>
+							<WatchedSegments dark={dark} />
 						</WatchedContainer>
 					)}
 				</div>
