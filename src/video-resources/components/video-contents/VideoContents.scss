@@ -1,7 +1,9 @@
+@use "sass:math";
+
 @import '~@nti/style-common';
 
 .video-resources-video-contents {
-	$gap: ((20 / 974) / 2) * 100%;
+	$gap: math.div(math.div(20, 974), 2) * 100%;
 
 	display: flex;
 	flex-wrap: wrap;
