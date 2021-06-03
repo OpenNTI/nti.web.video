@@ -31,7 +31,10 @@ export default function groupAdjoiningSegments(segments) {
 
 			return [
 				...acc.slice(0, -1),
-				{ [StartKey]: start(prev), [EndKey]: end(segment) },
+				{
+					[StartKey]: start(prev),
+					[EndKey]: Math.max(end(segment), end(prev)),
+				},
 			];
 		}, []);
 }

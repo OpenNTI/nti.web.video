@@ -33,4 +33,11 @@ describe('groupWatchSegment tests', () => {
 
 		expect(group([first, second])).toEqual([seg(0, 30)]);
 	});
+
+	test('contained segments', () => {
+		const first = seg(0, 30);
+		const second = seg(10, 20);
+
+		expect(group([first, second])).toEqual([seg(0, 30)]);
+	});
 });
