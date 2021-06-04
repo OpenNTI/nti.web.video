@@ -64,6 +64,10 @@ export default class extends React.Component {
 
 	attachRef = x => (this.activeVideo = x);
 
+	getPlayerState() {
+		return this.activeVideo?.getPlayerState();
+	}
+
 	getCurrentVideoTarget() {
 		const state = this.activeVideo && this.activeVideo.getPlayerState();
 
