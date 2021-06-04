@@ -78,7 +78,7 @@ const Milestone = styled(Text.Base)`
 
 const getSegmentStyle = (seg, player) => ({
 	...getTimeStyle(seg.video_start_time, player),
-	...getDurationStyle(seg.video_end_time - seg.video_start_time, player),
+	...getDurationStyle(seg.video_end_time - seg.video_start_time + 1, player), //the segments are inclusive
 });
 
 const getSegmentProps = (seg, player) => ({
