@@ -9,7 +9,6 @@ import {
 } from '@nti/lib-analytics';
 import { scoped } from '@nti/lib-locale';
 import { Hooks, Text, Button, Icons } from '@nti/web-commons';
-import { Session } from '@nti/web-session';
 
 import { usePlayer } from '../Context';
 
