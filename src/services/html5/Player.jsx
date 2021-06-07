@@ -316,6 +316,7 @@ export default class HTML5Video extends React.Component {
 			...otherProps,
 			controls: shouldUseNativeControls,
 			onClick: this.onClick,
+			playsinline: true, //https://stackoverflow.com/questions/41512200/how-do-some-websites-play-video-inline-in-ios-safari/42236446#42236446
 		};
 
 		delete videoProps.autoPlay;
