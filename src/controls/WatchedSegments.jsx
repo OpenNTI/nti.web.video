@@ -106,7 +106,7 @@ const useWatchedSegments = segments => {
 		const resp = await video.fetchLink('watched_segments');
 
 		return groupAdjoiningSegments(resp.WatchedSegments).map(toProps);
-	}, [player, segments]);
+	}, [player, player?.video, segments]);
 
 	return {
 		loading: isPending(resolver),
