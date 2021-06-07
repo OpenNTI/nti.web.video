@@ -3,8 +3,13 @@
 
 import React from 'react';
 
+import {
+	Hooks as AnalyticsHooks,
+	Manager as AnalyticManager,
+} from '@nti/lib-analytics';
 import { scoped } from '@nti/lib-locale';
 import { Hooks, Text, Button, Icons } from '@nti/web-commons';
+import { Session } from '@nti/web-session';
 
 import { usePlayer } from '../Context';
 
@@ -14,6 +19,8 @@ import groupAdjoiningSegments from './utils/group-adjoining-segments';
 
 const { useResolver } = Hooks;
 const { isPending, isErrored, isResolved } = useResolver;
+
+const VideoWatchType = AnalyticManager.getTypeForEvent('VideoWatch');
 
 const t = scoped('nti-video.controls.WatchedSegments', {
 	trigger: 'Watch History',
@@ -89,10 +96,11 @@ const getSegmentProps = (seg, player) => ({
 
 const useWatchedSegments = segments => {
 	const player = usePlayer();
+	const [liveSegments, setLiveSegments] = React.useState([]);
+
+	const toProps = s => getSegmentProps(s, player);
 
 	const resolver = useResolver(async () => {
-		const toProps = s => getSegmentProps(s, player);
-
 		if (segments) {
 			return groupAdjoiningSegments(segments).map(toProps);
 		}
@@ -105,13 +113,50 @@ const useWatchedSegments = segments => {
 
 		const resp = await video.fetchLink('watched_segments');
 
-		return groupAdjoiningSegments(resp.WatchedSegments).map(toProps);
+		return groupAdjoiningSegments(resp.WatchedSegments);
 	}, [player, player?.video, segments]);
+
+	React.useEffect(() => {
+		if (!player?.video) {
+			return;
+		}
+
+		const listener = events => {
+			const newSegments = events.reduce((acc, event) => {
+				if (
+					event.MimeType === VideoWatchType &&
+					event.ResourceId === player?.video.getID?.()
+				) {
+					acc.push({
+						video_start_time: event.video_start_time,
+						video_end_time:
+							event.video_end_time ??
+							event.video_start_time + event.Duration,
+						count: 1,
+					});
+				}
+
+				return acc;
+			}, []);
+
+			setLiveSegments(
+				groupAdjoiningSegments([...liveSegments, ...newSegments])
+			);
+		};
+
+		AnalyticsHooks.addAfterBatchEventsListener(listener);
+
+		return () => AnalyticsHooks.removeAfterBatchEventsListener(listener);
+	}, [liveSegments, setLiveSegments, player?.video]);
 
 	return {
 		loading: isPending(resolver),
 		error: isErrored(resolver) ? resolver : null,
-		segments: isResolved(resolver) ? resolver : null,
+		segments: isResolved(resolver)
+			? groupAdjoiningSegments([...resolver, ...liveSegments]).map(
+					toProps
+			  )
+			: null,
 	};
 };
 
