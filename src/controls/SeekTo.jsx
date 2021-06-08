@@ -20,6 +20,7 @@ export const useSeekHandler = (time, onClick) => {
 			onClick?.(e);
 
 			if (!e.defaultPrevented) {
+				player?.play();
 				player?.setCurrentTime(time);
 			}
 		},
