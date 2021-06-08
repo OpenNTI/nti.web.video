@@ -57,7 +57,7 @@ const useResumeTime = time => {
 
 		await delay();
 
-		return info.ResumeSeconds;
+		return info.ResumeSeconds ?? null;
 	}, [player, time]);
 
 	return {
@@ -86,7 +86,8 @@ export function Resume({ time, ...otherProps }) {
 	const { loading, error, resumeTime } = useResumeTime(time);
 
 	const hidden = width === null;
-	const collapsed = clicked || (!hidden && (loading || error));
+	const collapsed =
+		clicked || (!hidden && (loading || error || resumeTime === null));
 
 	return (
 		<ResumeButton
