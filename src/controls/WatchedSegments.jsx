@@ -82,26 +82,30 @@ const Milestone = styled(Text.Base)`
 	}
 `;
 
-const getSegmentStyle = (seg, player) => ({
+const getSegmentStyle = (seg, player, maxDuration) => ({
 	...getTimeStyle(seg.video_start_time, player),
-	...getDurationStyle(seg.video_end_time - seg.video_start_time + 1, player), //the segments are inclusive
+	...getDurationStyle(
+		seg.video_end_time - seg.video_start_time + 1,
+		player,
+		maxDuration
+	), //the segments are inclusive
 });
 
-const getSegmentProps = (seg, player) => ({
+const getSegmentProps = (seg, player, maxDuration) => ({
 	'data-start': seg.video_start_time,
 	'data-end': seg.video_end_time,
-	style: getSegmentStyle(seg, player),
+	style: getSegmentStyle(seg, player, maxDuration),
 });
 
 const useWatchedSegments = segments => {
 	const player = usePlayer();
 	const [liveSegments, setLiveSegments] = React.useState([]);
 
-	const toProps = s => getSegmentProps(s, player);
-
 	const resolver = useResolver(async () => {
 		if (segments) {
-			return groupAdjoiningSegments(segments).map(toProps);
+			return {
+				WatchedSegments: groupAdjoiningSegments(segments),
+			};
 		}
 
 		const video = player?.video;
@@ -112,7 +116,10 @@ const useWatchedSegments = segments => {
 
 		const resp = await video.fetchLink('watched_segments');
 
-		return groupAdjoiningSegments(resp.WatchedSegments);
+		return {
+			MaxDuration: resp.MaxDuration,
+			WatchedSegments: groupAdjoiningSegments(resp.WatchedSegments),
+		};
 	}, [player, player?.video, segments]);
 
 	React.useEffect(() => {
@@ -149,22 +156,24 @@ const useWatchedSegments = segments => {
 	}, [liveSegments, setLiveSegments, player?.video]);
 
 	return {
+		maxDuration: resolver?.MaxDuration,
 		loading: isPending(resolver),
 		error: isErrored(resolver) ? resolver : null,
 		segments: isResolved(resolver)
-			? groupAdjoiningSegments([...resolver, ...liveSegments]).map(
-					toProps
-			  )
+			? groupAdjoiningSegments([
+					...resolver.WatchedSegments,
+					...liveSegments,
+			  ]).map(s => getSegmentProps(s, player, resolver?.MaxDuration))
 			: null,
 	};
 };
 
-const useMileStones = () => {
+const useMileStones = maxDuration => {
 	const player = usePlayer();
 
-	return getMileStones(player).map(m => ({
+	return getMileStones(player, maxDuration).map(m => ({
 		...m,
-		style: getTimeStyle(m.time, player),
+		style: getTimeStyle(m.time, player, maxDuration),
 	}));
 };
 
@@ -211,8 +220,9 @@ export function WatchedSegments({
 	dark,
 	...otherProps
 }) {
-	const milestones = useMileStones();
-	const { loading, error, segments } = useWatchedSegments(segmentsProp);
+	const { loading, error, segments, maxDuration } =
+		useWatchedSegments(segmentsProp);
+	const milestones = useMileStones(maxDuration);
 	const { ref, onClick } = useSeekHandler(onClickProp);
 
 	return (

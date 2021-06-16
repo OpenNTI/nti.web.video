@@ -1,17 +1,19 @@
-export const getTimeStyle = (time, player) => {
-	const { duration } = player?.getPlayerState?.() ?? {};
+export const getTimeStyle = (time, player, maxDuration) => {
+	const state = player?.getPlayerState?.() ?? {};
+	const videoDuration = maxDuration ?? state.duration;
 
-	if (duration == null) {
+	if (videoDuration == null) {
 		return {};
 	}
 
 	return {
-		left: `${Math.floor((time / duration) * 100)}%`,
+		left: `${Math.floor((time / videoDuration) * 100)}%`,
 	};
 };
 
-export const getDurationStyle = (segmentDuration, player) => {
-	const { duration: videoDuration } = player?.getPlayerState?.() ?? {};
+export const getDurationStyle = (segmentDuration, player, maxDuration) => {
+	const state = player?.getPlayerState?.() ?? {};
+	const videoDuration = maxDuration ?? state.duration;
 
 	if (videoDuration == null) {
 		return {};

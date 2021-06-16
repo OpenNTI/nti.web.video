@@ -20,19 +20,25 @@ const getMileStoneLabel = m => {
 /**
  *
  * @param {object} player
+ * @param maxDuration
  * @returns {[Milestone]}
  */
-export default function getMileStones(player) {
-	const { duration } = player?.getPlayerState?.() ?? {};
+export default function getMileStones(player, maxDuration) {
+	const state = player?.getPlayerState?.() ?? {};
+	const videoDuration = maxDuration ?? state.duration;
 
-	if (!duration) {
+	if (!videoDuration) {
 		return [];
 	}
 
-	return [0, duration * 0.25, duration * 0.5, duration * 0.75, duration].map(
-		m => ({
-			time: m,
-			label: getMileStoneLabel(m),
-		})
-	);
+	return [
+		0,
+		videoDuration * 0.25,
+		videoDuration * 0.5,
+		videoDuration * 0.75,
+		videoDuration,
+	].map(m => ({
+		time: m,
+		label: getMileStoneLabel(m),
+	}));
 }
