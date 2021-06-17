@@ -19,7 +19,8 @@ export default class extends React.Component {
 	static propTypes = {
 		/**
 		 * The Video source. Either a URL or a Video model.
-		 * @type {String|Video}
+		 *
+		 * @type {string | Video}
 		 */
 		src: PropTypes.oneOfType([PropTypes.string, PropTypes.object])
 			.isRequired,
@@ -177,9 +178,11 @@ export default class extends React.Component {
 							if (this.isStarted) {
 								return;
 							}
+							console.trace('Starting Analytics');
 							this.isStarted = true;
 							break;
 						case 'stop':
+							console.trace('Stopping Analytics');
 							if (!this.isStarted) {
 								return;
 							}
@@ -215,6 +218,8 @@ export default class extends React.Component {
 		this.previousTime = currentTime;
 
 		if (this.isStarted) {
+			this.missedTimedUpdated = 0;
+
 			if (diff < 0 || diff > StopWatchThreshold) {
 				//Stop the current watch event
 				this.sendAnalyticsEvent(
@@ -234,6 +239,12 @@ export default class extends React.Component {
 				this.sendAnalyticsEvent(event, 'VideoWatch', 'start');
 			} else {
 				this.sendAnalyticsEvent(event, 'VideoWatch', 'update');
+			}
+		} else {
+			this.missedTimedUpdated = (this.missedTimedUpdated ?? 0) + 1;
+
+			if (this.missedTimedUpdated >= 2) {
+				this.sendAnalyticsEvent(event, 'VideoWatch', 'start');
 			}
 		}
 
