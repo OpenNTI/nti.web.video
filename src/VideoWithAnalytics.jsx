@@ -178,11 +178,9 @@ export default class extends React.Component {
 							if (this.isStarted) {
 								return;
 							}
-							console.trace('Starting Analytics');
 							this.isStarted = true;
 							break;
 						case 'stop':
-							console.trace('Stopping Analytics');
 							if (!this.isStarted) {
 								return;
 							}
