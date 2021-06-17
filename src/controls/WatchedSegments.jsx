@@ -53,6 +53,7 @@ const Segment = styled.div`
 	top: 0;
 	bottom: 0;
 	background: var(--secondary-green);
+	max-width: 100%;
 `;
 
 const Milestones = styled.div`
