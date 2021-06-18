@@ -239,6 +239,9 @@ export default class extends React.Component {
 				this.sendAnalyticsEvent(event, 'VideoWatch', 'update');
 			}
 		} else {
+			//this is to cover edge cases where we don't get the play event when seeking programmatically
+			//we wait for two to timed updates with out a started watch event to start one to prevent a one off
+			//time update from starting the watch
 			this.missedTimedUpdated = (this.missedTimedUpdated ?? 0) + 1;
 
 			if (this.missedTimedUpdated >= 2) {
