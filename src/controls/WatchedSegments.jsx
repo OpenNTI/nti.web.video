@@ -10,7 +10,7 @@ import {
 import { scoped } from '@nti/lib-locale';
 import { Hooks, Text, Button, Icons } from '@nti/web-commons';
 
-import { usePlayer } from '../Context';
+import { usePlayer, useDuration } from '../Context';
 
 import getMileStones from './utils/get-mile-stones';
 import { getTimeStyle, getDurationStyle } from './utils/get-styles';
@@ -169,8 +169,9 @@ const useWatchedSegments = segments => {
 	};
 };
 
-const useMileStones = maxDuration => {
+const useMileStones = () => {
 	const player = usePlayer();
+	const maxDuration = useDuration();
 
 	return getMileStones(player, maxDuration).map(m => ({
 		...m,
@@ -221,9 +222,8 @@ export function WatchedSegments({
 	dark,
 	...otherProps
 }) {
-	const { loading, error, segments, maxDuration } =
-		useWatchedSegments(segmentsProp);
-	const milestones = useMileStones(maxDuration);
+	const { loading, error, segments } = useWatchedSegments(segmentsProp);
+	const milestones = useMileStones();
 	const { ref, onClick } = useSeekHandler(onClickProp);
 
 	return (

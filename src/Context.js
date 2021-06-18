@@ -12,6 +12,8 @@ import { Hooks } from '@nti/web-commons';
 
 import { Context } from './Constants';
 
+const { useForceUpdate, useResolver } = Hooks;
+
 class ContextObject extends EventEmitter {
 	#players = [];
 
@@ -91,7 +93,7 @@ const useEvent = (event, fn) => {
  * @returns {Video}
  */
 export const usePlayer = () => {
-	const forceUpdate = Hooks.useForceUpdate();
+	const forceUpdate = useForceUpdate();
 	const context = useContext();
 
 	React.useEffect(() => {
@@ -106,6 +108,18 @@ export const usePlayer = () => {
 	}, [context]);
 
 	return context?.activePlayer || null;
+};
+
+export const useDuration = () => {
+	const player = usePlayer();
+
+	const resolver = useResolver(() => {
+		const currentState = player.getPlayerState();
+
+		return currentState?.duration ?? player.video.getDuration();
+	}, [player, player?.video]);
+
+	return useResolver.isResolved(resolver) ? resolver : null;
 };
 
 /**
