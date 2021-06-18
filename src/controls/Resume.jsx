@@ -98,6 +98,7 @@ export function Resume({ time, ...otherProps }) {
 			style={width ? { '--button-width': `${width}px` } : null}
 			hidden={hidden}
 			collapsed={collapsed}
+			data-testid="resume-video"
 		>
 			<Icons.VideoResume />
 			<Labels localeKey="label" />

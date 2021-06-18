@@ -260,7 +260,7 @@ const TriggerIcon = styled(Icons.Chevron.Down)`
 `;
 
 WatchedSegments.Trigger = ({ children, ...props }) => (
-	<Button {...props}>
+	<Button {...props} data-testid="watched-segments-trigger">
 		{React.Children.count(children) > 0 ? (
 			children
 		) : (
