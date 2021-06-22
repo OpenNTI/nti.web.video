@@ -21,6 +21,7 @@ const ResumeButton = styled(SeekTo)`
 	max-width: var(--button-width);
 	opacity: 1;
 	white-space: nowrap;
+	overflow: hidden;
 
 	&.hidden {
 		position: fixed;
