@@ -100,13 +100,13 @@ const getSegmentProps = (seg, player, maxDuration) => ({
 
 const useWatchedSegments = segments => {
 	const player = usePlayer();
+	const maxDuration = useDuration();
+
 	const [liveSegments, setLiveSegments] = React.useState([]);
 
 	const resolver = useResolver(async () => {
 		if (segments) {
-			return {
-				WatchedSegments: groupAdjoiningSegments(segments),
-			};
+			return groupAdjoiningSegments(segments);
 		}
 
 		const video = player?.video;
@@ -117,10 +117,7 @@ const useWatchedSegments = segments => {
 
 		const resp = await video.fetchLink('watched_segments');
 
-		return {
-			MaxDuration: resp.MaxDuration,
-			WatchedSegments: groupAdjoiningSegments(resp.WatchedSegments),
-		};
+		return groupAdjoiningSegments(resp.WatchedSegments);
 	}, [player, player?.video, segments]);
 
 	React.useEffect(() => {
@@ -157,14 +154,12 @@ const useWatchedSegments = segments => {
 	}, [liveSegments, setLiveSegments, player?.video]);
 
 	return {
-		maxDuration: resolver?.MaxDuration,
 		loading: isPending(resolver),
 		error: isErrored(resolver) ? resolver : null,
 		segments: isResolved(resolver)
-			? groupAdjoiningSegments([
-					...resolver.WatchedSegments,
-					...liveSegments,
-			  ]).map(s => getSegmentProps(s, player, resolver?.MaxDuration))
+			? groupAdjoiningSegments([...resolver, ...liveSegments]).map(s =>
+					getSegmentProps(s, player, maxDuration)
+			  )
 			: null,
 	};
 };
