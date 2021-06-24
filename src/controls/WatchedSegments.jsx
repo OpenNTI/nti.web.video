@@ -84,7 +84,7 @@ const Milestone = styled(Text.Base)`
 `;
 
 const getSegmentStyle = (seg, player, maxDuration) => ({
-	...getTimeStyle(seg.video_start_time, player),
+	...getTimeStyle(seg.video_start_time, player, maxDuration),
 	...getDurationStyle(
 		seg.video_end_time - seg.video_start_time + 1,
 		player,
