@@ -15,6 +15,13 @@ const { MediaSourceFactory } = Models.media;
 const commands = Logger.get('video:kaltura:commands');
 const events = Logger.get('video:kaltura:events');
 
+const KalturaWrapper = styled.div`
+	& video {
+		top: 50%;
+		transform: translateY(-50%);
+	}
+`;
+
 function Loading() {
 	return (
 		<figure className="loading">
@@ -87,6 +94,7 @@ export default class KalturaVideo extends React.Component {
 	 * ID should take the form `${partnerId}/${entryId}` for consistency
 	 * with Vimeo and YouTube (and the Video component), but in rst the
 	 * server expects `${partnerId}:${entryId}`.
+	 *
 	 * @param  {string} href kaltura video href
 	 * @returns {string} id of the form `${partnerId}/${entryId}`
 	 */
@@ -281,7 +289,7 @@ export default class KalturaVideo extends React.Component {
 		};
 
 		return (
-			<div className="kaltura-wrapper">
+			<KalturaWrapper className="kaltura-wrapper">
 				{!sourcesLoaded && <Loading />}
 				{sourcesLoaded && (
 					<Video
@@ -290,7 +298,7 @@ export default class KalturaVideo extends React.Component {
 						allowNormalTranscripts
 					/>
 				)}
-			</div>
+			</KalturaWrapper>
 		);
 	}
 
