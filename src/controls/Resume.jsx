@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import PropTypes from 'prop-types';
 
 import { scoped } from '@nti/lib-locale';
@@ -68,6 +68,51 @@ const useResumeTime = time => {
 	};
 };
 
+function useVideoCompletion () {
+	const player = usePlayer();
+
+	const [completeAndEnded, setCompleteAndEnded] = useState(false);
+	const [incompleteAndEnded, setIncompleteAndEnded] = useState(false);
+
+	useEffect(() => {
+		const isVideoCompletedAndEnded = async () => {
+			if (!player) {
+				return;
+			}
+
+			const video = player?.video;
+
+			if (!video?.fetchLink) {
+				return null;
+			}
+
+			const info = await video.fetchLink('resume_info');
+			const duration = await video.getDuration();
+			const resumeSeconds = info.ResumeSeconds;
+
+			/* Some definitions:
+				End: the video player's slider is at the far right end or very close to it.
+					End margin: for very long videos, the video does not register the end of the video
+						unless you watch the very last seconds of it. A margin allows the user to click on or near
+						the end of the video player's slider and register that the user reached the end. The margin is
+						the larger of 1 and 2% of the length of the video (in seconds).
+
+				Completed: at least 95% of the video was watched.
+			*/
+			const endMargin = duration * 0.02 <= 1 ? 1 : duration * 0.05
+			const completed = video.CompletedItem;
+			const ended = (duration - (resumeSeconds ?? 0)) <= endMargin;
+
+			setCompleteAndEnded(completed && ended);
+			setIncompleteAndEnded(!completed && ended);
+		}
+
+		isVideoCompletedAndEnded();
+	}, [player]);
+
+	return [completeAndEnded, incompleteAndEnded];
+}
+
 export function Resume({ time, ...otherProps }) {
 	const [clicked, setClicked] = React.useState(false);
 	const onClick = React.useCallback(() => setClicked(true), [setClicked]);
@@ -84,10 +129,18 @@ export function Resume({ time, ...otherProps }) {
 		}
 	}, []);
 
-	const { loading, error, resumeTime } = useResumeTime(time);
+	let { loading, error, resumeTime } = useResumeTime(time);
+
+	const [completeAndEnded, incompleteAndEnded] = useVideoCompletion();
+
+	if (incompleteAndEnded) {
+		resumeTime = 0;
+	}
 
 	const hidden = width === null;
 	const collapsed =
+		completeAndEnded ||
+		incompleteAndEnded ||
 		clicked || (!hidden && (loading || error || resumeTime === null));
 
 	return (
