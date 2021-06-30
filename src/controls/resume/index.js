@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { scoped } from '@nti/lib-locale';
 import { Text, Icons } from '@nti/web-commons';
 
-import {useVideoCompletion, useResumeTime} from './hooks';
+import useResumeTime from './useResumeTime';
 import ResumeButton from './ButtonCmp';
 
 const t = scoped('nti-video.controls.Resume', {
@@ -29,9 +29,14 @@ export default function Resume({ time, ...otherProps }) {
 		}
 	}, []);
 
-	let { loading, error, resumeTime } = useResumeTime(time);
+	const {
+		loading,
+		error,
+		resumeTime,
+		completeAndEnded,
+		incompleteAndEnded
+	} = useResumeTime(time);
 
-	const [completeAndEnded, incompleteAndEnded] = useVideoCompletion();
 
 	const hidden = width === null;
 	const collapsed =
