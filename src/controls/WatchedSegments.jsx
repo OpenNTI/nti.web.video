@@ -1,7 +1,7 @@
 /** @typedef {number} Time - video timestamp in seconds */
 /** @typedef {{video_start_time:Time, video_end_time: Time}} Segment */
 
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
 	Hooks as AnalyticsHooks,
@@ -83,6 +83,36 @@ const Milestone = styled(Text.Base)`
 	}
 `;
 
+const BadgeContainer = styled.div`
+	display: flex;
+	margin-bottom: 20px;
+	align-items: center;
+`;
+
+const CheckContainer = styled.div`
+	color: var(--secondary-green);
+	border: 1px var(--secondary-green) solid;
+	border-radius: 50%;
+	margin-right: 10px;
+	font-size: 10px;
+	width: 18px;
+	height: 18px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	align-content: center;
+`;
+
+const Badge = styled.div`
+	color: var(--secondary-green);
+	font-size: 10px;
+	font-weight: bold;
+	letter-spacing: 0;
+	line-height: 14px;
+	text-align: center;
+	text-transform: uppercase;
+`;
+
 const getSegmentStyle = (seg, player, maxDuration) => ({
 	...getTimeStyle(seg.video_start_time, player, maxDuration),
 	...getDurationStyle(
@@ -102,7 +132,8 @@ const useWatchedSegments = segments => {
 	const player = usePlayer();
 	const maxDuration = useDuration();
 
-	const [liveSegments, setLiveSegments] = React.useState([]);
+	const [liveSegments, setLiveSegments] = useState([]);
+	const [videoCompleted, setVideoCompleted] = useState(false);
 
 	const resolver = useResolver(async () => {
 		if (segments) {
@@ -114,6 +145,8 @@ const useWatchedSegments = segments => {
 		if (!video?.fetchLink) {
 			return null;
 		}
+
+		setVideoCompleted(video.CompletedItem);
 
 		const resp = await video.fetchLink('watched_segments');
 
@@ -161,6 +194,7 @@ const useWatchedSegments = segments => {
 					getSegmentProps(s, player, maxDuration)
 			  )
 			: null,
+		videoCompleted,
 	};
 };
 
@@ -217,18 +251,22 @@ export function WatchedSegments({
 	dark,
 	...otherProps
 }) {
-	const { loading, error, segments } = useWatchedSegments(segmentsProp);
+	const { loading, error, segments, videoCompleted } =
+		useWatchedSegments(segmentsProp);
 	const milestones = useMileStones();
 	const { ref, onClick } = useSeekHandler(onClickProp);
 
 	return (
 		<Container {...otherProps} onClick={onClick} ref={ref}>
-			<Bar
-				data-testid="watched-segments-bar"
-				loading={loading}
-				error={error}
-				dark={dark}
-			>
+			{videoCompleted && (
+				<BadgeContainer>
+					<CheckContainer>
+						<Icons.Check />
+					</CheckContainer>
+					<Badge>viewed</Badge>
+				</BadgeContainer>
+			)}
+			<Bar loading={loading} error={error} dark={dark}>
 				{(segments ?? []).map((seg, key) => (
 					<Segment
 						data-testid={`segment-${key}`}
