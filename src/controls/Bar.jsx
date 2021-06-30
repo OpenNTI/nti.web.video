@@ -3,7 +3,7 @@ import cx from 'classnames';
 
 import { Layouts, Hooks } from '@nti/web-commons';
 
-import { Resume } from './Resume';
+import Resume  from './resume';
 import { WatchedSegments } from './WatchedSegments';
 
 const { Slot } = Layouts;
