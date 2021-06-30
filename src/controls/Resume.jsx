@@ -5,7 +5,7 @@ import { scoped } from '@nti/lib-locale';
 import { wait } from '@nti/lib-commons';
 import { Hooks, Text, Icons } from '@nti/web-commons';
 
-import { usePlayer } from '../Context';
+import { usePlayer, useDuration } from '../Context';
 
 import { SeekTo } from './SeekTo';
 
@@ -39,8 +39,14 @@ const ResumeButton = styled(SeekTo)`
 
 const Labels = Text.Translator(t);
 
+const reachedVideoEnd = (duration, resumeTime) => {
+	const endMargin = duration * 0.02 <= 1 ? 1 : duration * 0.05
+	return (duration - (resumeTime ?? 0)) <= endMargin;
+};
+
 const useResumeTime = time => {
 	const player = usePlayer();
+	const duration = useDuration();
 
 	const resolver = useResolver(async () => {
 		if (time) {
@@ -64,51 +70,49 @@ const useResumeTime = time => {
 	return {
 		loading: isPending(resolver),
 		error: isErrored(resolver) ? resolver : null,
-		resumeTime: isResolved(resolver) ? resolver : null,
+		resumeTime: isResolved(resolver) ? (reachedVideoEnd(duration, resolver) ? 0 : resolver) : null,
 	};
 };
 
-function useVideoCompletion () {
+const useVideoCompletion = () => {
 	const player = usePlayer();
+	const duration = useDuration();
+	const {resumeTime} = useResumeTime();
 
 	const [completeAndEnded, setCompleteAndEnded] = useState(false);
 	const [incompleteAndEnded, setIncompleteAndEnded] = useState(false);
 
 	useEffect(() => {
-		const isVideoCompletedAndEnded = async () => {
-			if (!player) {
+		const isVideoCompletedAndEnded = () => {
+			if (!player || duration === null || resumeTime === null) {
 				return;
 			}
-
 			const video = player?.video;
-
-			if (!video?.fetchLink) {
-				return null;
-			}
-
-			const info = await video.fetchLink('resume_info');
-			const duration = await video.getDuration();
-			const resumeSeconds = info.ResumeSeconds;
 
 			/* Some definitions:
 				End: the video player's slider is at the far right end or very close to it.
-					End margin: for very long videos, the video does not register the end of the video
+					End margin: for very long videos, the video does not register its end
 						unless you watch the very last seconds of it. A margin allows the user to click on or near
 						the end of the video player's slider and register that the user reached the end. The margin is
 						the larger of 1 and 2% of the length of the video (in seconds).
 
 				Completed: at least 95% of the video was watched.
 			*/
-			const endMargin = duration * 0.02 <= 1 ? 1 : duration * 0.05
 			const completed = video.CompletedItem;
-			const ended = (duration - (resumeSeconds ?? 0)) <= endMargin;
+			let ended = reachedVideoEnd(duration, resumeTime);
+
+			// If resume time is 0s, it could mean that the video has ended the last time the user watched it.
+			// Set ended to true to collapse the Resume button, just in case.
+			if (resumeTime === 0) {
+				ended = true;
+			}
 
 			setCompleteAndEnded(completed && ended);
 			setIncompleteAndEnded(!completed && ended);
 		}
 
 		isVideoCompletedAndEnded();
-	}, [player]);
+	}, [player, resumeTime, duration]);
 
 	return [completeAndEnded, incompleteAndEnded];
 }
@@ -132,10 +136,6 @@ export function Resume({ time, ...otherProps }) {
 	let { loading, error, resumeTime } = useResumeTime(time);
 
 	const [completeAndEnded, incompleteAndEnded] = useVideoCompletion();
-
-	if (incompleteAndEnded) {
-		resumeTime = 0;
-	}
 
 	const hidden = width === null;
 	const collapsed =
