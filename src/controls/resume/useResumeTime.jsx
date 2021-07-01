@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import { wait } from '@nti/lib-commons';
 import { Hooks } from '@nti/web-commons';
 
@@ -22,9 +20,6 @@ const reachedVideoEnd = (duration, resumeTime) => {
 export default function useResumeTime (time) {
 	const player = usePlayer();
 	const duration = useDuration();
-
-	const [completeAndEnded, setCompleteAndEnded] = useState(false);
-	const [incompleteAndEnded, setIncompleteAndEnded] = useState(false);
 
 	const resolver = useResolver(async () => {
 		if (time) {
@@ -58,17 +53,14 @@ export default function useResumeTime (time) {
 			ended = true;
 		}
 
-		setCompleteAndEnded(completed && ended);
-		setIncompleteAndEnded(!completed && ended);
-
-		return info.ResumeSeconds ?? null;
+		return {resumeTime, completed, ended};
 	}, [player, time, duration]);
 
 	return {
 		loading: isPending(resolver),
 		error: isErrored(resolver) ? resolver : null,
-		resumeTime: isResolved(resolver) ? (reachedVideoEnd(duration, resolver) ? 0 : resolver) : null,
-		completeAndEnded,
-		incompleteAndEnded,
+		resumeTime: isResolved(resolver) ? (reachedVideoEnd(duration, resolver.resumeTime) ? 0 : resolver.resumeTime) : null,
+		completeAndEnded: resolver?.completed && resolver?.ended,
+		incompleteAndEnded: !resolver?.completed && resolver?.ended,
 	};
 };
