@@ -23,7 +23,10 @@ const VideoWatchType = AnalyticManager.getTypeForEvent('VideoWatch');
 
 const t = scoped('nti-video.controls.WatchedSegments', {
 	trigger: 'Watch History',
+	viewed: 'viewed',
 });
+
+const Translate = Text.Translator(t);
 
 const Container = styled.div`
 	cursor: pointer;
@@ -89,7 +92,7 @@ const BadgeContainer = styled.div`
 	align-items: center;
 `;
 
-const CheckContainer = styled.div`
+const Check = styled(Icons.Check)`
 	color: var(--secondary-green);
 	border: 1px var(--secondary-green) solid;
 	border-radius: 50%;
@@ -260,10 +263,10 @@ export function WatchedSegments({
 		<Container {...otherProps} onClick={onClick} ref={ref}>
 			{videoCompleted && (
 				<BadgeContainer>
-					<CheckContainer>
-						<Icons.Check />
-					</CheckContainer>
-					<Badge>viewed</Badge>
+					<Check />
+					<Badge>
+						<Translate localeKey="viewed" />
+					</Badge>
 				</BadgeContainer>
 			)}
 			<Bar loading={loading} error={error} dark={dark}>
@@ -307,7 +310,9 @@ WatchedSegments.Trigger = ({ children, ...props }) => (
 			children
 		) : (
 			<>
-				<Text.Base>{t('trigger')}</Text.Base>
+				<Text.Base>
+					<Translate localeKey="trigger" />
+				</Text.Base>
 				<TriggerIcon />
 			</>
 		)}
