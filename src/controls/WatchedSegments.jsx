@@ -223,9 +223,18 @@ export function WatchedSegments({
 
 	return (
 		<Container {...otherProps} onClick={onClick} ref={ref}>
-			<Bar loading={loading} error={error} dark={dark}>
+			<Bar
+				data-testid="watched-segments-bar"
+				loading={loading}
+				error={error}
+				dark={dark}
+			>
 				{(segments ?? []).map((seg, key) => (
-					<Segment key={key} {...seg} />
+					<Segment
+						data-testid={`segment-${key}`}
+						key={key}
+						{...seg}
+					/>
 				))}
 			</Bar>
 			{milestones && (
