@@ -8,7 +8,8 @@ import useResumeTime from './useResumeTime';
 import ResumeButton from './ButtonCmp';
 
 const t = scoped('nti-video.controls.Resume', {
-	label: 'Resume',
+	resume: 'Resume',
+	restart: 'Restart',
 });
 
 const Labels = Text.Translator(t);
@@ -33,15 +34,12 @@ export default function Resume({ time, ...otherProps }) {
 		loading,
 		error,
 		resumeTime,
-		completeAndEnded,
-		incompleteAndEnded
+		restart
 	} = useResumeTime(time);
 
 
 	const hidden = width === null;
 	const collapsed =
-		completeAndEnded ||
-		incompleteAndEnded ||
 		clicked || (!hidden && (loading || error || resumeTime === null));
 
 	return (
@@ -56,7 +54,7 @@ export default function Resume({ time, ...otherProps }) {
 			data-testid="resume-video"
 		>
 			<Icons.VideoResume />
-			<Labels localeKey="label" />
+			<Labels localeKey={restart ? "restart" : "resume"} />
 		</ResumeButton>
 	);
 }
