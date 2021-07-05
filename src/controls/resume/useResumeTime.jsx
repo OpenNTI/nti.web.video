@@ -13,7 +13,10 @@ const reachedVideoEnd = (duration, resumeTime) => {
 					the end of the video player's slider and register that the user reached the end. The margin is
 					the larger of 1 and 2% of the length of the video (in seconds).
 	*/
-	const endMargin = duration * 0.02 <= 1 ? 1 : duration * 0.05
+	const endMargin = duration * 0.02 <= 1 ? 1 : duration * 0.05;
+
+	// If resume time is 0s, it could mean that the video has ended the last time the user watched it.
+		// Set ended to true to collapse the Resume button, just in case.
 	return (duration - (resumeTime ?? 0)) <= endMargin;
 };
 
@@ -42,25 +45,27 @@ export default function useResumeTime (time) {
 			Completed: at least 95% of the video was watched.
 		*/
 
-		const resumeTime = info.ResumeSeconds;
+		let resumeTime = info.ResumeSeconds;
 
-		const completed = video.CompletedItem;
-		let ended = reachedVideoEnd(duration, resumeTime);
+		const completed = video.isCompletable() && video.hasCompleted();
+		const ended = reachedVideoEnd(duration, resumeTime);
+		const restart = !completed && ended;
 
-		// If resume time is 0s, it could mean that the video has ended the last time the user watched it.
-		// Set ended to true to collapse the Resume button, just in case.
-		if (resumeTime === 0) {
-			ended = true;
+		// No need to resume if the video ended and has been completed or the player is already at the resume location.
+		// Else if we need to restart the video, set resume time to 0s.
+		if (completed && ended || resumeTime === time) {
+			resumeTime = null;
+		} else if (restart) {
+			resumeTime = 0;
 		}
 
-		return {resumeTime, completed, ended};
+		return {resumeTime, restart};
 	}, [player, time, duration]);
 
 	return {
 		loading: isPending(resolver),
 		error: isErrored(resolver) ? resolver : null,
-		resumeTime: isResolved(resolver) ? (reachedVideoEnd(duration, resolver.resumeTime) ? 0 : resolver.resumeTime) : null,
-		completeAndEnded: resolver?.completed && resolver?.ended,
-		incompleteAndEnded: !resolver?.completed && resolver?.ended,
+		resumeTime: isResolved(resolver) ? resolver.resumeTime : null,
+		restart: resolver?.restart,
 	};
 };
