@@ -1,10 +1,46 @@
-import { wait } from '@nti/lib-commons';
-import { Hooks } from '@nti/web-commons';
 
-import { usePlayer, useDuration } from '../../Context';
+import React from 'react';
+import PropTypes from 'prop-types';
+
+import { wait } from '@nti/lib-commons';
+import { Hooks, Text, Icons } from '@nti/web-commons';
+import { scoped } from '@nti/lib-locale';
+
+import { usePlayer, useDuration } from '../Context';
+
+import { SeekTo } from './SeekTo';
 
 const { useResolver } = Hooks;
 const { isPending, isErrored, isResolved } = useResolver;
+
+const t = scoped('nti-video.controls.Resume', {
+	resume: 'Resume',
+	restart: 'Restart',
+});
+
+const Labels = Text.Translator(t);
+
+const ResumeButton = styled(SeekTo)`
+	transition: max-width 0.5s, opacity 0.5s;
+	max-width: var(--button-width);
+	opacity: 1;
+	white-space: nowrap;
+	overflow: hidden;
+
+	&.hidden {
+		position: fixed;
+		visibility: hidden;
+		opacity: 0;
+	}
+
+	&.collapsed {
+		opacity: 0;
+		max-width: 0;
+		padding: 0;
+		margin: 0;
+	}
+`;
+
 
 const reachedVideoEnd = (duration, resumeTime) => {
 	/*
@@ -20,7 +56,7 @@ const reachedVideoEnd = (duration, resumeTime) => {
 	return (duration - (resumeTime ?? 0)) <= endMargin;
 };
 
-export default function useResumeTime (time) {
+function useResumeTime (time) {
 	const player = usePlayer();
 	const duration = useDuration();
 
@@ -68,4 +104,53 @@ export default function useResumeTime (time) {
 		resumeTime: isResolved(resolver) ? resolver.resumeTime : null,
 		restart: resolver?.restart,
 	};
+};
+
+export function Resume({ time, ...otherProps }) {
+	const [clicked, setClicked] = React.useState(false);
+	const onClick = React.useCallback(() => setClicked(true), [setClicked]);
+
+	const [width, setWidth] = React.useState(null);
+
+	const buttonRef = React.useRef();
+	React.useLayoutEffect(() => {
+		const node = buttonRef.current?.getDOMNode?.() ?? buttonRef.current;
+		const maxWidth = node?.clientWidth ? node.clientWidth + 10 : null;
+
+		if (width !== maxWidth) {
+			setWidth(maxWidth);
+		}
+	}, []);
+
+	const {
+		loading,
+		error,
+		resumeTime,
+		restart
+	} = useResumeTime(time);
+
+
+	const hidden = width === null;
+	const collapsed =
+		clicked || (!hidden && (loading || error || resumeTime === null));
+
+	return (
+		<ResumeButton
+			{...otherProps}
+			ref={buttonRef}
+			time={resumeTime}
+			onClick={onClick}
+			style={width ? { '--button-width': `${width}px` } : null}
+			hidden={hidden}
+			collapsed={collapsed}
+			data-testid="resume-video"
+		>
+			<Icons.VideoResume />
+			<Labels localeKey={restart ? "restart" : "resume"} />
+		</ResumeButton>
+	);
+}
+
+Resume.propTypes = {
+	time: PropTypes.number,
 };
