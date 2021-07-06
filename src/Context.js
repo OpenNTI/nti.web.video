@@ -177,3 +177,44 @@ export const useErrorEvent = fn => useEvent('error', fn);
  * @returns {void}
  */
 export const useReadyEvent = fn => useEvent('ready', fn);
+
+/**
+ * Returns whether a given array of watched segments suggests that the represented video was once watched
+ * until the end.
+ *
+ * @param {Array} segments
+ * @returns {boolean}
+ */
+export const useWatchedTilEnd = (segments) => {
+	const duration = useDuration();
+
+	let [result, setResult]= React.useState(false);
+
+	React.useEffect(() => {
+		if (segments && duration) {
+			setResult(duration - segments[segments.length - 1]?.['data-end'] <= 2);
+		}
+	}, [segments, duration]);
+
+	return result;
+};
+
+/**
+ * Returns whether the current video has been completed.
+ *
+ * @returns {boolean}
+ */
+export const useVideoCompletion = () => {
+	const player = usePlayer();
+
+	const resolver = useResolver(() => {
+		const video = player?.video;
+		if (!video) {
+			return;
+		}
+
+		return video.isCompletable() && video.hasCompleted();
+	}, [player, player?.video]);
+
+	return useResolver.isResolved(resolver) ? resolver : null;
+}
