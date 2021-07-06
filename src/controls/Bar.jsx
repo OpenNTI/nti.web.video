@@ -45,9 +45,14 @@ const WatchedContainer = styled.div`
 	padding: 1.125rem 1.25rem 0.875rem;
 	background: var(--quad-grey);
 	border-radius: 4px;
+	display: none;
 
 	&.dark {
 		background: var(--secondary-background);
+	}
+
+	&.show {
+		display: block;
 	}
 `;
 
@@ -64,6 +69,11 @@ export function ControlBar({ children, dark, ...props }) {
 		() => setShowWatched(!showWatched),
 		[showWatched, setShowWatched]
 	);
+	const [alert, setAlert] = React.useState(false);
+
+	React.useEffect(() => {
+		alert && setShowWatched(true);
+	}, [alert]);
 
 	const PropsByCmp = {
 		[WatchedSegments.Trigger]: {
@@ -77,6 +87,7 @@ export function ControlBar({ children, dark, ...props }) {
 				[styles.lightButton]: !dark,
 				[styles.selected]: showWatched,
 			}),
+			alert,
 		},
 		[Resume]: {
 			rounded: true,
@@ -105,11 +116,9 @@ export function ControlBar({ children, dark, ...props }) {
 			</Bar>
 			{Slot.exists(WatchedSegments.Trigger, children) && (
 				<div id={watchedId}>
-					{showWatched && (
-						<WatchedContainer dark={dark}>
-							<WatchedSegments dark={dark} />
-						</WatchedContainer>
-					)}
+					<WatchedContainer dark={dark} show={showWatched}>
+						<WatchedSegments dark={dark} setAlert={setAlert} />
+					</WatchedContainer>
 				</div>
 			)}
 		</div>
