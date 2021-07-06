@@ -8,9 +8,14 @@ import {
 	Manager as AnalyticManager,
 } from '@nti/lib-analytics';
 import { scoped } from '@nti/lib-locale';
-import { Hooks, Text, Button, Icons } from '@nti/web-commons';
+import { Hooks, Text, Button, Icons, Loading } from '@nti/web-commons';
 
-import { usePlayer, useDuration } from '../Context';
+import {
+	usePlayer,
+	useDuration,
+	useVideoCompletion,
+	useWatchedTilEnd,
+} from '../Context';
 
 import getMileStones from './utils/get-mile-stones';
 import { getTimeStyle, getDurationStyle } from './utils/get-styles';
@@ -24,6 +29,7 @@ const VideoWatchType = AnalyticManager.getTypeForEvent('VideoWatch');
 const t = scoped('nti-video.controls.WatchedSegments', {
 	trigger: 'Watch History',
 	viewed: 'viewed',
+	alert: 'Incomplete — Watch more to complete this video.',
 });
 
 const Translate = Text.Translator(t);
@@ -92,18 +98,25 @@ const BadgeContainer = styled.div`
 	align-items: center;
 `;
 
-const Check = styled(Icons.Check)`
-	color: var(--secondary-green);
-	border: 1px var(--secondary-green) solid;
-	border-radius: 50%;
+const SharedIconStyle = styled.i`
 	margin-right: 10px;
-	font-size: 10px;
 	width: 18px;
 	height: 18px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	align-content: center;
+	font-size: 10px;
+`;
+
+const Check = styled(SharedIconStyle).attrs({ as: Icons.Check })`
+	color: var(--secondary-green);
+	border: 1px var(--secondary-green) solid;
+	border-radius: 50%;
+`;
+
+const Alert = styled(SharedIconStyle).attrs({ as: Icons.Alert })`
+	color: var(--primary-red);
 `;
 
 const Badge = styled.div`
@@ -114,6 +127,10 @@ const Badge = styled.div`
 	line-height: 14px;
 	text-align: center;
 	text-transform: uppercase;
+
+	&.alert {
+		color: var(--primary-red);
+	}
 `;
 
 const getSegmentStyle = (seg, player, maxDuration) => ({
@@ -136,7 +153,6 @@ const useWatchedSegments = segments => {
 	const maxDuration = useDuration();
 
 	const [liveSegments, setLiveSegments] = useState([]);
-	const [videoCompleted, setVideoCompleted] = useState(false);
 
 	const resolver = useResolver(async () => {
 		if (segments) {
@@ -148,8 +164,6 @@ const useWatchedSegments = segments => {
 		if (!video?.fetchLink) {
 			return null;
 		}
-
-		setVideoCompleted(video.CompletedItem);
 
 		const resp = await video.fetchLink('watched_segments');
 
@@ -197,7 +211,6 @@ const useWatchedSegments = segments => {
 					getSegmentProps(s, player, maxDuration)
 			  )
 			: null,
-		videoCompleted,
 	};
 };
 
@@ -252,48 +265,69 @@ export function WatchedSegments({
 	segments: segmentsProp,
 	onClick: onClickProp,
 	dark,
+	setAlert,
 	...otherProps
 }) {
-	const { loading, error, segments, videoCompleted } =
-		useWatchedSegments(segmentsProp);
+	const { loading, error, segments } = useWatchedSegments(segmentsProp);
 	const milestones = useMileStones();
 	const { ref, onClick } = useSeekHandler(onClickProp);
 
+	const completedVideo = useVideoCompletion();
+	const watchedTilEnd = useWatchedTilEnd(segments);
+	const alertUserForCompletion = !completedVideo && watchedTilEnd;
+
+	React.useEffect(() => {
+		setAlert(alertUserForCompletion);
+	}, [segments]);
+
+	const CompletionIcon = alertUserForCompletion ? Alert : Check;
+
 	return (
 		<Container {...otherProps} onClick={onClick} ref={ref}>
-			{videoCompleted && (
-				<BadgeContainer>
-					<Check />
-					<Badge>
-						<Translate localeKey="viewed" />
-					</Badge>
-				</BadgeContainer>
-			)}
-			<Bar loading={loading} error={error} dark={dark}>
-				{(segments ?? []).map((seg, key) => (
-					<Segment
-						data-testid={`segment-${key}`}
-						key={key}
-						{...seg}
-					/>
-				))}
-			</Bar>
-			{milestones && (
-				<Milestones>
-					{milestones.map((milestone, key) => (
-						<Milestone
-							key={key}
-							style={milestone.style}
-							dark={dark}
-						>
-							{milestone.label}
-						</Milestone>
+			<Loading.Placeholder
+				loading={loading}
+				fallback={<Loading.Spinner blue size="30px" />}
+			>
+				{(alertUserForCompletion || completedVideo) && (
+					<BadgeContainer>
+						<CompletionIcon />
+						<Badge alert={alertUserForCompletion}>
+							<Translate
+								localeKey={
+									alertUserForCompletion ? 'alert' : 'viewed'
+								}
+							/>
+						</Badge>
+					</BadgeContainer>
+				)}
+				<Bar loading={loading} error={error} dark={dark}>
+					{(segments ?? []).map((seg, key) => (
+						<Segment key={key} {...seg} />
 					))}
-				</Milestones>
-			)}
+				</Bar>
+				{milestones && (
+					<Milestones>
+						{milestones.map((milestone, key) => (
+							<Milestone
+								key={key}
+								style={milestone.style}
+								dark={dark}
+							>
+								{milestone.label}
+							</Milestone>
+						))}
+					</Milestones>
+				)}
+			</Loading.Placeholder>
 		</Container>
 	);
 }
+
+const TriggerButton = styled(Button)`
+	&.alert {
+		background-color: rgba(var(--primary-red-rgb), 0.15) !important;
+	}
+`;
 
 const TriggerIcon = styled(Icons.Chevron.Down)`
 	border: 1px solid currentColor;
@@ -302,19 +336,33 @@ const TriggerIcon = styled(Icons.Chevron.Down)`
 	[aria-expanded='true'] & {
 		transform: rotate(180deg);
 	}
+
+	&.alert {
+		border-color: var(--primary-red);
+	}
 `;
 
-WatchedSegments.Trigger = ({ children, ...props }) => (
-	<Button {...props} data-testid="watched-segments-trigger">
+const ContentContainer = styled.div`
+	&.alert {
+		color: var(--primary-red);
+	}
+`;
+
+WatchedSegments.Trigger = ({ alert, children, ...props }) => (
+	<TriggerButton
+		alert={alert}
+		{...props}
+		data-testid="watched-segments-trigger"
+	>
 		{React.Children.count(children) > 0 ? (
 			children
 		) : (
-			<>
+			<ContentContainer alert={alert}>
 				<Text.Base>
 					<Translate localeKey="trigger" />
 				</Text.Base>
-				<TriggerIcon />
-			</>
+				<TriggerIcon alert={alert} />
+			</ContentContainer>
 		)}
-	</Button>
+	</TriggerButton>
 );
