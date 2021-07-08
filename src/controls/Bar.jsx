@@ -72,7 +72,9 @@ export function ControlBar({ children, dark, ...props }) {
 	const [alert, setAlert] = React.useState(false);
 
 	React.useEffect(() => {
-		alert && setShowWatched(true);
+		if (alert) {
+			setShowWatched(true);
+		}
 	}, [alert]);
 
 	const PropsByCmp = {

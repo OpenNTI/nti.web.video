@@ -185,14 +185,16 @@ export const useReadyEvent = fn => useEvent('ready', fn);
  * @param {Array} segments
  * @returns {boolean}
  */
-export const useWatchedTilEnd = (segments) => {
+export const useWatchedTilEnd = segments => {
 	const duration = useDuration();
 
-	let [result, setResult]= React.useState(false);
+	const [result, setResult] = React.useState(false);
 
 	React.useEffect(() => {
 		if (segments && duration) {
-			setResult(duration - segments[segments.length - 1]?.['data-end'] <= 2);
+			setResult(
+				duration - segments[segments.length - 1]?.['data-end'] <= 2
+			);
 		}
 	}, [segments, duration]);
 
@@ -217,4 +219,4 @@ export const useVideoCompletion = () => {
 	}, [player, player?.video]);
 
 	return useResolver.isResolved(resolver) ? resolver : null;
-}
+};
