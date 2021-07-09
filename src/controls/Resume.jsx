@@ -1,4 +1,3 @@
-
 import React from 'react';
 import PropTypes from 'prop-types';
 
@@ -41,22 +40,21 @@ const ResumeButton = styled(SeekTo)`
 	}
 `;
 
-
 const reachedVideoEnd = (duration, resumeTime) => {
 	/*
 		End margin: for very long videos, the video does not register its end
 					unless you watch the very last seconds of it. A margin allows the user to click on or near
 					the end of the video player's slider and register that the user reached the end. The margin is
-					the larger of 1 and 2% of the length of the video (in seconds).
+					the larger of 1s and 2% of the length of the video (in seconds).
 	*/
-	const endMargin = duration * 0.02 <= 1 ? 1 : duration * 0.05;
+	const endMargin = Math.max(duration * 0.02, 1);
 
 	// If resume time is 0s, it could mean that the video has ended the last time the user watched it.
-		// Set ended to true to collapse the Resume button, just in case.
-	return (duration - (resumeTime ?? 0)) <= endMargin;
+	// Set ended to true to collapse the Resume button, just in case.
+	return duration - (resumeTime ?? 0) <= endMargin;
 };
 
-function useResumeTime (time) {
+function useResumeTime(time) {
 	const player = usePlayer();
 	const duration = useDuration();
 
@@ -89,13 +87,13 @@ function useResumeTime (time) {
 
 		// No need to resume if the video ended and has been completed or the player is already at the resume location.
 		// Else if we need to restart the video, set resume time to 0s.
-		if (completed && ended || resumeTime === time) {
+		if ((completed && ended) || resumeTime === time) {
 			resumeTime = null;
 		} else if (restart) {
 			resumeTime = 0;
 		}
 
-		return {resumeTime, restart};
+		return { resumeTime, restart };
 	}, [player, time, duration]);
 
 	return {
@@ -104,7 +102,7 @@ function useResumeTime (time) {
 		resumeTime: isResolved(resolver) ? resolver.resumeTime : null,
 		restart: resolver?.restart,
 	};
-};
+}
 
 export function Resume({ time, ...otherProps }) {
 	const [clicked, setClicked] = React.useState(false);
@@ -122,13 +120,7 @@ export function Resume({ time, ...otherProps }) {
 		}
 	}, []);
 
-	const {
-		loading,
-		error,
-		resumeTime,
-		restart
-	} = useResumeTime(time);
-
+	const { loading, error, resumeTime, restart } = useResumeTime(time);
 
 	const hidden = width === null;
 	const collapsed =
@@ -146,7 +138,7 @@ export function Resume({ time, ...otherProps }) {
 			data-testid="resume-video"
 		>
 			<Icons.VideoResume />
-			<Labels localeKey={restart ? "restart" : "resume"} />
+			<Labels localeKey={restart ? 'restart' : 'resume'} />
 		</ResumeButton>
 	);
 }
