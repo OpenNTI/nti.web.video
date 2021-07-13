@@ -10,12 +10,9 @@ import {
 import { scoped } from '@nti/lib-locale';
 import { Hooks, Text, Button, Icons, Loading } from '@nti/web-commons';
 
-import {
-	usePlayer,
-	useDuration,
-	useVideoCompletion,
-	useWatchedTilEnd,
-} from '../Context';
+import { usePlayer, useDuration } from '../Context';
+import useVideoCompletion from '../hooks/useVideoCompletion';
+import useWatchedTilEnd from '../hooks/useWatchedTilEnd';
 
 import getMileStones from './utils/get-mile-stones';
 import { getTimeStyle, getDurationStyle } from './utils/get-styles';
