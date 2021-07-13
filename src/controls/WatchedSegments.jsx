@@ -300,7 +300,12 @@ export function WatchedSegments({
 						</Badge>
 					</BadgeContainer>
 				)}
-				<Bar loading={loading} error={error} dark={dark}>
+				<Bar
+					data-testid="watched-segments-bar"
+					loading={loading}
+					error={error}
+					dark={dark}
+				>
 					{(segments ?? []).map((seg, key) => (
 						<Segment key={key} {...seg} />
 					))}
