@@ -8,11 +8,18 @@ import {
 	Manager as AnalyticManager,
 } from '@nti/lib-analytics';
 import { scoped } from '@nti/lib-locale';
-import { Hooks, Text, Button, Icons, Loading } from '@nti/web-commons';
+import {
+	Hooks,
+	Text,
+	Button,
+	Icons,
+	Loading,
+	Placeholder,
+} from '@nti/web-commons';
 
 import { usePlayer, useDuration } from '../Context';
-import useVideoCompletion from '../hooks/useVideoCompletion';
-import useWatchedTilEnd from '../hooks/useWatchedTilEnd';
+import useVideoCompletion from '../hooks/use-video-completion';
+import useWatchedTilEnd from '../hooks/use-watched-til-end';
 
 import getMileStones from './utils/get-mile-stones';
 import { getTimeStyle, getDurationStyle } from './utils/get-styles';
@@ -114,6 +121,7 @@ const Check = styled(SharedIconStyle).attrs({ as: Icons.Check })`
 
 const Alert = styled(SharedIconStyle).attrs({ as: Icons.Alert })`
 	color: var(--primary-red);
+	font-size: 18px;
 `;
 
 const Badge = styled.div`
@@ -283,7 +291,7 @@ export function WatchedSegments({
 		<Container {...otherProps} onClick={onClick} ref={ref}>
 			<Loading.Placeholder
 				loading={loading}
-				fallback={<Loading.Spinner blue size="30px" />}
+				fallback={<Placeholder.Text text="Loading..." />}
 			>
 				{(alertUserForCompletion || completedVideo) && (
 					<BadgeContainer>

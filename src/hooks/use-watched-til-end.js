@@ -16,10 +16,9 @@ export default function useWatchedTilEnd(segments) {
 
 	useEffect(() => {
 		if (segments && duration) {
-			setResult(
-				duration - segments[segments.length - 1]?.['data-end'] <=
-					Math.max(duration * 0.02, 1)
-			);
+			const secondsTilEnd =
+				duration - segments[segments.length - 1]?.['data-end'];
+			setResult(secondsTilEnd <= Math.max(duration * 0.02, 1));
 		}
 	}, [segments, duration]);
 
