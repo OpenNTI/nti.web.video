@@ -9,6 +9,7 @@ import { usePlayer } from '../Context';
  */
 export default function useVideoCompletion() {
 	const player = usePlayer();
+	const completed = player?.video?.hasCompleted();
 
 	const resolver = useResolver(() => {
 		const video = player?.video;
@@ -17,7 +18,7 @@ export default function useVideoCompletion() {
 		}
 
 		return video.isCompletable() && video.hasCompleted();
-	}, [player, player?.video]);
+	}, [player, player?.video, completed]);
 
 	return useResolver.isResolved(resolver) ? resolver : null;
 }
