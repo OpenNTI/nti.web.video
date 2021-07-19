@@ -4,8 +4,8 @@ import { renderHook } from '@testing-library/react-hooks';
 import * as Commons from '@nti/web-commons';
 
 import * as Context from '../Context';
-import useVideoCompletion from '../hooks/useVideoCompletion';
-import useWatchedTilEnd from '../hooks/useWatchedTilEnd';
+import useVideoCompletion from '../hooks/use-video-completion';
+import useWatchedTilEnd from '../hooks/use-watched-til-end';
 
 jest.mock('@nti/web-commons');
 
