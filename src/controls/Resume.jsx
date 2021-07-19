@@ -57,6 +57,7 @@ const reachedVideoEnd = (duration, resumeTime) => {
 function useResumeTime(time) {
 	const player = usePlayer();
 	const duration = useDuration();
+	const currentTime = player?.activeVideo.getPlayerState().time;
 
 	const resolver = useResolver(async () => {
 		if (time) {
@@ -85,23 +86,31 @@ function useResumeTime(time) {
 		const ended = reachedVideoEnd(duration, resumeTime);
 		const restart = !completed && ended;
 
-		// No need to resume if the video ended and has been completed or the player is already at the resume location.
-		// Else if we need to restart the video, set resume time to 0s.
-		if ((completed && ended) || resumeTime === time) {
+		// No need to resume if the video ended and has been completed or once you have watched past it.
+		if ((completed && ended) || currentTime >= resumeTime) {
 			resumeTime = null;
-		} else if (restart) {
-			resumeTime = 0;
 		}
 
 		return { resumeTime, restart };
-	}, [player, time, duration]);
+	}, [player, currentTime, time, duration]);
 
 	return {
 		loading: isPending(resolver),
 		error: isErrored(resolver) ? resolver : null,
 		resumeTime: isResolved(resolver) ? resolver.resumeTime : null,
-		restart: resolver?.restart,
 	};
+}
+
+function useVideoRestart() {
+	const player = usePlayer();
+	const duration = useDuration();
+	const time = player?.activeVideo.getPlayerState().time;
+
+	const resolver = useResolver(() => {
+		return player.activeVideo.getPlayerState().time >= duration - 2;
+	}, [player, time, duration]);
+
+	return isResolved(resolver) ? resolver : null;
 }
 
 export function Resume({ time, ...otherProps }) {
@@ -120,17 +129,22 @@ export function Resume({ time, ...otherProps }) {
 		}
 	}, []);
 
-	const { loading, error, resumeTime, restart } = useResumeTime(time);
+	const { loading, error, resumeTime } = useResumeTime(time);
+
+	const restart = useVideoRestart();
 
 	const hidden = width === null;
-	const collapsed =
+	let collapsed =
 		clicked || (!hidden && (loading || error || resumeTime === null));
 
+	if (restart) {
+		collapsed = false;
+	}
 	return (
 		<ResumeButton
 			{...otherProps}
 			ref={buttonRef}
-			time={resumeTime}
+			time={restart ? 0 : resumeTime}
 			onClick={onClick}
 			style={width ? { '--button-width': `${width}px` } : null}
 			hidden={hidden}
