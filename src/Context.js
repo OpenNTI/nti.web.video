@@ -117,7 +117,7 @@ export const useDuration = () => {
 		const currentState = player.getPlayerState();
 
 		return currentState?.duration ?? player.video.getDuration();
-	}, [player, player?.video]);
+	}, [player, player?.video, player?.getPlayerState?.().duration]);
 
 	return useResolver.isResolved(resolver) ? resolver : null;
 };
