@@ -277,13 +277,13 @@ export function WatchedSegments({
 	const milestones = useMileStones();
 	const { ref, onClick } = useSeekHandler(onClickProp);
 
-	const completedVideo = useVideoCompletion();
+	const completedVideo = useVideoCompletion(segments);
 	const watchedTilEnd = useWatchedTilEnd(segments);
 	const alertUserForCompletion = !completedVideo && watchedTilEnd;
 
 	React.useEffect(() => {
 		setAlert(alertUserForCompletion);
-	}, [segments]);
+	}, [watchedTilEnd, completedVideo]);
 
 	const CompletionIcon = alertUserForCompletion ? Alert : Check;
 
