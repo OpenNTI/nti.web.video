@@ -74,7 +74,7 @@ function useResumeTime(time) {
 		return info;
 	}, [player?.video]);
 
-	const resolver = useResolver(async () => {
+	const resolver = useResolver(() => {
 		if (time) {
 			return time;
 		}
