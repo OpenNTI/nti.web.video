@@ -12,26 +12,31 @@ jest.mock('@nti/web-commons');
 beforeEach(() => {
 	Commons.useResolver.mockImplementation(fn => fn());
 	Commons.useResolver.isResolved.mockImplementation(() => true);
+
+	jest.spyOn(Context, 'useDuration').mockImplementation(() => 60);
 });
 
 test('useVideoCompletion Hook.', () => {
+	const refresh = jest.fn();
+
 	jest.spyOn(Context, 'usePlayer').mockImplementation(() => {
 		return {
 			video: {
 				isCompletable: () => true,
 				hasCompleted: () => false,
+				refresh: refresh,
 			},
 		};
 	});
 
-	const { result } = renderHook(() => useVideoCompletion());
+	const segments = [{ 'data-end': 1, 'data-start': 0 }];
 
-	expect(result.current).toBe(false);
+	renderHook(() => useVideoCompletion(segments));
+
+	expect(refresh).toBeCalled();
 });
 
 test('useWatchedTilEnd Hook.', () => {
-	jest.spyOn(Context, 'useDuration').mockImplementation(() => 60);
-
 	const segmentsFalse = [{ 'data-end': 1 }];
 
 	const { result: first } = renderHook(() => useWatchedTilEnd(segmentsFalse));
