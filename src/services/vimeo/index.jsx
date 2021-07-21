@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Player from '@vimeo/player';
 import { v4 as uuid } from 'uuid';
-import QueryString from 'query-string';
 
 import Logger from '@nti/util-logger';
 import { isFlag } from '@nti/web-client';
+import { Url } from '@nti/lib-commons';
 
 import {
 	EventHandlers,
@@ -17,7 +17,8 @@ import {
 import { resolveCanAccessSource, createNonRecoverableError } from '../utils';
 
 const logger = Logger.get('video:vimeo');
-const VIMEO_URL_PARTS = /(?:https?:)?\/\/(?:(?:www|player)\.)?vimeo.com\/(?:(?:channels|video)\/(?:\w+\/)?|groups\/(?:[^/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?|#)/i;
+const VIMEO_URL_PARTS =
+	/(?:https?:)?\/\/(?:(?:www|player)\.)?vimeo.com\/(?:(?:channels|video)\/(?:\w+\/)?|groups\/(?:[^/]*)\/videos\/|album\/(\d+)\/video\/|)(\d+)(?:$|\/|\?|#)/i;
 const VIMEO_PROTOCOL_PARTS = /vimeo:\/\/(\d+\/)?(\d+)/i;
 
 const VIMEO_EVENTS = {
@@ -256,7 +257,7 @@ export default class VimeoVideo extends React.Component {
 			'https://player.vimeo.com/video/' +
 			videoId +
 			'?' +
-			QueryString.stringify(args)
+			Url.stringifyQuery(args)
 		);
 	};
 

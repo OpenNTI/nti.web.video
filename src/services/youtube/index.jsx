@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import invariant from 'invariant';
 import { v4 as uuid } from 'uuid';
-import QueryString from 'query-string';
 
+import { Url } from '@nti/lib-commons';
 import Logger from '@nti/util-logger';
 
 import { EventHandlers } from '../../Constants';
@@ -53,7 +53,8 @@ export default class YouTubeVideo extends React.Component {
 	static service = 'youtube';
 
 	static getID(url) {
-		const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+		const regExp =
+			/^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
 		const match = url.match(regExp);
 		if (match && match[2].length === 11) {
 			return match[2];
@@ -199,7 +200,7 @@ export default class YouTubeVideo extends React.Component {
 			origin: location.protocol + '//' + location.host,
 		};
 
-		return `${YOU_TUBE}/embed/${videoId}?${QueryString.stringify(args)}`;
+		return `${YOU_TUBE}/embed/${videoId}?${Url.stringifyQuery(args)}`;
 	};
 
 	updateURL = (props = this.props, update = x => this.setState(x)) => {
