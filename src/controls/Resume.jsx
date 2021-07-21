@@ -59,11 +59,7 @@ function useResumeTime(time) {
 	const duration = useDuration();
 	const currentTime = player?.activeVideo.getPlayerState().time;
 
-	const resolver = useResolver(async () => {
-		if (time) {
-			return time;
-		}
-
+	const resumeInfoResolver = useResolver(async () => {
 		const video = player?.video;
 
 		if (!video?.fetchLink) {
@@ -75,24 +71,36 @@ function useResumeTime(time) {
 
 		await delay();
 
+		return info;
+	}, [player?.video]);
+
+	const resolver = useResolver(async () => {
+		if (time) {
+			return time;
+		}
+		if (isPending(resumeInfoResolver) || isErrored(resumeInfoResolver)) {
+			return resumeInfoResolver;
+		}
+
 		/* Some definitions:
-			End: the video player's slider is at the far right end or very close to it.
-			Completed: at least 95% of the video was watched.
+		End: the video player's slider is at the far right end or very close to it.
+		Completed: at least 95% of the video was watched.
 		*/
 
-		let resumeTime = info.ResumeSeconds;
+		const video = player?.video;
+		let resumeTime = resumeInfoResolver.ResumeSeconds;
 
-		const completed = video.isCompletable() && video.hasCompleted();
+		const completed = video?.isCompletable() && video?.hasCompleted();
 		const ended = reachedVideoEnd(duration, resumeTime);
 		const restart = !completed && ended;
 
-		// No need to resume if the video ended and has been completed or once you have watched past it.
+		//No need to resume if the video ended and has been completed or once you have watched past it.
 		if ((completed && ended) || currentTime >= resumeTime) {
 			resumeTime = null;
 		}
 
 		return { resumeTime, restart };
-	}, [player, currentTime, time, duration]);
+	}, [resumeInfoResolver, currentTime, time, duration]);
 
 	return {
 		loading: isPending(resolver),
