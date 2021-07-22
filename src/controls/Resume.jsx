@@ -83,7 +83,7 @@ function useResumeTime(time) {
 	}
 
 	const resumeInfo = resumeInfoResolver;
-	let resumeTime = resumeInfo.ResumeSeconds;
+	let resumeTime = resumeInfo.ResumeSeconds ?? null; //we need it to be null not undefined if its not set
 
 	const video = player?.video;
 
@@ -134,6 +134,7 @@ export function Resume({ time, ...otherProps }) {
 	let collapsed =
 		!restart &&
 		(clicked || (!hidden && (loading || error || resumeTime === null)));
+
 	return (
 		<ResumeButton
 			{...otherProps}
