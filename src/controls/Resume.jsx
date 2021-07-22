@@ -130,10 +130,16 @@ export function Resume({ time, ...otherProps }) {
 
 	const { loading, error, resumeTime, restart } = useResumeTime(time);
 
+	React.useEffect(() => {
+		if (clicked && restart) {
+			setClicked(false);
+		}
+	}, [restart]);
+
 	const hidden = width === null;
 	let collapsed =
-		!restart &&
-		(clicked || (!hidden && (loading || error || resumeTime === null)));
+		clicked ||
+		(!hidden && (restart || loading || error || resumeTime === null));
 
 	return (
 		<ResumeButton

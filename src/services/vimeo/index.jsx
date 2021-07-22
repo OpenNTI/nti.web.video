@@ -110,7 +110,7 @@ export default class VimeoVideo extends React.Component {
 	}
 
 	componentDidUpdate({ source }, { playerURL }) {
-		if (isSameSource(this.props.source, source)) {
+		if (!isSameSource(this.props.source, source)) {
 			this.ensureAccess();
 			this.updateURL(this.props);
 		}

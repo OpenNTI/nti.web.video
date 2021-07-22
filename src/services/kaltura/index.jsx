@@ -164,7 +164,7 @@ export default class KalturaVideo extends React.Component {
 	}
 
 	componentDidUpdate({ source }) {
-		if (isSameSource(this.props.source, source)) {
+		if (!isSameSource(this.props.source, source)) {
 			this.setState(initialState);
 			this.setupSource();
 		}

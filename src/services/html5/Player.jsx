@@ -121,7 +121,7 @@ export default class HTML5Video extends React.Component {
 	}
 
 	componentDidUpdate({ source }) {
-		if (isSameSource(source, this.props.source)) {
+		if (!isSameSource(source, this.props.source)) {
 			this.setState({ ...initialState });
 			this.setupSource(this.props, () => {
 				let { video } = this;

@@ -57,7 +57,7 @@ export default class WistiaVideoPlayer extends React.Component {
 		const { source } = this.props;
 		const { source: prevSource } = prevProps;
 
-		if (isSameSource(source, prevSource)) {
+		if (!isSameSource(source, prevSource)) {
 			this.setupSource();
 		}
 	}

@@ -121,7 +121,7 @@ export default class YouTubeVideo extends React.Component {
 			'Something changed the initTask!'
 		);
 
-		if (isSameSource(prevProps.source, this.props.source)) {
+		if (!isSameSource(prevProps.source, this.props.source)) {
 			this.ensureAccess();
 			this.updateURL();
 			return;
