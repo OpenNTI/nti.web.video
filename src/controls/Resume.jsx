@@ -97,11 +97,14 @@ function useResumeTime(time) {
 
 	const restart =
 		player?.getPlayerState()?.state === ENDED ||
-		(!completed && (ended || currentTime >= duration - 2));
+		currentTime >= duration - 2 ||
+		(!completed && ended);
 
 	if ((completed && ended) || currentTime >= resumeTime) {
 		resumeTime = null;
-	} else if (restart) {
+	}
+
+	if (restart) {
 		resumeTime = 0;
 	}
 
@@ -137,9 +140,8 @@ export function Resume({ time, ...otherProps }) {
 	}, [restart]);
 
 	const hidden = width === null;
-	let collapsed =
-		clicked ||
-		(!hidden && (restart || loading || error || resumeTime === null));
+	const collapsed =
+		!hidden && (clicked || loading || error || resumeTime === null);
 
 	return (
 		<ResumeButton
