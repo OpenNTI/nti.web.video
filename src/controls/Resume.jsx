@@ -5,12 +5,12 @@ import { wait } from '@nti/lib-commons';
 import { Hooks, Text, Icons } from '@nti/web-commons';
 import { scoped } from '@nti/lib-locale';
 
-import { usePlayer, useDuration } from '../Context';
+import { usePlayer, useDuration, useCurrentTime } from '../Context';
 
 import { SeekTo } from './SeekTo';
 
 const { useResolver } = Hooks;
-const { isPending, isErrored, isResolved } = useResolver;
+const { isPending, isErrored } = useResolver;
 
 const t = scoped('nti-video.controls.Resume', {
 	resume: 'Resume',
@@ -57,7 +57,7 @@ const reachedVideoEnd = (duration, resumeTime) => {
 function useResumeTime(time) {
 	const player = usePlayer();
 	const duration = useDuration();
-	const currentTime = player?.activeVideo.getPlayerState().time;
+	const currentTime = useCurrentTime();
 
 	const resumeInfoResolver = useResolver(async () => {
 		const video = player?.video;
@@ -74,51 +74,39 @@ function useResumeTime(time) {
 		return info;
 	}, [player?.video]);
 
-	const resolver = useResolver(() => {
-		if (time) {
-			return time;
-		}
-		if (isPending(resumeInfoResolver) || isErrored(resumeInfoResolver)) {
-			return resumeInfoResolver;
-		}
+	if (isPending(resumeInfoResolver)) {
+		return { loading: true };
+	}
+	if (isErrored(resumeInfoResolver)) {
+		return { loading: false, error: resumeInfoResolver };
+	}
 
-		/* Some definitions:
+	const resumeInfo = resumeInfoResolver;
+	let resumeTime = resumeInfo.ResumeSeconds;
+
+	const video = player?.video;
+
+	/*
+		Some definitions:
 		End: the video player's slider is at the far right end or very close to it.
 		Completed: at least 95% of the video was watched.
-		*/
+	*/
+	const completed = video?.isCompletable() && video?.hasCompleted();
+	const ended = reachedVideoEnd(duration, resumeTime);
 
-		const video = player?.video;
-		let resumeTime = resumeInfoResolver.ResumeSeconds;
+	const restart = !completed && (ended || currentTime >= duration - 2);
 
-		const completed = video?.isCompletable() && video?.hasCompleted();
-		const ended = reachedVideoEnd(duration, resumeTime);
-		const restart = !completed && ended;
-
-		//No need to resume if the video ended and has been completed or once you have watched past it.
-		if ((completed && ended) || currentTime >= resumeTime) {
-			resumeTime = null;
-		}
-
-		return { resumeTime, restart };
-	}, [resumeInfoResolver, currentTime, time, duration]);
+	if ((completed && ended) || currentTime >= resumeTime) {
+		resumeTime = null;
+	} else if (restart) {
+		resumeTime = 0;
+	}
 
 	return {
-		loading: isPending(resolver),
-		error: isErrored(resolver) ? resolver : null,
-		resumeTime: isResolved(resolver) ? resolver.resumeTime : null,
+		loading: false,
+		resumeTime,
+		restart,
 	};
-}
-
-function useVideoRestart() {
-	const player = usePlayer();
-	const duration = useDuration();
-	const time = player?.activeVideo.getPlayerState().time;
-
-	const resolver = useResolver(() => {
-		return player.activeVideo.getPlayerState().time >= duration - 2;
-	}, [player, time, duration]);
-
-	return isResolved(resolver) ? resolver : null;
 }
 
 export function Resume({ time, ...otherProps }) {
@@ -137,17 +125,12 @@ export function Resume({ time, ...otherProps }) {
 		}
 	}, []);
 
-	const { loading, error, resumeTime } = useResumeTime(time);
-
-	const restart = useVideoRestart();
+	const { loading, error, resumeTime, restart } = useResumeTime(time);
 
 	const hidden = width === null;
 	let collapsed =
-		clicked || (!hidden && (loading || error || resumeTime === null));
-
-	if (restart) {
-		collapsed = false;
-	}
+		!restart &&
+		(clicked || (!hidden && (loading || error || resumeTime === null)));
 	return (
 		<ResumeButton
 			{...otherProps}

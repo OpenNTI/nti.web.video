@@ -114,10 +114,8 @@ export const useDuration = () => {
 	const player = usePlayer();
 
 	const resolver = useResolver(() => {
-		const currentState = player.getPlayerState();
-
-		return currentState?.duration ?? player.video.getDuration();
-	}, [player, player?.video, player?.getPlayerState?.().duration]);
+		return player?.video.getDuration();
+	}, [player?.video]);
 
 	return useResolver.isResolved(resolver) ? resolver : null;
 };
@@ -129,6 +127,20 @@ export const useDuration = () => {
  * @returns {void}
  */
 export const useTimeUpdate = fn => useEvent('time-update', fn);
+
+/**
+ * Use the current time of the active player in the current context
+ *
+ * @returns {number}
+ */
+export const useCurrentTime = () => {
+	const forceUpdate = useForceUpdate();
+	const player = usePlayer();
+
+	useTimeUpdate(forceUpdate);
+
+	return player?.getPlayerState?.().time ?? 0;
+};
 
 /**
  * Listen for seeked events on the active player in the current context
