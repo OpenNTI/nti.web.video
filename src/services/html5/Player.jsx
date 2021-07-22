@@ -12,6 +12,7 @@ import {
 	getSourceGroups,
 	removeSourcesFromGroups,
 	HLS_TYPE,
+	isSameSource,
 } from '../utils';
 import { UNSTARTED, PLAYING, PAUSED, ENDED } from '../../Constants';
 
@@ -120,7 +121,7 @@ export default class HTML5Video extends React.Component {
 	}
 
 	componentDidUpdate({ source }) {
-		if (source !== this.props.source) {
+		if (isSameSource(source, this.props.source)) {
 			this.setState({ ...initialState });
 			this.setupSource(this.props, () => {
 				let { video } = this;

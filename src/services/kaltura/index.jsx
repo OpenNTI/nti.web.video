@@ -8,7 +8,7 @@ import Logger from '@nti/util-logger';
 import { Models } from '@nti/lib-interfaces';
 
 import Video from '../html5/';
-import { createNonRecoverableError } from '../utils';
+import { createNonRecoverableError, isSameSource } from '../utils';
 
 const { MediaSourceFactory } = Models.media;
 
@@ -164,7 +164,7 @@ export default class KalturaVideo extends React.Component {
 	}
 
 	componentDidUpdate({ source }) {
-		if (this.props.source !== source) {
+		if (isSameSource(this.props.source, source)) {
 			this.setState(initialState);
 			this.setupSource();
 		}

@@ -14,7 +14,11 @@ import {
 	PLAYING,
 	PAUSED,
 } from '../../Constants';
-import { resolveCanAccessSource, createNonRecoverableError } from '../utils';
+import {
+	resolveCanAccessSource,
+	createNonRecoverableError,
+	isSameSource,
+} from '../utils';
 
 const logger = Logger.get('video:vimeo');
 const VIMEO_URL_PARTS =
@@ -106,7 +110,7 @@ export default class VimeoVideo extends React.Component {
 	}
 
 	componentDidUpdate({ source }, { playerURL }) {
-		if (this.props.source !== source) {
+		if (isSameSource(this.props.source, source)) {
 			this.ensureAccess();
 			this.updateURL(this.props);
 		}

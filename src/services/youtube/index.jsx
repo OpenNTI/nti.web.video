@@ -13,6 +13,7 @@ import {
 	resolveCanAccessSource,
 	createNonRecoverableError,
 	parseJSON,
+	isSameSource,
 } from '../utils';
 
 const logger = Logger.get('video:youtube');
@@ -120,7 +121,7 @@ export default class YouTubeVideo extends React.Component {
 			'Something changed the initTask!'
 		);
 
-		if (prevProps.source !== this.props.source) {
+		if (isSameSource(prevProps.source, this.props.source)) {
 			this.ensureAccess();
 			this.updateURL();
 			return;

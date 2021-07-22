@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { Models } from '@nti/lib-interfaces';
 
 import { UNSTARTED, ENDED, PLAYING, PAUSED } from '../../Constants';
+import { isSameSource } from '../utils';
 
 import WistiaPlayer from './WistiaPlayer';
 
@@ -56,7 +57,7 @@ export default class WistiaVideoPlayer extends React.Component {
 		const { source } = this.props;
 		const { source: prevSource } = prevProps;
 
-		if (source !== prevSource) {
+		if (isSameSource(source, prevSource)) {
 			this.setupSource();
 		}
 	}
