@@ -6,6 +6,7 @@ import { Hooks, Text, Icons } from '@nti/web-commons';
 import { scoped } from '@nti/lib-locale';
 
 import { usePlayer, useDuration, useCurrentTime } from '../Context';
+import { ENDED } from '../Constants';
 
 import { SeekTo } from './SeekTo';
 
@@ -94,7 +95,9 @@ function useResumeTime(time) {
 	const completed = video?.isCompletable() && video?.hasCompleted();
 	const ended = reachedVideoEnd(duration, resumeTime);
 
-	const restart = !completed && (ended || currentTime >= duration - 2);
+	const restart =
+		player?.getPlayerState()?.state === ENDED ||
+		(!completed && (ended || currentTime >= duration - 2));
 
 	if ((completed && ended) || currentTime >= resumeTime) {
 		resumeTime = null;
