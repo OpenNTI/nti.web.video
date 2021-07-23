@@ -3,6 +3,8 @@ import cx from 'classnames';
 
 import { Layouts, Hooks } from '@nti/web-commons';
 
+import useVideoCompletion from '../hooks/use-video-completion';
+
 import { Resume } from './Resume';
 import { WatchedSegments } from './WatchedSegments';
 
@@ -45,14 +47,9 @@ const WatchedContainer = styled.div`
 	padding: 1.125rem 1.25rem 0.875rem;
 	background: var(--quad-grey);
 	border-radius: 4px;
-	display: none;
 
 	&.dark {
 		background: var(--secondary-background);
-	}
-
-	&.show {
-		display: block;
 	}
 `;
 
@@ -69,11 +66,17 @@ export function ControlBar({ children, dark, ...props }) {
 		() => setShowWatched(!showWatched),
 		[showWatched, setShowWatched]
 	);
-	const [alert, setAlert] = React.useState(false);
+
+	const completionObject = useVideoCompletion();
+
+	const alert =
+		completionObject?.videoCompletable &&
+		completionObject?.watchedTilEnd &&
+		!completionObject?.videoCompleted;
 
 	React.useEffect(() => {
-		if (alert) {
-			setShowWatched(true);
+		if (alert ^ showWatched) {
+			toggleShowWatched();
 		}
 	}, [alert]);
 
@@ -118,9 +121,18 @@ export function ControlBar({ children, dark, ...props }) {
 			</Bar>
 			{Slot.exists(WatchedSegments.Trigger, children) && (
 				<div id={watchedId}>
-					<WatchedContainer dark={dark} show={showWatched}>
-						<WatchedSegments dark={dark} setAlert={setAlert} />
-					</WatchedContainer>
+					{showWatched && (
+						<WatchedContainer dark={dark}>
+							<WatchedSegments
+								dark={dark}
+								alert={alert}
+								viewed={
+									completionObject?.videoCompletable &&
+									completionObject?.videoCompleted
+								}
+							/>
+						</WatchedContainer>
+					)}
 				</div>
 			)}
 		</div>
