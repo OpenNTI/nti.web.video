@@ -72,7 +72,8 @@ export function ControlBar({ children, dark, ...props }) {
 	const alert =
 		completionObject?.videoCompletable &&
 		completionObject?.watchedTilEnd &&
-		!completionObject?.videoCompleted;
+		!completionObject?.videoCompleted &&
+		!completionObject.loading;
 
 	React.useEffect(() => {
 		if (alert ^ showWatched) {
