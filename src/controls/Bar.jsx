@@ -76,6 +76,22 @@ export function ControlBar({ children, dark, ...props }) {
 		!completionObject.loading;
 
 	React.useEffect(() => {
+		/**
+		 * Here's why I'm using XOR:
+		 * if alert is false and showWatched is false,
+		 * 		then I don't wanna do anything cause there's no need to show watched segments
+		 * 		so I won't toggle showWatched.
+		 * 		FALSE XOR FALSE = FALSE (check)
+		 * if alert is true and showWatched is false,
+		 * 		I wanna toggle showWatched to make it true and hence show the watched segments.
+		 * 		TRUE XOR FALSE = TRUE(check)
+		 * if alert is false and showWatched is true,
+		 * 		then I wanna hide the watched segments by toggling showWatched to false.
+		 * 		FALSE XOR TRUE = TRUE (check)
+		 * if alert and showWatched are true,
+		 * 		then I don't need to toggle showWatched since I want the user to see watched segments.
+		 * 		TRUE XOR TRUE = FALSE (check)
+		 */
 		if (alert ^ showWatched) {
 			toggleShowWatched();
 		}
