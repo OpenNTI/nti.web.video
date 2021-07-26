@@ -39,6 +39,6 @@ test('useVideoCompletion Hook.', async () => {
 		watchedTilEnd: true,
 		videoCompletable: true,
 		videoCompleted: true,
-		loading: undefined,
+		loading: true,
 	});
 });
