@@ -21,47 +21,45 @@ export default function useVideoCompletion() {
 	const time = useCurrentTime();
 	const video = player?.video;
 
-	const videoActuallyEnded = player?.getPlayerState()?.state === ENDED;
 	const watchedTilEnd =
 		time >= duration * 0.95 || player?.getPlayerState()?.state === ENDED;
 	const videoCompletable = video?.isCompletable();
 	const videoCompleted =
 		video?.hasCompleted() && video?.completedSuccessfully();
 
-	const [bin, setBin] = React.useState();
+	/**
+	 * Meaning of !(videoCompletable && videoCompleted):
+	 * Is to refresh video only when we are not sure if it is completed or not.
+	 * That is: We can't un-complete a video so we don't need to refresh it if we already know it's been completed.
+	 */
+	const hasEnded = watchedTilEnd && !(videoCompletable && videoCompleted);
+
+	const [receivedBatchEventAfterEnd, setRBEAE] = React.useState(false);
 
 	React.useEffect(() => {
-		if (!video) {
-			return;
-		}
-		function updateBin() {
-			const time = player.getPlayerState().time;
-			const newBin = time - (time % 5);
-
-			if (newBin !== bin) {
-				setBin(newBin);
+		const listener = () => {
+			if (hasEnded) {
+				setRBEAE(true);
 			}
+		};
+
+		AnalyticsHooks.addAfterBatchEventsListener(listener);
+
+		return () => AnalyticsHooks.removeAfterBatchEventsListener(listener);
+	}, [hasEnded]);
+
+	const updating = useResolver(async () => {
+		if (receivedBatchEventAfterEnd) {
+			await video.refresh();
 		}
-
-		AnalyticsHooks.addAfterBatchEventsListener(updateBin);
-
-		return () => AnalyticsHooks.removeAfterBatchEventsListener(updateBin);
-	}, [video]);
-
-	const resolver = useResolver(async () => {
-		// Refresh video only when we are not sure if it is completed or not.
-		// (We can't un-complete a video so we don't need to refresh it if we already know it's been completed.)
-		if (watchedTilEnd && !(videoCompletable && videoCompleted)) {
-			await video?.refresh();
-		}
-	}, [watchedTilEnd, videoActuallyEnded, bin]);
+	}, [receivedBatchEventAfterEnd]);
 
 	return {
 		watchedTilEnd,
 		videoCompletable,
-		videoCompleted: useResolver.isResolved(resolver)
+		videoCompleted: useResolver.isResolved(updating)
 			? video?.hasCompleted() && video?.completedSuccessfully()
 			: false,
-		loading: useResolver.isPending(resolver),
+		loading: useResolver.isPending(updating) || !receivedBatchEventAfterEnd,
 	};
 }
