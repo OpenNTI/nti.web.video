@@ -75,6 +75,9 @@ export function ControlBar({ children, dark, ...props }) {
 		!completionObject?.videoCompleted &&
 		!completionObject.loading;
 
+	const viewed =
+		completionObject?.videoCompletable && completionObject?.videoCompleted;
+
 	React.useEffect(() => {
 		/**
 		 * Here's why I'm using XOR:
@@ -143,10 +146,7 @@ export function ControlBar({ children, dark, ...props }) {
 							<WatchedSegments
 								dark={dark}
 								alert={alert}
-								viewed={
-									completionObject?.videoCompletable &&
-									completionObject?.videoCompleted
-								}
+								viewed={viewed}
 							/>
 						</WatchedContainer>
 					)}
