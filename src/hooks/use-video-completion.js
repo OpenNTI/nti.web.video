@@ -1,3 +1,6 @@
+import React from 'react';
+
+import { Hooks as AnalyticsHooks } from '@nti/lib-analytics';
 import { useResolver } from '@nti/web-commons';
 
 import { ENDED } from '../Constants';
@@ -19,21 +22,46 @@ export default function useVideoCompletion() {
 	const video = player?.video;
 
 	const videoActuallyEnded = player?.getPlayerState()?.state === ENDED;
-
 	const watchedTilEnd =
 		time >= duration * 0.95 || player?.getPlayerState()?.state === ENDED;
+	const videoCompletable = video?.isCompletable();
+	const videoCompleted =
+		video?.hasCompleted() && video?.completedSuccessfully();
+
+	const [bin, setBin] = React.useState();
+
+	React.useEffect(() => {
+		if (!video) {
+			return;
+		}
+		function updateBin() {
+			const time = player.getPlayerState().time;
+			const newBin = time - (time % 5);
+
+			if (newBin !== bin) {
+				setBin(newBin);
+			}
+		}
+
+		AnalyticsHooks.addAfterBatchEventsListener(updateBin);
+
+		return () => AnalyticsHooks.removeAfterBatchEventsListener(updateBin);
+	}, [video]);
 
 	const resolver = useResolver(async () => {
-		if (watchedTilEnd) {
+		// Refresh video only when we are not sure if it is completed or not.
+		// (We can't un-complete a video so we don't need to refresh it if we already know it's been completed.)
+		if (watchedTilEnd && !(videoCompletable && videoCompleted)) {
 			await video?.refresh();
 		}
-		return {
-			watchedTilEnd,
-			videoCompletable: video?.isCompletable(),
-			videoCompleted:
-				video?.hasCompleted() && video?.completedSuccessfully(),
-		};
-	}, [watchedTilEnd, videoActuallyEnded]);
+	}, [watchedTilEnd, videoActuallyEnded, bin]);
 
-	return useResolver.isResolved(resolver) ? resolver : false;
+	return {
+		watchedTilEnd,
+		videoCompletable,
+		videoCompleted: useResolver.isResolved(resolver)
+			? video?.hasCompleted() && video?.completedSuccessfully()
+			: false,
+		loading: useResolver.isPending(resolver),
+	};
 }
