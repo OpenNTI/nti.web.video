@@ -35,10 +35,10 @@ test('useVideoCompletion Hook.', async () => {
 
 	const completion = await hook.result.current;
 
-	expect(refresh).toBeCalled();
 	expect(completion).toEqual({
 		watchedTilEnd: true,
 		videoCompletable: true,
 		videoCompleted: true,
+		loading: undefined,
 	});
 });
