@@ -53,6 +53,10 @@ const WatchedContainer = styled.div`
 	}
 `;
 
+const Container = styled.div`
+	margin-bottom: 18px;
+`;
+
 /**
  * Video Control Bar
  *
@@ -125,7 +129,7 @@ export function ControlBar({ children, dark, ...props }) {
 	};
 
 	return (
-		<div {...props}>
+		<Container {...props}>
 			<Bar>
 				<Slot.List
 					slots={[Resume, WatchedSegments.Trigger]}
@@ -152,6 +156,6 @@ export function ControlBar({ children, dark, ...props }) {
 					)}
 				</div>
 			)}
-		</div>
+		</Container>
 	);
 }
