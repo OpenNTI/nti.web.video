@@ -21,7 +21,7 @@ const t = scoped('nti-video.controls.Resume', {
 const Labels = Text.Translator(t);
 
 const ResumeButton = styled(SeekTo)`
-	transition: max-width 0.5s, opacity 0.5s;
+	transition: all 0.5s;
 	max-width: var(--button-width);
 	opacity: 1;
 	white-space: nowrap;
