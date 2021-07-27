@@ -36,10 +36,20 @@ export default function useVideoCompletion() {
 
 	const [receivedBatchEventAfterEnd, setRBEAE] = React.useState(false);
 
+	/**
+	 * What's going on here:
+	 * We are adding a listener to execute after the watched segments batch events is sent to the server.
+	 * The listener is basically checking if the user is at the "end" of the video. If so, then we set
+	 * the receivedBatchEventAfterEnd state to true, which basically refreshes the video. Otherwise,
+	 * if the video has not ended and we have receivedBatchEventAfterEnd, then we will have to update
+	 * the state such that we can refresh the video when receivedBatchEventAfterEnd toggles back to true.
+	 */
 	React.useEffect(() => {
 		const listener = () => {
 			if (hasEnded) {
 				setRBEAE(true);
+			} else if (!hasEnded && receivedBatchEventAfterEnd) {
+				setRBEAE(false);
 			}
 		};
 
