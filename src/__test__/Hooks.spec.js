@@ -5,47 +5,40 @@ import * as Commons from '@nti/web-commons';
 
 import * as Context from '../Context';
 import useVideoCompletion from '../hooks/use-video-completion';
-import useWatchedTilEnd from '../hooks/use-watched-til-end';
+import { ENDED } from '../Constants';
 
 jest.mock('@nti/web-commons');
 
 beforeEach(() => {
 	Commons.useResolver.mockImplementation(fn => fn());
 	Commons.useResolver.isResolved.mockImplementation(() => true);
-
-	jest.spyOn(Context, 'useDuration').mockImplementation(() => 60);
 });
 
-test('useVideoCompletion Hook.', () => {
+test('useVideoCompletion Hook.', async () => {
 	const refresh = jest.fn();
 
-	jest.spyOn(Context, 'usePlayer').mockImplementation(() => {
-		return {
-			video: {
-				isCompletable: () => true,
-				hasCompleted: () => false,
-				refresh: refresh,
-			},
-		};
+	jest.spyOn(Context, 'useDuration').mockImplementation(() => 100);
+	jest.spyOn(Context, 'usePlayer').mockImplementation(() => ({
+		getPlayerState: () => ({ state: ENDED }),
+		video: {
+			isCompletable: () => true,
+			hasCompleted: () => true,
+			completedSuccessfully: () => true,
+			refresh: refresh,
+		},
+	}));
+	jest.spyOn(Context, 'useCurrentTime').mockImplementation(() => 90);
+
+	const hook = renderHook(() => useVideoCompletion());
+
+	hook.waitForNextUpdate();
+
+	const completion = await hook.result.current;
+
+	expect(completion).toEqual({
+		watchedTilEnd: true,
+		videoCompletable: true,
+		videoCompleted: true,
+		loading: true,
 	});
-
-	const segments = [{ 'data-end': 1, 'data-start': 0 }];
-
-	renderHook(() => useVideoCompletion(segments));
-
-	expect(refresh).toBeCalled();
-});
-
-test('useWatchedTilEnd Hook.', () => {
-	const segmentsFalse = [{ 'data-end': 1 }];
-
-	const { result: first } = renderHook(() => useWatchedTilEnd(segmentsFalse));
-
-	expect(first.current).toBe(false);
-
-	const segmentsTrue = [{ 'data-end': 59 }];
-
-	const { result: second } = renderHook(() => useWatchedTilEnd(segmentsTrue));
-
-	expect(second.current).toBe(true);
 });

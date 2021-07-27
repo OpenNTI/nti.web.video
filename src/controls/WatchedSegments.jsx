@@ -18,8 +18,6 @@ import {
 } from '@nti/web-commons';
 
 import { usePlayer, useDuration } from '../Context';
-import useVideoCompletion from '../hooks/use-video-completion';
-import useWatchedTilEnd from '../hooks/use-watched-til-end';
 
 import getMileStones from './utils/get-mile-stones';
 import { getTimeStyle, getDurationStyle } from './utils/get-styles';
@@ -270,22 +268,15 @@ export function WatchedSegments({
 	segments: segmentsProp,
 	onClick: onClickProp,
 	dark,
-	setAlert,
+	alert,
+	viewed,
 	...otherProps
 }) {
 	const { loading, error, segments } = useWatchedSegments(segmentsProp);
 	const milestones = useMileStones();
 	const { ref, onClick } = useSeekHandler(onClickProp);
 
-	const completedVideo = useVideoCompletion(segments);
-	const watchedTilEnd = useWatchedTilEnd(segments);
-	const alertUserForCompletion = !completedVideo && watchedTilEnd;
-
-	React.useEffect(() => {
-		setAlert(alertUserForCompletion);
-	}, [watchedTilEnd, completedVideo]);
-
-	const CompletionIcon = alertUserForCompletion ? Alert : Check;
+	const CompletionIcon = alert ? Alert : Check;
 
 	return (
 		<Container {...otherProps} onClick={onClick} ref={ref}>
@@ -293,15 +284,11 @@ export function WatchedSegments({
 				loading={loading}
 				fallback={<Placeholder.Text text="Loading..." />}
 			>
-				{(alertUserForCompletion || completedVideo) && (
+				{(alert || viewed) && (
 					<BadgeContainer>
 						<CompletionIcon />
-						<Badge alert={alertUserForCompletion}>
-							<Translate
-								localeKey={
-									alertUserForCompletion ? 'alert' : 'viewed'
-								}
-							/>
+						<Badge alert={alert}>
+							<Translate localeKey={alert ? 'alert' : 'viewed'} />
 						</Badge>
 					</BadgeContainer>
 				)}

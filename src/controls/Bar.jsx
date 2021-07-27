@@ -3,6 +3,8 @@ import cx from 'classnames';
 
 import { Layouts, Hooks } from '@nti/web-commons';
 
+import useVideoCompletion from '../hooks/use-video-completion';
+
 import { Resume } from './Resume';
 import { WatchedSegments } from './WatchedSegments';
 
@@ -45,15 +47,14 @@ const WatchedContainer = styled.div`
 	padding: 1.125rem 1.25rem 0.875rem;
 	background: var(--quad-grey);
 	border-radius: 4px;
-	display: none;
 
 	&.dark {
 		background: var(--secondary-background);
 	}
+`;
 
-	&.show {
-		display: block;
-	}
+const Container = styled.div`
+	margin-bottom: 18px;
 `;
 
 /**
@@ -69,11 +70,37 @@ export function ControlBar({ children, dark, ...props }) {
 		() => setShowWatched(!showWatched),
 		[showWatched, setShowWatched]
 	);
-	const [alert, setAlert] = React.useState(false);
+
+	const completionObject = useVideoCompletion();
+
+	const alert =
+		completionObject?.videoCompletable &&
+		completionObject?.watchedTilEnd &&
+		!completionObject?.videoCompleted &&
+		!completionObject.loading;
+
+	const viewed =
+		completionObject?.videoCompletable && completionObject?.videoCompleted;
 
 	React.useEffect(() => {
-		if (alert) {
-			setShowWatched(true);
+		/**
+		 * Here's why I'm using XOR:
+		 * if alert is false and showWatched is false,
+		 * 		then I don't wanna do anything cause there's no need to show watched segments
+		 * 		so I won't toggle showWatched.
+		 * 		FALSE XOR FALSE = FALSE (check)
+		 * if alert is true and showWatched is false,
+		 * 		I wanna toggle showWatched to make it true and hence show the watched segments.
+		 * 		TRUE XOR FALSE = TRUE(check)
+		 * if alert is false and showWatched is true,
+		 * 		then I wanna hide the watched segments by toggling showWatched to false.
+		 * 		FALSE XOR TRUE = TRUE (check)
+		 * if alert and showWatched are true,
+		 * 		then I don't need to toggle showWatched since I want the user to see watched segments.
+		 * 		TRUE XOR TRUE = FALSE (check)
+		 */
+		if (alert ^ showWatched) {
+			toggleShowWatched();
 		}
 	}, [alert]);
 
@@ -102,7 +129,7 @@ export function ControlBar({ children, dark, ...props }) {
 	};
 
 	return (
-		<div {...props}>
+		<Container {...props}>
 			<Bar>
 				<Slot.List
 					slots={[Resume, WatchedSegments.Trigger]}
@@ -118,11 +145,17 @@ export function ControlBar({ children, dark, ...props }) {
 			</Bar>
 			{Slot.exists(WatchedSegments.Trigger, children) && (
 				<div id={watchedId}>
-					<WatchedContainer dark={dark} show={showWatched}>
-						<WatchedSegments dark={dark} setAlert={setAlert} />
-					</WatchedContainer>
+					{showWatched && (
+						<WatchedContainer dark={dark}>
+							<WatchedSegments
+								dark={dark}
+								alert={alert}
+								viewed={viewed}
+							/>
+						</WatchedContainer>
+					)}
 				</div>
 			)}
-		</div>
+		</Container>
 	);
 }
