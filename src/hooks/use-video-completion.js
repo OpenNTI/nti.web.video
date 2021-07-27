@@ -34,7 +34,7 @@ export default function useVideoCompletion() {
 	 */
 	const hasEnded = watchedTilEnd && !(videoCompletable && videoCompleted);
 
-	const [receivedBatchEventAfterEnd, setRecievedBatchEventAfterEnd] =
+	const [receivedBatchEventAfterEnd, setReceivedBatchEventAfterEnd] =
 		React.useState(false);
 
 	/**
@@ -48,9 +48,9 @@ export default function useVideoCompletion() {
 	React.useEffect(() => {
 		const listener = () => {
 			if (hasEnded) {
-				setRecievedBatchEventAfterEnd(true);
+				setReceivedBatchEventAfterEnd(true);
 			} else if (!hasEnded && receivedBatchEventAfterEnd) {
-				setRecievedBatchEventAfterEnd(false);
+				setReceivedBatchEventAfterEnd(false);
 			}
 		};
 
