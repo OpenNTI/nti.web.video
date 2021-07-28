@@ -278,9 +278,14 @@ const useSeekHandler = onClick => {
 };
 
 /**
- * Render the watched segments of the video in a trackbar
+ * Render the watched segments of the video in a track bar
  *
- * @param {{segments:[Segment], dark:boolean, onClick:(event:Event) => void}} props
+ * @param {Object} props
+ * @param {Segment[]} props.segments
+ * @param {(event:Event) => void} props.onClick
+ * @param {boolean} props.dark
+ * @param {boolean} props.alert
+ * @param {boolean} props.viewed
  * @returns {JSX.Element}
  */
 export function WatchedSegments({
