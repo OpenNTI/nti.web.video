@@ -36,8 +36,27 @@ const t = scoped('nti-video.controls.WatchedSegments', {
 
 const Translate = Text.Translator(t);
 
+const styles = stylesheet`
+	.fadeup {
+		animation: fadeup 0.5s;
+		animation-iteration-count: 1;
+		animation-fill-mode: both;
+	}
+
+	@keyframes fadeup {
+		0% {
+			opacity: 0;
+		}
+
+		100% {
+			opacity: 1;
+		}
+	}
+`;
+
 const Container = styled.div`
 	cursor: pointer;
+	min-height: 34px;
 `;
 
 const Bar = styled.div`
@@ -261,7 +280,7 @@ const useSeekHandler = onClick => {
 /**
  * Render the watched segments of the video in a trackbar
  *
- * @param {{segments:[Segment], onClick:(event:Event) => void, dark:boolean}} props
+ * @param {{segments:[Segment], dark:boolean, onClick:(event:Event) => void}} props
  * @returns {JSX.Element}
  */
 export function WatchedSegments({
@@ -284,37 +303,41 @@ export function WatchedSegments({
 				loading={loading}
 				fallback={<Placeholder.Text text="Loading..." />}
 			>
-				{(alert || viewed) && (
-					<BadgeContainer>
-						<CompletionIcon />
-						<Badge alert={alert}>
-							<Translate localeKey={alert ? 'alert' : 'viewed'} />
-						</Badge>
-					</BadgeContainer>
-				)}
-				<Bar
-					data-testid="watched-segments-bar"
-					loading={loading}
-					error={error}
-					dark={dark}
-				>
-					{(segments ?? []).map((seg, key) => (
-						<Segment key={key} {...seg} />
-					))}
-				</Bar>
-				{milestones && (
-					<Milestones>
-						{milestones.map((milestone, key) => (
-							<Milestone
-								key={key}
-								style={milestone.style}
-								dark={dark}
-							>
-								{milestone.label}
-							</Milestone>
+				<div className={styles.fadeup}>
+					{(alert || viewed) && (
+						<BadgeContainer>
+							<CompletionIcon />
+							<Badge alert={alert}>
+								<Translate
+									localeKey={alert ? 'alert' : 'viewed'}
+								/>
+							</Badge>
+						</BadgeContainer>
+					)}
+					<Bar
+						data-testid="watched-segments-bar"
+						loading={loading}
+						error={error}
+						dark={dark}
+					>
+						{(segments ?? []).map((seg, key) => (
+							<Segment key={key} {...seg} />
 						))}
-					</Milestones>
-				)}
+					</Bar>
+					{milestones && (
+						<Milestones>
+							{milestones.map((milestone, key) => (
+								<Milestone
+									key={key}
+									style={milestone.style}
+									dark={dark}
+								>
+									{milestone.label}
+								</Milestone>
+							))}
+						</Milestones>
+					)}
+				</div>
 			</Loading.Placeholder>
 		</Container>
 	);
