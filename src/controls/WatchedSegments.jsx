@@ -36,6 +36,7 @@ const t = scoped('nti-video.controls.WatchedSegments', {
 
 const Translate = Text.Translator(t);
 
+//#region 🎨
 const styles = stylesheet`
 	.fade-up {
 		animation: fade-up 0.5s;
@@ -154,6 +155,9 @@ const Badge = styled.div`
 		color: var(--primary-red);
 	}
 `;
+//#endregion
+
+//#region 🛠️
 
 const getSegmentStyle = (seg, player, maxDuration) => ({
 	...getTimeStyle(seg.video_start_time, player, maxDuration),
@@ -276,6 +280,8 @@ const useSeekHandler = onClick => {
 		ref: container,
 	};
 };
+
+//#endregion
 
 /**
  * Render the watched segments of the video in a track bar
