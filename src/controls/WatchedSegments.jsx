@@ -37,13 +37,13 @@ const t = scoped('nti-video.controls.WatchedSegments', {
 const Translate = Text.Translator(t);
 
 const styles = stylesheet`
-	.fadeup {
-		animation: fadeup 0.5s;
+	.fade-up {
+		animation: fade-up 0.5s;
 		animation-iteration-count: 1;
 		animation-fill-mode: both;
 	}
 
-	@keyframes fadeup {
+	@keyframes fade-up {
 		0% {
 			opacity: 0;
 		}
@@ -308,7 +308,7 @@ export function WatchedSegments({
 				loading={loading}
 				fallback={<Placeholder.Text text="Loading..." />}
 			>
-				<div className={styles.fadeup}>
+				<div className={styles.fadeUp}>
 					{(alert || viewed) && (
 						<BadgeContainer>
 							<CompletionIcon />
