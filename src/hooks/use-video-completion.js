@@ -27,6 +27,10 @@ export default function useVideoCompletion() {
 	const videoCompleted =
 		video?.hasCompleted() && video?.completedSuccessfully();
 
+	React.useEffect(() => {
+		video?.refresh();
+	}, [video]);
+
 	/**
 	 * Meaning of !(videoCompletable && videoCompleted):
 	 * Is to refresh video only when we are not sure if it is completed or not.
