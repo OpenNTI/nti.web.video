@@ -4,7 +4,6 @@ import Player from '@vimeo/player';
 import { v4 as uuid } from 'uuid';
 
 import Logger from '@nti/util-logger';
-import { isFlag } from '@nti/web-client';
 import { Url } from '@nti/lib-commons';
 
 import {

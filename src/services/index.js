@@ -77,6 +77,7 @@ export async function createMediaSourceFromUrl(url) {
 
 /**
  * Get canonical URL from service and source
+ *
  * @param  {string|Object} args - `${service} ${source}` or {service: ..., source: ...}
  * @returns {string} canonical url
  */
