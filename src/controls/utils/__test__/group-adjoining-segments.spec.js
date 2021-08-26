@@ -1,5 +1,5 @@
 /* eslint-env jest */
-import group from '../group-adjoining-segments';
+import { groupAdjoiningSegments as group } from '../segments';
 
 const seg = (start, end) => ({
 	video_start_time: start,

@@ -1,7 +1,7 @@
 /** @typedef {number} Time - video timestamp in seconds */
 /** @typedef {{video_start_time:Time, video_end_time: Time}} Segment */
 
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 
 import {
 	Hooks as AnalyticsHooks,
@@ -9,13 +9,13 @@ import {
 } from '@nti/lib-analytics';
 import { scoped } from '@nti/lib-locale';
 import { Hooks, Text, Icons, Loading, Placeholder } from '@nti/web-commons';
-import { Button } from "@nti/web-core";
+import { Button } from '@nti/web-core';
 
 import { usePlayer, useDuration } from '../Context';
 
 import getMileStones from './utils/get-mile-stones';
 import { getTimeStyle, getDurationStyle } from './utils/get-styles';
-import groupAdjoiningSegments from './utils/group-adjoining-segments';
+import { groupAdjoiningSegments, getVisibleSegments } from './utils/segments';
 
 const { useResolver } = Hooks;
 const { isPending, isErrored, isResolved } = useResolver;
@@ -168,15 +168,15 @@ const getSegmentProps = (seg, player, maxDuration) => ({
 	style: getSegmentStyle(seg, player, maxDuration),
 });
 
-const useWatchedSegments = segments => {
+const useWatchedSegments = (segmentsProp, bar) => {
 	const player = usePlayer();
 	const maxDuration = useDuration();
 
 	const [liveSegments, setLiveSegments] = useState([]);
 
 	const resolver = useResolver(async () => {
-		if (segments) {
-			return groupAdjoiningSegments(segments);
+		if (segmentsProp) {
+			return groupAdjoiningSegments(segmentsProp);
 		}
 
 		const video = player?.video;
@@ -188,7 +188,7 @@ const useWatchedSegments = segments => {
 		const resp = await video.fetchLink('watched_segments');
 
 		return groupAdjoiningSegments(resp.WatchedSegments);
-	}, [player, player?.video, segments]);
+	}, [player, player?.video, segmentsProp]);
 
 	React.useEffect(() => {
 		if (!player?.video) {
@@ -223,14 +223,22 @@ const useWatchedSegments = segments => {
 		return () => AnalyticsHooks.removeAfterBatchEventsListener(listener);
 	}, [liveSegments, setLiveSegments, player?.video]);
 
+	const segments = useMemo(() => {
+		if (!bar || !maxDuration || !isResolved(resolver)) {
+			return null;
+		}
+
+		return getVisibleSegments(
+			groupAdjoiningSegments([...resolver, ...liveSegments]),
+			maxDuration,
+			bar?.offsetWidth
+		).map(s => getSegmentProps(s, player, maxDuration));
+	}, [resolver, liveSegments, maxDuration, bar, player]);
+
 	return {
 		loading: isPending(resolver),
 		error: isErrored(resolver) ? resolver : null,
-		segments: isResolved(resolver)
-			? groupAdjoiningSegments([...resolver, ...liveSegments]).map(s =>
-					getSegmentProps(s, player, maxDuration)
-			  )
-			: null,
+		segments,
 	};
 };
 
@@ -296,7 +304,17 @@ export function WatchedSegments({
 	viewed,
 	...otherProps
 }) {
-	const { loading, error, segments } = useWatchedSegments(segmentsProp);
+	const [bar, setBar] = useState(null);
+	const BarRef = useCallback(
+		newBar => {
+			if (bar !== newBar) {
+				setBar(newBar);
+			}
+		},
+		[setBar, bar]
+	);
+
+	const { loading, error, segments } = useWatchedSegments(segmentsProp, bar);
 	const milestones = useMileStones();
 	const { ref, onClick } = useSeekHandler(onClickProp);
 
@@ -321,6 +339,7 @@ export function WatchedSegments({
 					)}
 					<Bar
 						data-testid="watched-segments-bar"
+						ref={BarRef}
 						loading={loading}
 						error={error}
 						dark={dark}
