@@ -55,20 +55,34 @@ function buildSegmentWatchedIndex(segments) {
 
 	const starts = Array.from(index.keys()).sort();
 
+	/**
+	 * Find the segment start time that is closes to the target, without going over.
+	 *
+	 * @param {number} s
+	 * @returns {number}
+	 */
 	const findClosestStart = s => {
+		//if we're less than the first start type there is no closest start time
+		if (s < starts[0]) {
+			return null;
+		}
+
 		for (let i = 0; i < starts.length; i++) {
 			const segStart = starts[i];
 
+			//if the target is exactly the start of this segment use it.
 			if (s === segStart) {
 				return starts[i];
 			}
 
+			//if this segment is past the target, the previous segment start is the closest
 			if (s < segStart) {
 				return starts[i - 1];
 			}
 		}
 
-		return starts[0];
+		//if we get here the target was greater than all the segment starts so the last segment start is the closest
+		return last(starts);
 	};
 
 	return {
