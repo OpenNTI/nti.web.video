@@ -53,7 +53,7 @@ function buildSegmentWatchedIndex(segments) {
 		return acc;
 	}, new Map());
 
-	const starts = Array.from(index.keys()).sort();
+	const starts = Array.from(index.keys()).sort((a, b) => a - b);
 
 	/**
 	 * Find the segment start time that is closes to the target, without going over.
