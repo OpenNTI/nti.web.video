@@ -390,6 +390,10 @@ const ContentContainer = styled.div`
 	&.alert {
 		color: var(--primary-red);
 	}
+
+	& > * {
+		vertical-align: middle;
+	}
 `;
 
 WatchedSegments.Trigger = ({ alert, children, ...props }) => (
