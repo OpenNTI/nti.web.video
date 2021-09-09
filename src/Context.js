@@ -9,10 +9,11 @@ import EventEmitter from 'events';
 import React from 'react';
 
 import { Hooks } from '@nti/web-commons';
+import { useForceUpdate } from '@nti/web-core';
 
 import { Context } from './Constants';
 
-const { useForceUpdate, useResolver } = Hooks;
+const { useResolver } = Hooks;
 
 class ContextObject extends EventEmitter {
 	#players = [];
