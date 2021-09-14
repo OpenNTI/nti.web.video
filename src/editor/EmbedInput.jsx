@@ -29,12 +29,12 @@ async function getMediaSource(rawInput) {
 
 export default class EmbedInput extends React.Component {
 	static show(value, config = {}) {
-		return new Promise((fulfill, reject) => {
+		return new Promise(done => {
 			Prompt.modal(
 				<EmbedInput
 					value={value}
-					onSelect={fulfill}
-					onCancel={reject}
+					onSelect={done}
+					onCancel={() => done(null)}
 				/>,
 				{ ...config, className: 'video-embed-input-container' }
 			);
