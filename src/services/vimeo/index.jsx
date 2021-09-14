@@ -4,7 +4,7 @@ import Player from '@vimeo/player';
 import { v4 as uuid } from 'uuid';
 
 import Logger from '@nti/util-logger';
-import { Url } from '@nti/lib-commons';
+import { url } from '@nti/lib-commons';
 
 import {
 	EventHandlers,
@@ -260,7 +260,7 @@ export default class VimeoVideo extends React.Component {
 			'https://player.vimeo.com/video/' +
 			videoId +
 			'?' +
-			Url.stringifyQuery(args)
+			url.stringifyQuery(args)
 		);
 	};
 

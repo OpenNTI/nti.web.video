@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import invariant from 'invariant';
 import { v4 as uuid } from 'uuid';
 
-import { Url } from '@nti/lib-commons';
+import { url } from '@nti/lib-commons';
 import Logger from '@nti/util-logger';
 
 import { EventHandlers } from '../../Constants';
@@ -201,7 +201,7 @@ export default class YouTubeVideo extends React.Component {
 			origin: location.protocol + '//' + location.host,
 		};
 
-		return `${YOU_TUBE}/embed/${videoId}?${Url.stringifyQuery(args)}`;
+		return `${YOU_TUBE}/embed/${videoId}?${url.stringifyQuery(args)}`;
 	};
 
 	updateURL = (props = this.props, update = x => this.setState(x)) => {
