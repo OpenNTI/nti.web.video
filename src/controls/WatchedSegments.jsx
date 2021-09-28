@@ -187,7 +187,10 @@ const useWatchedSegments = (segmentsProp, bar) => {
 
 		const resp = await video.fetchLink('watched_segments');
 
-		return groupAdjoiningSegments(resp.WatchedSegments);
+		return {
+			segments: groupAdjoiningSegments(resp.WatchedSegments),
+			maxDuration: resp.MaxDuration,
+		};
 	}, [player, player?.video, segmentsProp]);
 
 	React.useEffect(() => {
@@ -228,9 +231,14 @@ const useWatchedSegments = (segmentsProp, bar) => {
 			return null;
 		}
 
+		const {
+			segments: analyticsSegments,
+			maxDuration: analyticsDuration,
+		} = resolver;
+
 		return getVisibleSegments(
-			groupAdjoiningSegments([...resolver, ...liveSegments]),
-			maxDuration,
+			groupAdjoiningSegments([...analyticsSegments, ...liveSegments]),
+			maxDuration ?? analyticsDuration,
 			bar?.offsetWidth
 		).map(s => getSegmentProps(s, player, maxDuration));
 	}, [resolver, liveSegments, maxDuration, bar, player]);
