@@ -227,7 +227,7 @@ const useWatchedSegments = (segmentsProp, bar) => {
 	}, [liveSegments, setLiveSegments, player?.video]);
 
 	const segments = useMemo(() => {
-		if (!bar || !maxDuration || !isResolved(resolver)) {
+		if (!bar || !isResolved(resolver)) {
 			return null;
 		}
 
