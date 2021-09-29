@@ -236,18 +236,25 @@ const useWatchedSegments = (segmentsProp, bar) => {
 			maxDuration: analyticsDuration,
 		} = resolver;
 
+		const duration =
+			maxDuration ??
+			analyticsDuration ??
+			player?.getPlayerState?.()?.duration;
+
 		return getVisibleSegments(
 			groupAdjoiningSegments([...analyticsSegments, ...liveSegments]),
-			maxDuration ?? analyticsDuration,
+			duration,
 			bar?.offsetWidth
-		).map(s => getSegmentProps(s, player, maxDuration));
+		).map(s => getSegmentProps(s, player, duration));
 	}, [resolver, liveSegments, maxDuration, bar, player]);
 
 	return {
 		loading: isPending(resolver),
 		error: isErrored(resolver) ? resolver : null,
 		maxDuration:
-			maxDuration ?? (isResolved(resolver) ? resolver.maxDuration : null),
+			maxDuration ??
+			(isResolved(resolver) ? resolver.maxDuration : null) ??
+			player?.getPlayerState?.()?.duration,
 		segments,
 	};
 };
