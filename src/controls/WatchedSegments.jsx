@@ -246,13 +246,14 @@ const useWatchedSegments = (segmentsProp, bar) => {
 	return {
 		loading: isPending(resolver),
 		error: isErrored(resolver) ? resolver : null,
+		maxDuration:
+			maxDuration ?? (isResolved(resolver) ? resolver.maxDuration : null),
 		segments,
 	};
 };
 
-const useMileStones = () => {
+const useMileStones = maxDuration => {
 	const player = usePlayer();
-	const maxDuration = useDuration();
 
 	return getMileStones(player, maxDuration).map(m => ({
 		...m,
@@ -322,8 +323,11 @@ export function WatchedSegments({
 		[setBar, bar]
 	);
 
-	const { loading, error, segments } = useWatchedSegments(segmentsProp, bar);
-	const milestones = useMileStones();
+	const { loading, error, segments, maxDuration } = useWatchedSegments(
+		segmentsProp,
+		bar
+	);
+	const milestones = useMileStones(maxDuration);
 	const { ref, onClick } = useSeekHandler(onClickProp);
 
 	const CompletionIcon = alert ? Alert : Check;
