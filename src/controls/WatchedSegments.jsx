@@ -185,7 +185,10 @@ const useWatchedSegments = (segmentsProp, bar) => {
 			return null;
 		}
 
-		const resp = await video.fetchLink('watched_segments');
+		const resp = await video.fetchLink({
+			mode: 'raw',
+			rel: 'watched_segments',
+		});
 
 		return {
 			segments: groupAdjoiningSegments(resp.WatchedSegments),
@@ -231,10 +234,8 @@ const useWatchedSegments = (segmentsProp, bar) => {
 			return null;
 		}
 
-		const {
-			segments: analyticsSegments,
-			maxDuration: analyticsDuration,
-		} = resolver;
+		const { segments: analyticsSegments, maxDuration: analyticsDuration } =
+			resolver;
 
 		const duration =
 			maxDuration ??

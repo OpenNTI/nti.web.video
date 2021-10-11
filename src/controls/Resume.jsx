@@ -68,7 +68,7 @@ function useResumeTime(time) {
 		}
 
 		const delay = wait.min(wait.SHORT);
-		const info = await video.fetchLink('resume_info');
+		const info = await video.fetchLink({ mode: 'raw', rel: 'resume_info' });
 
 		await delay();
 
