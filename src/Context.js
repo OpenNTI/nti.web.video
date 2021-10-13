@@ -6,7 +6,7 @@
 
 import EventEmitter from 'events';
 
-import React from 'react';
+import { useEffect, useState } from 'react';
 
 import { Hooks } from '@nti/web-commons';
 import { useForceUpdate } from '@nti/web-core';
@@ -73,16 +73,16 @@ class ContextObject extends EventEmitter {
 }
 
 export function VideoContext(props) {
-	const [context] = React.useState(() => new ContextObject());
+	const [context] = useState(() => new ContextObject());
 
 	return <Context.Provider value={context} {...props} />;
 }
 
-const useContext = () => React.useContext(Context);
+const useContext = () => useContext(Context);
 const useEvent = (event, fn) => {
 	const context = useContext();
 
-	React.useEffect(
+	useEffect(
 		() => (context && event && fn ? context.subscribe(event, fn) : null),
 		[context, event, fn]
 	);
@@ -97,7 +97,7 @@ export const usePlayer = () => {
 	const forceUpdate = useForceUpdate();
 	const context = useContext();
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (!context) {
 			return null;
 		}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import cx from 'classnames';
 
 import { Layouts, Hooks } from '@nti/web-commons';
@@ -65,8 +65,8 @@ const Container = styled.div`
  */
 export function ControlBar({ children, dark, ...props }) {
 	const watchedId = Hooks.useId('watchedsegments');
-	const [showWatched, setShowWatched] = React.useState(false);
-	const toggleShowWatched = React.useCallback(
+	const [showWatched, setShowWatched] = useState(false);
+	const toggleShowWatched = useCallback(
 		() => setShowWatched(!showWatched),
 		[showWatched, setShowWatched]
 	);
@@ -82,7 +82,7 @@ export function ControlBar({ children, dark, ...props }) {
 	const viewed =
 		completionObject?.videoCompletable && completionObject?.videoCompleted;
 
-	React.useEffect(() => {
+	useEffect(() => {
 		/**
 		 * Here's why I'm using XOR:
 		 * if alert is false and showWatched is false,

@@ -1,4 +1,10 @@
-import React from 'react';
+import {
+	useCallback,
+	useEffect,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from 'react';
 import PropTypes from 'prop-types';
 
 import { wait } from '@nti/lib-commons';
@@ -116,13 +122,13 @@ function useResumeTime(time) {
 }
 
 export function Resume({ time, ...otherProps }) {
-	const [clicked, setClicked] = React.useState(false);
-	const onClick = React.useCallback(() => setClicked(true), [setClicked]);
+	const [clicked, setClicked] = useState(false);
+	const onClick = useCallback(() => setClicked(true), [setClicked]);
 
-	const [width, setWidth] = React.useState(null);
+	const [width, setWidth] = useState(null);
 
-	const buttonRef = React.useRef();
-	React.useLayoutEffect(() => {
+	const buttonRef = useRef();
+	useLayoutEffect(() => {
 		const node = buttonRef.current?.getDOMNode?.() ?? buttonRef.current;
 		const maxWidth = node?.clientWidth ? node.clientWidth + 10 : null;
 
@@ -133,7 +139,7 @@ export function Resume({ time, ...otherProps }) {
 
 	const { loading, error, resumeTime, restart } = useResumeTime(time);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (clicked && restart) {
 			setClicked(false);
 		}

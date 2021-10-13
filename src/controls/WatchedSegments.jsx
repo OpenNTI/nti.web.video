@@ -1,7 +1,13 @@
 /** @typedef {number} Time - video timestamp in seconds */
 /** @typedef {{video_start_time:Time, video_end_time: Time}} Segment */
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, {
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react';
 
 import {
 	Hooks as AnalyticsHooks,
@@ -196,7 +202,7 @@ const useWatchedSegments = (segmentsProp, bar) => {
 		};
 	}, [player, player?.video, segmentsProp]);
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if (!player?.video) {
 			return;
 		}
@@ -271,10 +277,10 @@ const useMileStones = maxDuration => {
 
 const useSeekHandler = onClick => {
 	const player = usePlayer();
-	const container = React.useRef();
+	const container = useRef();
 
 	return {
-		onClick: React.useCallback(
+		onClick: useCallback(
 			e => {
 				onClick?.(e);
 

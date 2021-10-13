@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { Button } from "@nti/web-core";
+import { Button } from '@nti/web-core';
 
 import { usePlayer } from '../Context';
 
@@ -15,7 +15,7 @@ import { usePlayer } from '../Context';
 export const useSeekHandler = (time, onClick) => {
 	const player = usePlayer();
 
-	return React.useCallback(
+	return useCallback(
 		e => {
 			onClick?.(e);
 
@@ -32,7 +32,7 @@ export const useSeekHandler = (time, onClick) => {
  * Render a button that seeks the current player in the VideoContext to the given time.
  *
  * @param {SeekToProps} props
- * @returns {React.ReactElement}
+ * @returns {JSX.Element}
  */
 function SeekToCmp({
 	time,

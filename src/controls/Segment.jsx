@@ -1,17 +1,17 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 
-import { Button } from "@nti/web-core";
+import { Button } from '@nti/web-core';
 
 import { usePlayer, useTimeUpdate } from '../Context';
 
 import { useSeekHandler } from './SeekTo';
 
 const useIsActiveTime = (start, end, silent) => {
-	const [active, setActive] = React.useState(false);
+	const [active, setActive] = useState(false);
 
-	const updateActive = React.useCallback(
+	const updateActive = useCallback(
 		({ target }) => {
 			const { currentTime } = target ?? {};
 			const isActive =

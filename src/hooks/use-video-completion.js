@@ -1,4 +1,4 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 
 import { Hooks as AnalyticsHooks } from '@nti/lib-analytics';
 import { useResolver } from '@nti/web-commons';
@@ -27,7 +27,7 @@ export default function useVideoCompletion() {
 	const videoCompleted =
 		video?.hasCompleted() && video?.completedSuccessfully();
 
-	React.useEffect(() => {
+	useEffect(() => {
 		video?.refresh();
 	}, [video]);
 
@@ -39,7 +39,7 @@ export default function useVideoCompletion() {
 	const hasEnded = watchedTilEnd && !(videoCompletable && videoCompleted);
 
 	const [receivedBatchEventAfterEnd, setReceivedBatchEventAfterEnd] =
-		React.useState(false);
+		useState(false);
 
 	/**
 	 * What's going on here:
@@ -49,7 +49,7 @@ export default function useVideoCompletion() {
 	 * if the video has not ended and we have receivedBatchEventAfterEnd, then we will have to update
 	 * the state such that we can refresh the video when receivedBatchEventAfterEnd toggles back to true.
 	 */
-	React.useEffect(() => {
+	useEffect(() => {
 		const listener = () => {
 			if (hasEnded) {
 				setReceivedBatchEventAfterEnd(true);

@@ -1,4 +1,4 @@
-import React from 'react';
+import { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 
@@ -69,7 +69,7 @@ export default function VideoCurtain({
 	onPlayClick,
 	...otherProps
 }) {
-	const [size, setSize] = React.useState(Poster);
+	const [size, setSize] = useState(Poster);
 
 	const resolver = useResolver(async () => {
 		const poster = await video.getPoster();
@@ -80,7 +80,7 @@ export default function VideoCurtain({
 
 	const assets = isResolved(resolver) ? resolver : null;
 
-	const onSizeChange = React.useCallback(newSize =>
+	const onSizeChange = useCallback(newSize =>
 		setSize(Sizes.find(s => s.query(newSize))?.size)
 	);
 
