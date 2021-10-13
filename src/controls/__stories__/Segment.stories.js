@@ -1,4 +1,3 @@
-import React from 'react';
 
 import { Segment } from '../Segment';
 import { VideoContext } from '../../Context';

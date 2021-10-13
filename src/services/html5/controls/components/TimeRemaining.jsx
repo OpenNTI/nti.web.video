@@ -1,5 +1,4 @@
 import './TimeRemaining.scss';
-import React from 'react';
 import PropTypes from 'prop-types';
 
 import { getFormattedTimeRemaining } from '../utils';

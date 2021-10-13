@@ -1,4 +1,3 @@
-import React from 'react';
 
 import { SeekTo } from '../SeekTo';
 import { VideoContext } from '../../Context';
