@@ -14,8 +14,8 @@ import {
 	Manager as AnalyticManager,
 } from '@nti/lib-analytics';
 import { scoped } from '@nti/lib-locale';
-import { Hooks, Text, Icons, Loading, Placeholder } from '@nti/web-commons';
-import { Button } from '@nti/web-core';
+import { Hooks, Text, Loading, Placeholder } from '@nti/web-commons';
+import { Button, Icons } from '@nti/web-core';
 
 import { usePlayer, useDuration } from '../Context';
 

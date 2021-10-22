@@ -8,7 +8,8 @@ import {
 import PropTypes from 'prop-types';
 
 import { wait } from '@nti/lib-commons';
-import { Hooks, Text, Icons } from '@nti/web-commons';
+import { Hooks, Text } from '@nti/web-commons';
+import { Icons } from '@nti/web-core';
 import { scoped } from '@nti/lib-locale';
 
 import { usePlayer, useDuration, useCurrentTime } from '../Context';
