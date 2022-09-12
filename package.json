@@ -48,7 +48,7 @@
     "@vimeo/player": "^2.8.2",
     "hls.js": "1.x.x",
     "invariant": "^2.1.1",
-    "uuid": "^8.3.0"
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@nti/cmp-scripts": "^2.31.8"
